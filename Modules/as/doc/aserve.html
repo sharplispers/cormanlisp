@@ -1,0 +1,1664 @@
+<html>
+
+<head>
+<title>AllegroServe</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body>
+
+<h1 align="center">AllegroServe</h1>
+
+<p align="left"><strong><small>copyright(c) 2000. Franz Inc</small></strong></p>
+
+<h2 align="left">Table of Contents</h2>
+
+<p align="left"><a href="#introduction">Introduction</a><br>
+<a href="#running-AllegroServe">Running AllegroServe</a><br>
+<a href="#starting-the-server">Starting the Server</a><br>
+<font face="Courier New">&nbsp; <a href="#f-start">start</a></font><br>
+<a href="#shutting-down-the-server">Shutting Down the Server</a><br>
+<font face="Courier New">&nbsp; <a href="#f-shutdown">shutdown</a></font><br>
+<a href="#publishing-information">Publishing Information</a><br>
+<font face="Courier New">&nbsp; <a href="#f-publish-file">publish-file</a><br>
+&nbsp; <a href="#f-publish-directory">publish-directory</a><br>
+&nbsp; <a href="#f-publish">publish</a></font><br>
+<a href="#generating-a-computed-response">Generating a Computed Response</a><br>
+<font face="Courier New">&nbsp; <a href="#f-with-http-response">with-http-response</a><br>
+&nbsp; <a href="#f-with-http-body">with-http-body</a><br>
+&nbsp; <a href="#f-get-request-body">get-request-body</a><br>
+&nbsp; <a href="#f-header-slot-value">header-slot-value</a><br>
+&nbsp; <a href="#f-reply-header-slot-value">reply-header-slot-value</a><br>
+&nbsp; <a href="#f-request-query">request-query</a></font><br>
+&nbsp;&nbsp;&nbsp;&nbsp; <font face="Courier New"><a href="#f-request-query-value">request-query-value</a></font><br>
+<a href="#request-object-readers">Request Object Readers and Accessors</a><br>
+<font face="Courier New">&nbsp; <a href="#f-request-method">request-method</a><br>
+&nbsp; <a href="#f-request-uri">request-uri</a><br>
+&nbsp; <a href="#f-request-protocol">request-protocol</a><br>
+&nbsp; <a href="#f-request-socket">request-socket</a><br>
+&nbsp; <a href="#f-request-wserver">request-wserver</a><br>
+&nbsp; <a href="#f-request-raw-request">request-raw-request</a><br>
+&nbsp; <a href="#f-request-reply-code">request-reply-code</a><br>
+&nbsp; <a href="#f-request-reply-date">request-reply-date</a><br>
+&nbsp; <a href="#f-request-reply-headers">request-reply-headers</a><br>
+&nbsp; <a href="#f-request-reply-content-length">request-reply-content-length</a><br>
+&nbsp; <a href="#f-request-reply-plist">request-reply-plist</a><br>
+&nbsp; <a href="#f-request-reply-strategy">request-reply-strategy</a><br>
+&nbsp; <a href="#f-request-reply-stream">request-reply-stream</a></font><br>
+<a href="#form-processing">Form Processing</a><br>
+<font face="Courier New">&nbsp; <a href="#f-get-multipart-header">get-multipart-header</a><br>
+&nbsp; <a href="#f-get-multipart-sequence">get-multipart-sequence</a></font> <br>
+&nbsp;&nbsp;&nbsp;&nbsp; <font face="Courier New"><a href="#f-form-urlencoded-">form-urlencoded-to-query</a><br>
+&nbsp; <a href="#f-query-to">query-to-form-urlencoded</a></font><br>
+<a href="#authorization">Authorization</a><br>
+<font face="Courier New">&nbsp; <a href="#f-get-basic-authorization">get-basic-authorization</a><br>
+&nbsp; <a href="#f-set-basic-authorization">set-basic-authorization</a><br>
+&nbsp; <a href="#c-password-authorizer">password-authorizer</a><br>
+&nbsp; <a href="#c-location-authorizer">location-authorizer</a></font><br>
+<a href="#cookies">Cookies</a><br>
+<font face="Courier New">&nbsp; <a href="#f-set-cookie-header">set-cookie-header</a><br>
+&nbsp; <a href="#f-get-cookie-values">get-cookie-values</a></font><br>
+<a href="#iseve-request-proc">AllegroServe Request Processing Protocol<br>
+</a><font face="Courier New">&nbsp; <a href="#f-handle-request">handle-request</a><br>
+&nbsp; <a href="#f-standard-locator">standard-locator</a><br>
+&nbsp; <a href="#f-unpublish-locator">unpublish-locator</a><br>
+&nbsp; <a href="#f-authorize">authorize</a><br>
+&nbsp; <a href="#f-failed-request">failed-request</a><br>
+&nbsp; <a href="#f-denied-request">denied-request</a><br>
+&nbsp; <a href="#f-process-entity">process-entity</a></font><br>
+<a href="#cliient-request">Client Functions</a><br>
+<font face="Courier New">&nbsp; <a href="#f-do-http-request">do-http-request</a><br>
+&nbsp; <a href="#c-client-request">client-request</a><br>
+&nbsp; <a href="#c-cookie-jar">cookie-jar</a><br>
+&nbsp; <a href="#f-make-http-client-request">make-http-client-request</a><br>
+&nbsp; <a href="#f-read-client-response">read-client-response-headers</a><br>
+&nbsp; <a href="#f-client-request-read-sequence">client-request-read-sequence</a></font><br>
+<a href="#debugging">Debugging</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp; <font face="Courier New"><a href="#f-debug-on">net.aserve::debug-on</a><br>
+&nbsp; <a href="#f-debug-off">net.aserve::debug-off</a></font><br>
+<br>
+<br>
+</p>
+
+<h2 align="left">In<a name="introduction"></a>troduction</h2>
+
+<p><strong>AllegroServe </strong>is a webserver&nbsp; written at <a
+href="http://www.franz.com">Franz Inc</a>.&nbsp;&nbsp;AllegroServe is designed to work
+with the <a href="htmlgen.html">htmlgen</a> system for generating dynamic html, as one of
+the big advantages of&nbsp; a web server written in Common Lisp is the ability to generate
+html dynamically.&nbsp; In this document we'll consider the web server and dynamic html
+generation to be parts of the same product.</p>
+
+<p>The design goals of AllegroServe are: 
+
+<ul>
+  <li>a very small footprint.&nbsp;&nbsp; It should be possible to make AllegroServe a part of
+    every application without being concerned about the impact of its size and processing
+    requirements.</li>
+  <li>simple configuration.&nbsp; AllegroServe should start automatically with minimal input
+    from the user.&nbsp; </li>
+  <li>easy to use.&nbsp;&nbsp; The typical scenarios should be easy to program with just
+    knowledge of simple html.</li>
+  <li>usable in commercial applications .</li>
+  <li>support the latest http protocol (currently HTTP/1.1)</li>
+  <li>runnable in multiple configurations.&nbsp;&nbsp;&nbsp; We want to support a program that
+    just wants to make some part of it visible or configurable by one user through a web
+    server.&nbsp; We also want to support&nbsp; a web site running on a multiprocessor taking
+    many hits per second.&nbsp;&nbsp; Finally, we want to support levels in between those
+    scenarios.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2><a name="running-AllegroServe"></a>Running AllegroServe</h2>
+
+<p>Running&nbsp; AllegroServe requires that you 
+
+<ul>
+  <li><strong>load</strong> <em>aserve.fasl</em> into Lisp</li>
+  <li><strong>publish </strong>zero or more urls</li>
+  <li><strong>start</strong> the server</li>
+  <li><strong>publish </strong>zero or more urls</li>
+</ul>
+
+<p>We mention <strong>publish</strong> twice to emphasize that you can publish urls before
+and after you start the server.</p>
+
+<p>&nbsp;</p>
+
+<h2><a name="starting-the-server"></a>Starting the server</h2>
+
+<p>The function <font face="Courier New">net.aserve:start</font> is used to start the
+server running.</p>
+
+<p><strong><font face="Courier New"><a name="f-start"></a>(start &amp;key port listeners
+chunking keep-alive server setuid setgid debug)</font></strong></p>
+
+<p>If no arguments are given then <strong>start</strong>&nbsp; starts a multi-threaded web
+server on port 80, which is the standard web server port.&nbsp;&nbsp;&nbsp; If you are
+running this on Unix then you can only allocate port 80 if you are logged in as root or
+have made Lisp a set-user-id root program.</p>
+
+<p>The&nbsp; are quite a few keyword arguments to <strong>start</strong>, but in practice
+you only need be concerned with <strong>:port</strong> and <strong>:listeners.
+&nbsp;&nbsp;&nbsp; </strong>The arguments have the following meanings: 
+
+<ul>
+  <li>port -- the port on which to open the web server.&nbsp; 80 is the default.</li>
+  <li>listeners -- the number of threads to process http requests.&nbsp;&nbsp;&nbsp;&nbsp; If
+    a value isn't given for the <strong>:listeners</strong> argument then 5 is assumed. &nbsp;
+    If&nbsp; the value is <strong>nil </strong>or <strong>0 </strong>then the server runs in <em>simple
+    server mode<strong> </strong></em>in which the <strong>start</strong> function doesn't
+    return - instead it processes the requests itself, one at a time.&nbsp; If a positive
+    number is given as the value of <strong>:listeners</strong> then the server runs in <em>threaded
+    server mode<strong>.</em> </strong>&nbsp; In this mode separate lisp lightweight processes
+    are started to handle requests from clients, the number of request handing threads equal
+    to the value of the <strong>:listeners</strong> keyword argument.&nbsp; In this mode the <strong>start
+    </strong>function returns after starting the other threads.</li>
+  <li>chunking -- if true then the server will using the chunked transfer encoding when it's
+    possible to do so.&nbsp; This is an optimization and should be left enabled unless you
+    suspect that it is the cause of some sort of error.&nbsp;&nbsp; The default is true.</li>
+  <li>keep-alive -- if true then the server will keep connections alive if requested by the
+    web client, and if there are sufficient free threads to handle new requests coming in.
+    &nbsp;&nbsp; This is an optimization and should be left on.&nbsp;&nbsp; The default is
+    true.</li>
+  <li>server -- if this is a passed a value it must be a <strong>wserver</strong> object,
+    which denotes&nbsp; a particular instance of a web server.&nbsp;&nbsp; This is for support
+    of running multiple independent web servers in the same lisp image.&nbsp; This will be
+    described in a later section (eventually).</li>
+  <li>setuid -- after opening the port, change the user id of this process to the given number
+    (only numbers are allowed, not names).&nbsp; This will only have an effect on Unix and it
+    will only succeed if the current user id is <strong>root</strong>.&nbsp;&nbsp; You would
+    want to use this argument if you plan on opening port <strong>80</strong> on Unix, as you
+    would have to start the server as <strong>root</strong> but then would want to change the
+    user id to an account with fewer privileges before allowing possibly malicious people to
+    connect to it.</li>
+  <li>setgid -- after opening the port, change the group&nbsp; id of this process to the given
+    number (only numbers are allowed, not names).&nbsp; This will only have an effect on Unix</li>
+  <li>debug -- if given a number this will print debugging messages whose associated codes are
+    this number or less.&nbsp;&nbsp;&nbsp; This is really an internal switch and may be
+    removed in future versions.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2><a name="shutting-down-the-server"></a>Shutting down the server</h2>
+
+<p><strong><font face="Courier New"><a name="f-shutdown"></a>(shutdown &amp;optional
+server)</font></strong></p>
+
+<p>This shuts down the web server given (or the most recently started web server if no
+argument is passed in).</p>
+
+<p>&nbsp;</p>
+
+<h2><a name="publishing-information"></a>Publishing information</h2>
+
+<p>Once the server is started it will accept requests from http clients, typically web
+browsers.&nbsp;&nbsp; Each request is parsed and then AllegroServe searches for an object
+to handle that request.&nbsp;&nbsp; That object is called an <strong>entity</strong>.&nbsp;
+If an entity is found, it is passed the request and is responsible for generating and
+sending a response to the client.&nbsp; If an entity can't be found then AllegroServe
+sends back a response saying that that request was invalid.</p>
+
+<p><em>Publishing</em> is the process of creating entities and registering them in the
+tables scanned by AllegroServe after a request is read.</p>
+
+<h3>Components of a request</h3>
+
+<p>A request from an http client contains a lot of information.&nbsp; The two items that
+determine which entity will handle the request are 
+
+<ul>
+  <li>the <strong>path</strong> of the url.&nbsp; This is the part of the url after the host
+    name and before the query string (if any).&nbsp; For example in the url&nbsp; <a
+    href="http://bar.com:8030/files/foo?xx=3&amp;yy=4">http://bar.com:8030/files/foo?xx=3&amp;yy=4</a>
+    the part we call the path&nbsp; is just <strong>/files/foo.</strong></li>
+  <li>the <strong>host</strong> to which the request is directed.&nbsp;&nbsp; This is not
+    necessarily the host that is receiving the request due to virtual hosts and proxy
+    servers.&nbsp; This value comes from the <strong>Host:</strong> header line, if one is
+    given.&nbsp; If the <strong>Host:</strong> header line isn't given then this value is <em>unspecified</em>
+    for this request.&nbsp;&nbsp;&nbsp; The <strong>Host:</strong> header line also may
+    include a port number, but we ignore that for the purposes of matching requests to
+    entities.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>A request contains other information and while that information isn't used to determine
+which entity will handle the request it can be used by the entity handling the request in
+any way it sees fit.</p>
+
+<p>&nbsp;</p>
+
+<p>The following functions create entities and specify which requests they will handle.
+&nbsp;&nbsp; An entity is distinguished by the <strong>path</strong> and <strong>host</strong>
+values passed to the particular <strong>publish</strong> function.&nbsp;&nbsp; When a <strong>publish</strong>
+is done for a <strong>path</strong> and <strong>host</strong> for which there is already
+an entity assigned, the old entity is replaced by the new entity.</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-publish-file"></a><strong><font face="Courier New">(publish-file &amp;key
+path host port&nbsp; file content-type class preload remove server)</font></strong></p>
+
+<p>This creates an entity that will return the contents of a file on the disk in response
+to a request.&nbsp;&nbsp; The <strong>url</strong> and <strong>file</strong>&nbsp; must be
+given, the rest of the arguments are optional..&nbsp; The arguments have these meanings: 
+
+<ul>
+  <li><strong>path </strong>-- a string that must match the name part of the url as described
+    above in <strong>Components of a Request</strong></li>
+  <li><strong>host -- </strong>a string that must match (in a case insensitive manner) the
+    host part of the request.&nbsp;&nbsp; If this argument is not given then it will match the
+    host part of any request.&nbsp; If this argument is given and the request does not have a
+    host part specified, then it will not match.</li>
+  <li><strong>port</strong> -- this argument is currently unused and will likely be removed in
+    future versions.</li>
+  <li><strong>file </strong>-- the name of the file to return when a request to this entity is
+    made.&nbsp;&nbsp; The file doesn't have to exist until the request is made unless <strong>preload</strong>
+    is specified as true.</li>
+  <li><strong>content-type</strong> -- A string describing the content of the file.&nbsp; This
+    is often referred to as the MIME type of the file.&nbsp; An example is
+    &quot;text/html&quot; to describe an html file.&nbsp; If a content-type value is not
+    provided, then AllegroServe checks the pathname-type in the&nbsp; *mime-types* hash table
+    to see if there is a content-type associated with this pathname-type.&nbsp; If it fails to
+    find a content-type then it uses the type &quot;application/octet-stream&quot;.&nbsp; </li>
+  <li><strong>class</strong> -- a Clos class name or class object to be used to hold this
+    entity.&nbsp; The class must be a subclass of&nbsp; <strong>file-entity</strong>.
+    &nbsp;&nbsp; </li>
+  <li><strong>preload</strong> --if true it instructs <strong>AllegroServe</strong> to read
+    the contents of the file in immediately and store it in a lisp object.&nbsp; This will
+    speed up the response to this request.&nbsp; However note that if the file changes on the
+    disk after it has been preloaded, this change will <strong>not </strong>be seen until<strong>
+    &nbsp; publish-file </strong>is called again<strong>.</strong></li>
+  <li><strong>remove </strong>-- instead of adding an entity, remove the entities that match
+    the given <strong>path</strong> and <strong>host. </strong>This removes all entities, not
+    just file entities.&nbsp; If a <strong>host</strong> value is not passed in an argument,
+    then this will remove all entities for this <strong>path</strong>, regardless of their <strong>host</strong>
+    values.</li>
+  <li><strong>server</strong> -- if this entity should only be served by a particular server,
+    then this specifies which server.&nbsp;&nbsp; See the section (to be written) on running
+    multiple servers in the same Lisp process.</li>
+</ul>
+
+<p>The function that handles requests for files will respond correctly to <strong>If-Modified-Since</strong>
+header lines and thus minimizes network traffic. </p>
+
+<p>Example: </p>
+
+<p>This will work on Unix where the password file is stored in /etc.</p>
+
+<pre>(publish-file :path &quot;/password&quot; :file &quot;/etc/passwd&quot; :content-type &quot;text/plain&quot;)</pre>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-publish-directory"></a><strong><font face="Courier New">(publish-directory
+&amp;key prefix host port destination remove server)</font></strong></p>
+
+<p>This creates a mapping from all urls whose name begins with<strong> prefix</strong> to
+files stored in the directory specified by the destination.&nbsp;&nbsp; The <strong>host</strong>,
+<strong>port, remove </strong>and <strong>server</strong> arguments are as described above
+for <strong>publish.</strong> &nbsp;&nbsp;&nbsp;&nbsp; When a request comes in for which
+there isn't an entity that matches it exactly,&nbsp; AllegroServe checks to see if a
+prefix of the request matches the request.&nbsp; If so, and if the resulting entity is a <strong>directory-entity</strong>
+as created by this function, then it strips the prefix off the given request and appends
+the remaining part of the request to the destination string.&nbsp; It then publishes that
+(using <strong>publish-file</strong> and computing the content-type from the file type).
+&nbsp;&nbsp; Next that <strong>file-entity </strong>is made to handle the request in the
+normal manner.</p>
+
+<p>We plan to make a number of refinements to <strong>publish-directory</strong> including
+the ability to specify how deep in the directory structure it will look and also
+&nbsp;&nbsp; restricting what kinds of files it will match.</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-publish"></a><strong><font face="Courier New">(publish &amp;key path host
+port content-type function class format remove server)</font></strong></p>
+
+<p>This creates a mapping from a url to a <strong>computed-entity</strong>, that is an
+entity that computes its response every time a request comes in.&nbsp; The <strong>path</strong>,
+<strong>host</strong>, <strong>port</strong>, <strong>remove, server</strong> and <strong>class</strong>
+arguments are as in the other publish functions.&nbsp;&nbsp; The <strong>content-type</strong>
+sets a default value for the response to the request but this can be overridden.&nbsp; The
+<strong>format</strong> argument is either <strong>:text </strong>(the default) or <strong>:binary</strong>
+and it specifies the kind of value that will be sent back (after the response headers,
+which are always in text).&nbsp;&nbsp; This value is only important if the response is
+generated in a particular way (described below).</p>
+
+<p>The <strong>function </strong>argument is&nbsp; a function of two arguments: an object
+of class <strong>http-request</strong> that holds a description of the request, and an
+object of class <strong>entity </strong>that holds this entity which is handling the
+request.&nbsp;&nbsp; This function must generate a response to the http request, even if
+the response is only that the request wasn't found.</p>
+
+<p>&nbsp;</p>
+
+<h2><a name="generating-a-computed-response"></a>Generating a computed response </h2>
+
+<p>There are a variety of ways that a response can be sent back to the http client
+depending on whether keep-alive is being done, chunking is possible, whether the response
+is text or binary, whether the client already has the most recent data, and whether the
+size of the body of the response is known before the headers are sent.&nbsp; AllegroServe
+handles the complexity of determining the optimal response strategy and the user need only
+use a few specific macros in the computation of the response in order ot take advantage of
+AllegroServe's strategy computation</p>
+
+<p>Here's a very simple computed response.&nbsp; It just puts &quot;Hello World!&quot; in
+the browser window:</p>
+
+<pre>(publish :path &quot;/hello&quot;
+         :content-type &quot;text/html&quot;
+         :function #'(lambda (req ent)
+                       (with-http-response (req ent)
+                          (with-http-body (req ent)
+                             (html &quot;Hello World!&quot;)))))
+
+
+
+</pre>
+
+<p align="left">This example works regardless of whether the request comes in from an old
+HTTP/0.9 browser or a modern HTTP/1.1 browser.&nbsp; It may or may not send the response
+back with Chunked transfer encoding and it may or may not keep the connection alive after
+sending back the response.&nbsp;&nbsp; The user code doesn't have to deal with those
+possibilities, it just uses <strong>with-http-response</strong> and <strong>with-http-body</strong>
+and the rest is automatic.&nbsp; The <strong>html</strong> macro is part of the htmlgen
+package that accompanies AllegroServe.&nbsp;&nbsp; In the case above we are being lazy and
+not putting out the html directives that should be found on every page of html since most
+browsers are accommodating.&nbsp;&nbsp; Here's the function that generates the correct
+html:</p>
+<div align="left">
+
+<pre>(publish :path &quot;/hello2&quot;
+         :content-type &quot;text/html&quot;
+         :function #'(lambda (req ent)
+                       (with-http-response (req ent)
+                         (with-http-body (req ent)
+                          (html 
+                             (:html
+                               (:body &quot;Hello World!&quot;)))))))</pre>
+</div>
+
+<p align="left">&nbsp;</p>
+
+<p align="left">The function above generates: <font face="Courier New">&lt;html&gt;&lt;body&gt;Hello
+World!&lt;/body&gt;&lt;/html&gt;.</font></p>
+
+<p align="left">&nbsp;</p>
+
+<p align="left">The macros and functions used in computing responses are these:</p>
+
+<hr>
+
+<p align="left"><a name="f-with-http-response"></a><strong><font face="Courier New">(with-http-response
+(req ent &amp;key timeout check-modified response content-type) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&amp;rest body)</font></strong></p>
+
+<p align="left">This macro begins the process of generating a response to an http request
+and then&nbsp; runs the code in the <strong>body</strong> which will actually send out the
+response.&nbsp; <strong>req</strong> and <strong>ent</strong> are the request and entity
+objects passed into the function designated to compute the response for the request.
+&nbsp;&nbsp;&nbsp; <strong>timeout </strong>sets a time limit for the computation of the
+response.&nbsp;&nbsp; The default is the value of the variable <strong>*http-response-timeout*</strong>
+(which is initially 120 meaning 120 seconds).&nbsp;&nbsp; If <strong>check-modified </strong>is
+true (the default) then the <strong>last-modified </strong>time stored in the entity
+object will be compared against the <strong>if-modified-since </strong>time of the request
+and if that indicates that the client already has the latest copy of this entity then a <strong>not-modified</strong>
+response will be automatically returned to the client and the <strong>body </strong>of
+this macro will not be run.&nbsp;&nbsp; <strong>response </strong>is an object containing
+the code and description of the http response we wish to return. &nbsp;&nbsp; The default
+value is the value of <strong>*response-ok*</strong> (which has a code of 200 and a string
+descriptor &quot;OK&quot;).&nbsp;&nbsp; <strong>content-type </strong>is a string
+describing the MIME type of the body (if any) sent after the headers.&nbsp; It has a form
+like &quot;text/html&quot;.&nbsp;&nbsp; If <strong>content-type</strong> isn't given here
+then the content-type value in the entity (which is set in the call to <strong>publish)</strong>
+will be used.</p>
+
+<p align="left">&nbsp;</p>
+
+<p align="left">An http response consists of a line describing the response code, followed
+by headers (unless it's the HTTP/0.9 protocol in which case there are no headers),
+&nbsp;&nbsp; and then followed by the body (if any) of the response.&nbsp;&nbsp; <strong>with-http-response</strong>
+doesn't normally send anything to the client.&nbsp; It only does so when it determines
+that the <strong>if-modified-since</strong> predicate doesn't hold and that it must send
+back a <strong>not-modified</strong> response.&nbsp;&nbsp;&nbsp; Thus in the normal case
+it isn't enough, even if there no body to send, to just call <strong>with-http-response</strong>.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This is where the <strong>with-http-body </strong>is used.</p>
+
+<p align="left">&nbsp;</p>
+
+<hr>
+
+<p align="left"><a name="f-with-http-body"></a><strong><font face="Courier New">(with-http-body
+(req ent &amp;key format headers)&nbsp; &amp;rest body)</font></strong></p>
+
+<p align="left">This macro causes the whole http response to be sent out.&nbsp; The macro
+itself will send out everything except the body of the response.&nbsp; That is the
+responsibility of the code supplied as the <strong>body </strong>form of the macro.
+&nbsp;&nbsp;&nbsp; In cases where there is no body to the response being sent it is still
+necessary to call <strong>with-http-body </strong>so that the other parts of the response
+are sent out, e.g.<font face="Courier New"> </font>at a minimum you should put<font
+face="Courier New"> (with-http-body (req ent)) </font>in the body of a with-http-response</p>
+
+<p align="left">The <strong>format</strong> argument specifies whether the code in the <strong>body</strong>
+will want to write <strong>:text</strong> (e.g. <strong>write-char</strong>) or <strong>:binary</strong>
+(e.g. <strong>write-byte</strong>) when it writes the data of the body of the response.
+&nbsp;&nbsp;&nbsp;&nbsp; Based on the value of the <strong>format</strong> argument,
+AllegroServe will create the correct kind of response stream.&nbsp;&nbsp; If <strong>format
+</strong>is not specified here it will default to the value specified when <strong>publish</strong>
+was called to create the entity.</p>
+
+<p align="left">The <strong>headers</strong> argument is a list of conses, where the car
+is the header name (a string) and the cdr is the header value.&nbsp; These headers are
+added to the headers sent as part of this response.</p>
+
+<p align="left">Within the <strong>body </strong>forms the code calls <strong>(request-reply-stream
+req)</strong> to obtain a stream to which it can write to supply the body of the response.</p>
+
+<hr>
+
+<p><a name="f-get-request-body"></a><strong><font face="Courier New">(get-request-body
+request)</font></strong></p>
+
+<p>Return the body of the request as a string.&nbsp; If there is no body the return value
+will be an empty string.&nbsp;&nbsp; The result is cached inside the request object, so
+this function can be called more than once while processing a request.&nbsp;&nbsp; The
+typical reason for there to be a body to a request is when a web browser sends the result
+of a form with&nbsp; a POST method.</p>
+
+<hr>
+
+<p><a name="f-header-slot-value"></a><strong><font face="Courier New">(header-slot-value
+request header-name)</font></strong></p>
+
+<p>Return the value given in the request for the given header-name (a string).
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The header-name string should be all lower case.&nbsp; If
+the header wasn't present in this request then nil will be returned.&nbsp;&nbsp; <strong>header-slot-value</strong>
+is a macro that will expand into a fast accessor if the <strong>header-name</strong> is a
+constant string.</p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<p><a name="f-reply-header-slot-value"></a><font face="Courier New"><strong>(reply-header-slot-value
+request header-name)</strong></font></p>
+
+<p>Return the value associated with the header <strong>header-name</strong> in the reply
+sent back to the client.&nbsp; This function is setf'able and this is the preferred way to
+specify headers and values to be sent with a reply.</p>
+
+<hr>
+
+<p><a name="f-request-query"></a><strong><font face="Courier New">(request-query request
+&amp;key uri post)</font></strong></p>
+
+<p>Decode and return an alist of the query values in the request.&nbsp;&nbsp; Each item in
+the alist is a cons where the car is a string giving the name of the argument and the cdr
+is a string giving the value of the argument.</p>
+
+<p>The query string is in one or both of two places: 
+
+<ul>
+  <li>it begins at the first question mark in the uri and continues until the end of the uri
+    or a sharp sign (#), whichever comes first.</li>
+  <li>it is in the body of a POST request from a web client.</li>
+</ul>
+
+<p><strong>request-query</strong> will by default look in both locations for the query
+string and concatenate the results of decoding both query strings.&nbsp; If you would like
+it to not check one or both of the locations you can use the <strong>:uri</strong> and <strong>:post</strong>
+keyword arguments.&nbsp;&nbsp; If <strong>uri</strong> is true (and true is the default
+value) then the query string in the uri is checked.&nbsp; If <strong>post</strong> is true
+(and true is the default value) and if the request is a POST then the body of the post
+form will be decoded for query values.</p>
+
+<p>A query is normally a set of names and values.&nbsp; <br>
+<strong>http://foo.com/bar?a=3&amp;b=4 </strong>yields a query alist <strong>((&quot;a&quot;
+. &quot;3&quot;) (&quot;b&quot; . &quot;4&quot;)). </strong><br>
+If a name doesn't have an associated value then the value in the alist is the empty
+string.&nbsp;<br>
+<strong>http://foo.com/bar?a&amp;b=&amp;c=4</strong> &nbsp; yields a query alist <strong>((&quot;a&quot;
+. &quot;&quot;) (&quot;b&quot; . &quot;&quot;) (c . &quot;4&quot;))</strong></p>
+
+<p>.&nbsp;&nbsp; </p>
+
+<p><a name="f-request-query-value"></a><font face="Courier New"><strong>(request-query-value
+key request &amp;key uri post test)</strong></font></p>
+
+<p>This combines a call to <strong>request-query</strong> to retrieve the alist of query
+keys and values, with a call to <strong>assoc</strong> to search for the specific key, and
+finally with a call to <strong>cdr</strong> to return just the value from the assoc list
+entry.&nbsp; The <strong>test</strong> argument is the function to be used to test the
+given key against the keys in the assoc list. It defaults to <strong>#'equal</strong>. </p>
+
+<p>If the given key is <em>not</em> present in the query <strong>nil</strong> is returned.
+&nbsp; If the given key <em>is</em> present in the query but doesn't have an associated
+value then the empty string is returned.</p>
+
+<hr>
+
+<p>&nbsp;</p>
+
+<h2><a name="request-object-readers"></a>Request Object Reader and Accessors</h2>
+
+<p>The request object contains information about the http request being processed and it
+contains information about the response that is being computed and returned to the
+requestor.&nbsp;&nbsp; The following functions access slots of the request object. &nbsp;
+Those with names beginning with <strong>request-reply-</strong> are accessing the slots
+which hold information about the response to the request.&nbsp;&nbsp; When a function is
+listed as an<em> accessor<strong> </strong></em>that means that it can be <strong>setf</strong>'ed
+as well as used to read the slot value.</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-request-method"></a><font face="Courier New"><strong>(request-method
+request)</strong></font> - reader - a keyword symbol naming the kind of request, typically
+:get, :put or :post.</p>
+
+<p><a name="f-request-uri"></a><strong><font face="Courier New">(request-uri request)</font></strong>
+- reader - a uri object describing the request.&nbsp;&nbsp; If the request contains a
+&quot;Host:&quot; header line then the value of this header is placed in the uri-host and
+uri-port slots of this uri object.</p>
+
+<p><a name="f-request-protocol"></a><strong><font face="Courier New">(request-protocol
+request)</font></strong> - reader - a keyword symbol naming the http protocol
+requested.&nbsp; It is either :http/0.9, :http/1.0 or :http/1.1.</p>
+
+<p><a name="f-request-protocol-string"></a><font face="Courier New"><strong>(request-protocol-string
+request) </strong></font>- reader - a string naming the http protocol requested. It is
+either &quot;HTTP/0.9&quot;, &quot;HTTP/1.0&quot; or &quot;HTTP/1.1&quot;.</p>
+
+<p><a name="f-request-socket"></a><strong><font face="Courier New">(request-socket
+request)</font></strong> - reader - the socket object through which the request was made
+and to which the response must be sent.&nbsp;&nbsp;&nbsp; This object can be used to
+determine the IP address of the requestor.</p>
+
+<p><a name="f-request-wserver"></a><strong><font face="Courier New">(request-wserver
+request)</font></strong> - reader - the wserver object describing the web server taking
+this request</p>
+
+<p><a name="f-request-raw-request"></a><strong><font face="Courier New">(request-raw-request
+request)</font></strong> - reader -&nbsp; a string holding the exact request made by the
+client</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-request-reply-code"></a><strong><font face="Courier New">(request-reply-code
+request)</font></strong> &nbsp;&nbsp;&nbsp;&nbsp; - accessor - the value describes the
+response code and string we will return for this request.&nbsp;&nbsp; See the value of the
+argument <strong>response</strong> in <strong>with-http-response</strong> for more
+information.</p>
+
+<p><a name="f-request-reply-date"></a><strong><font face="Courier New">(request-reply-date
+request)</font></strong> &nbsp;&nbsp;&nbsp;&nbsp; - accessor - the date the response will
+be made (in Lisp's universal time format).&nbsp; This defaults to the time when the
+request arrived.</p>
+
+<p><a name="f-request-reply-headers"></a><strong><font face="Courier New">(request-reply-headers
+request)</font></strong> - accessor - an alist of some of the headers to send out with the
+reply (other headers values are stored in specific slots of the request object).&nbsp;
+Each entry in the alist is a cons where the <strong>car</strong> is a string holding the
+header name and the <strong>cdr</strong> is the value (it is printed using the <strong>~a</strong>
+format directive). &nbsp;&nbsp; Typically <strong>request-reply-headers</strong> isn't
+used, instead the headers to be sent are passed as the <strong>:header</strong> argument
+to <strong>with-http-body</strong>, or <strong>(setf reply-header-slot-value)</strong> is
+called.</p>
+
+<p><a name="f-request-reply-content-length"></a><strong><font face="Courier New">(request-reply-content-length
+request) </font></strong>&nbsp;&nbsp;&nbsp; - accessor -&nbsp; the value to send as the
+Content-Length of this response.&nbsp;&nbsp; This is computed automatically by
+AllegroServe and thus a user program shouldn't have to set this slot under normal
+circumstances.</p>
+
+<p><a name="f-request-reply-plist"></a><strong><font face="Courier New">(request-reply-plist
+request)</font></strong> &nbsp;&nbsp;&nbsp;&nbsp; - accessor -&nbsp; this slot holds a
+property list on which AllegroServe uses to stores some lesser used information.&nbsp; The
+user program can use it as well.</p>
+
+<p><a name="f-request-reply-strategy"></a><font face="Courier New"><strong>(request-reply-strategy
+request)</strong></font>&nbsp;&nbsp; - accessor - the strategy is a list of symbols which
+describe how AllegroServe will build a response stream and will send back a
+response.&nbsp; More details will be given about the possible strategies at a future time.</p>
+
+<p><a name="f-request-reply-stream"></a><strong><font face="Courier New">(request-reply-stream
+request)</font></strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - accessor -&nbsp; This is the
+stream to be used in user code to send back the body of the response.&nbsp;&nbsp;&nbsp;
+This stream must&nbsp; be used instead of the value of <strong>request-socket</strong>.</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<h2><a name="form-processing"></a>Form Processing</h2>
+
+<p>Forms are used on web pages in order to allow the user to send information to the web
+server.&nbsp;&nbsp; A form consists of a number of objects, such as text fields, file
+fields, check boxes and radio buttons.&nbsp;&nbsp; Each field has a name.&nbsp;&nbsp; When
+the user takes a certain action, the form data is encoded and sent to the web server.
+&nbsp;&nbsp;&nbsp; There are three ways that data can be sent to the web server.&nbsp; The
+method used is determined by the attributes of the <strong>&lt;form&gt;</strong> tag that
+defines the form 
+
+<ul>
+  <li><strong>&lt;form method=&quot;get&quot;&gt; -&nbsp; </strong>The data is made part of
+    the <strong>url</strong> that is sent to the web server and is separated from the url
+    itself by a question mark.&nbsp; The AllegroServe url handler code uses <strong>(request-query</strong>
+    <strong>req)</strong> to retrieve the alist of form names and values.&nbsp;&nbsp; This
+    method has a few disadvantages - the amount of data that can be sent is limited since the
+    size of urls is limited.&nbsp; Also the data is visible to everyone seeing the url and
+    that may not be desirable.&nbsp; </li>
+  <li><strong>&lt;form method=&quot;post&quot;&gt; - </strong>The data is sent in the body of
+    the request.&nbsp;&nbsp;&nbsp; The&nbsp; AllegroServe url handler should call <strong>(request-query</strong>
+    <strong>req)</strong> to retrieve and decode the data posted.&nbsp;&nbsp;&nbsp; In this
+    case&nbsp; <strong>request-query</strong> calls <strong>(get-request-body req)</strong> to
+    retrieve the body from the web browser and then <strong>(form-urlencoded-to-query body) </strong>to
+    turn it into an alist that associates form field names with values.</li>
+  <li><strong>&lt;form method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt; - </strong>The
+    data is sent in the body of the request in MIME format, with each field in its own
+    separate MIME entity.&nbsp;&nbsp;&nbsp; This method is only necessary when one of the
+    fields in the form is a <strong>&lt;input type=&quot;file&quot;&gt;</strong> since that
+    causes the whole contents of a file to be sent from the browser to the web server. &nbsp;
+    When sending a file you would like to include information such as the filename and
+    content-type of the file, and by sending it in MIME format there is room for this
+    information in the MIME header.&nbsp;&nbsp; We describe how to retrieve data from such a
+    form next.</li>
+</ul>
+
+<h3>Retrieving multipart/form-data information</h3>
+
+<p>If you create a form with <strong>&lt;form method=&quot;post&quot;
+enctype=&quot;multipart/form-data&quot;&gt;</strong> then your url handler must do the
+following to retrieve the value of each field in the form: 
+
+<ol>
+  <li>Call <strong>(get-multipart-header req)</strong> to return the MIME headers of the next
+    field.&nbsp; If this returns nil then there are no more fields to retrieve.</li>
+  <li>Create a buffer and call <strong>(get-multipart-sequence req buffer)</strong> repeatedly
+    to return the next chunk of data.&nbsp; When there is no more data to read for this field,
+    <strong>get-multipart-sequence</strong> will return nil.&nbsp; </li>
+  <li>go back to step 1</li>
+</ol>
+
+<p>It's important to retrieve all of the data sent with the form, even if that data is
+just ignored.&nbsp; This is because there may be another http request following this one
+and it's important to advance to the beginning of that request so that it is properly
+recognized.&nbsp;&nbsp; </p>
+
+<p>Details on the functions are given next.</p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<p><a name="f-get-multipart-header"></a><strong><font face="Courier New">(get-multipart-header
+request)</font></strong></p>
+
+<p>This returns nil or&nbsp; the MIME headers for the next form field in alist form.
+&nbsp;&nbsp;&nbsp; If nil is returned then there is no more form data.&nbsp;&nbsp; </p>
+
+<p>For an input field such as <strong>&lt;input type=&quot;text&quot;
+name=&quot;textthing&quot;&gt; </strong>the value returned by <strong>get-multipart-header</strong>
+would be</p>
+
+<pre>((&quot;Content-Disposition&quot;
+
+      (:param &quot;form-data&quot; (&quot;name&quot; . &quot;textthing&quot;))))</pre>
+
+<p>For an input field such as <strong>&lt;input type=&quot;file&quot;
+name=&quot;thefile&quot;&gt; </strong>the value returned by <strong>get-multipart-header</strong>
+would be something like</p>
+
+<pre>((&quot;Content-Disposition&quot;
+      (:param &quot;form-data&quot; (&quot;name&quot; . &quot;thefile&quot;)
+                          (&quot;filename&quot; . &quot;C://down//550mhz.gif&quot;)))
+ (&quot;Content-Type&quot; &quot;image/gif&quot;))</pre>
+
+<p>Note that the filename is expressed in the syntax of the operating system on which the
+web browser is running.&nbsp; This syntax may or may not make sense to the Lisp pathname
+functions of the AllegroServe web server as it may be running on a totally different
+operating system.</p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<p><a name="f-get-multipart-sequence"></a><strong><font face="Courier New">(get-multipart-sequence
+request buffer &amp;key start end raw)</font></strong></p>
+
+<p>This retrieves the next chunk of data for the current form field and stores it in <strong>buffer</strong>.
+&nbsp;&nbsp; If <strong>start</strong> is given then it specifies the index in the buffer
+at which to begin storing the data.&nbsp; If <strong>end</strong> is given then it
+specifies the index just after the last index in which to store data.</p>
+
+<p>The return value is <strong>nil </strong>if there is no more data to return, otherwise
+it is the index one after the last last index filled with data in <strong>buffer.</strong></p>
+
+<p>The buffer can be a one dimensional array of <strong>character</strong> or of <strong>(unsigned-byte
+8)</strong>.&nbsp;&nbsp; If the buffer is a <strong>character</strong> buffer then <strong>raw</strong>
+defaults to <strong>nil, </strong>otherwise <strong>raw </strong>defaults to true.</p>
+
+<p>If <strong>raw </strong>is true then the buffer is filled with the bytes just as they
+are sent from the web browser.&nbsp; If <strong>raw</strong> is false then the sequence of
+characters #\return #\newline is converted to just #\newline (which is the preferred
+format for line separation in Lisp strings).</p>
+
+<p><strong>get-multipart-sequence</strong> may return before filling up the whole buffer,
+so program should be sure to make use of the index returned by <strong>get-multipart-sequence</strong>.</p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<p>&nbsp;</p>
+
+<p>In AllegroServe the information sent to the web server as a result of filling out a
+form&nbsp; is called a <strong>query</strong>.&nbsp; We store a query as a list of <strong>cons</strong>es,
+where the <strong>car</strong> of the <strong>cons </strong>is the name (a string) and the
+<strong>cdr</strong> of the cons is the value (another string).&nbsp;&nbsp;&nbsp; When a
+query is transmitted by the web browser to AllegroServe it is sent as string using the
+encoding <strong>application/x-www-form-urlencoded.&nbsp; </strong>We provide the
+following functions to convert between the encoding and the query list:</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-form-urlencoded-"></a><font face="Courier New"><strong>(form-urlencoded-to-query
+string)</strong></font></p>
+
+<p>Decodes the string and returns the query list.</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-query-to"></a><font face="Courier New"><strong>(query-to-form-urlencoded
+query)</strong></font></p>
+
+<p>Encodes the query and returns a string.</p>
+
+<p>&nbsp;</p>
+
+<p>Examples:</p>
+
+<pre>user(4): <strong>(query-to-form-urlencoded '((&quot;first name&quot; . &quot;joe&quot;) 
+                                     (&quot;last name&quot; . &quot;smith&quot;)))</strong>
+&quot;first+name=joe&amp;last+name=smith&quot;
+
+user(5): <strong>(form-urlencoded-to-query &quot;first+name=joe&amp;last+name=smith&quot;)</strong>
+((&quot;first name&quot; . &quot;joe&quot;) (&quot;last name&quot; . &quot;smith&quot;))
+ </pre>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<h2><a name="authorization"></a>Authorization </h2>
+
+<p>You may want to restrict certain entities to be accessible from only certain machines
+or people.&nbsp;&nbsp; You can put the test for authorization in the entity response
+function using one of the following functions, or you can have the check done
+automatically by storing an <strong>authorizer</strong> object in the entity.</p>
+
+<p>&nbsp;</p>
+
+<h3>functions</h3>
+
+<p><a name="f-get-basic-authorization"></a><strong><font face="Courier New">(get-basic-authorization
+request)</font></strong></p>
+
+<p>This function retrieves the Basic authorization information associated with this
+request, if any.&nbsp;&nbsp;&nbsp; The two returned values are the name and password, both
+strings.&nbsp; If there is no Basic authorization information with this request, <strong>nil</strong>
+is returned.</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-set-basic-authorization"></a><strong><font face="Courier New">(set-basic-authorization
+request realm)</font></strong></p>
+
+<p>This adds a header line that requests Basic authorization in the given realm (a
+string). &nbsp;&nbsp; This should be called between <strong>with-http-response</strong>
+and <strong>with-http-body</strong> and only for response of type 401 (i.e. <strong>*response-unauthorized*</strong>).
+&nbsp;&nbsp; The realm is an identifier, unique on this site, for the set of pages for
+which access should be authorized by a certain name and password.</p>
+
+<p>&nbsp;</p>
+
+<p>This example manually tests for basic authorization where the name is <strong>foo</strong>
+and the password is <strong>bar</strong>.</p>
+
+<pre>(publish :path &quot;/secret&quot;
+    :content-type &quot;text/html&quot;
+    :function
+    #'(lambda (req ent)
+        (multiple-value-bind (name password) (<strong>get-basic-authorization</strong> req)
+           (if* (and (equal name &quot;foo&quot;) (equal password &quot;bar&quot;))
+             then (with-http-response (req ent)
+                    (with-http-body (req ent)
+                      (html (:head (:title &quot;Secret page&quot;))
+                            (:body &quot;You made it to the secret page&quot;))))
+             else ; this will cause browser to put up a name/password dialog
+                  (with-http-response (req ent :response *response-unauthorized*)
+                     (<strong>set-basic-authorization</strong> req &quot;secretserver&quot;)
+                     (with-http-body (req ent)))))))
+
+</pre>
+
+<h3>authorizer classes</h3>
+
+<p>If an entity has an associated <strong>authorizer</strong> object, then before that
+entity's response function is run the authorizer is tested to see if&nbsp; it will accept
+or deny the current request.&nbsp;&nbsp;&nbsp; AllegroServe supplies two interesting
+subclasses of <strong>authorizer</strong> and users are free to add their own subclasses
+to support their own authorization needs.&nbsp;&nbsp; </p>
+
+<p>The protocol followed during authorization is this: 
+
+<ol>
+  <li>an entity object is selected that matches the request</li>
+  <li>if the entity object's authorizer slot is <strong>nil</strong> then it is considered
+    authorized.</li>
+  <li>otherwise the <strong>authorize</strong> generic function is called, passing it the
+    authorization object, the http-request object and the entity object</li>
+  <li>the return value from <strong>authorize </strong>can be&nbsp; <br>
+    <strong>t </strong>- meaning this request is authorized to access this entity<br>
+    <strong>nil - </strong>meaning that this request isn't authorized.&nbsp; The response from
+    AllegroServe will be the standard &quot;failed request&quot; response so the user won't be
+    able to distinguish this response from one that would be received if the entity didn't
+    exist at all.<br>
+    <strong>:deny</strong> - a denied request response will be returned.&nbsp;&nbsp; It will <strong>not</strong>
+    use the 401 return code so this will not cause a password box to be displayed by the
+    browser.<br>
+    <strong>:done</strong> - the request is denied, and a response has already been sent to
+    the requestor by the <strong>authorize </strong>function so no further response should be
+    made.</li>
+</ol>
+
+<p>&nbsp;</p>
+
+<p><a name="c-password-authorizer"></a><strong>password-authorizer</strong>&nbsp; [class]</p>
+
+<p>This subclass of <strong>authorizer</strong> is useful if you want to protect an entity
+using the basic authorization scheme that asks for a name and a password.
+&nbsp;&nbsp;&nbsp; When you create this class of object you should supply values for the
+two slots:</p>
+
+<table border="1" width="100%">
+  <tr>
+    <td width="13%"><big><strong>Slot Name</strong></big></td>
+    <td width="11%"><big><strong>initarg</strong></big></td>
+    <td width="76%"><big><strong>what</strong></big></td>
+  </tr>
+  <tr>
+    <td width="13%"><strong>allowed</strong></td>
+    <td width="11%">:<strong>allowed</strong></td>
+    <td width="76%">list of conses, each cons having the form <strong>(&quot;name&quot; .
+    &quot;password&quot;) </strong>where any of the listed name password pairs will allow
+    access to this page.</td>
+  </tr>
+  <tr>
+    <td width="13%"><strong>realm</strong></td>
+    <td width="11%"><strong>:realm</strong></td>
+    <td width="76%">A string which names the protection space for the given name and password.
+    &nbsp; The realm will appear in the dialog box the browser displays when asking for a name
+    and password. </td>
+  </tr>
+</table>
+
+<p>An example of it's use is the following where we allow access only if the user enters a
+name of <strong>joe</strong> and a password of <strong>eoj</strong> or a name of <strong>fred</strong>
+and a password of<strong> derf</strong>.</p>
+
+<pre>  (publish :path &quot;/foo&quot;
+    :content-type &quot;text/html&quot;
+    :authorizer (make-instance 'password-authorizer
+                       :allowed '((&quot;joe&quot; . &quot;eoj&quot;)
+                                  (&quot;fred&quot; . &quot;derf&quot;))
+                       :realm &quot;SecretAuth&quot;)
+
+    :function
+    #'(lambda (req ent)
+        (with-http-response (req ent)
+           (with-http-body (req ent)
+              (html (:head (:title &quot;Secret page&quot;))
+                    (:body &quot;You made it to the secret page&quot;))))))</pre>
+
+<p>&nbsp;</p>
+
+<p><a name="c-location-authorizer"></a><strong>location-authorizer</strong> [class]</p>
+
+<p>This authorizer class checks the IP address of the request to see if it is permitted
+access to the entity.&nbsp; The&nbsp; authorizer can specify a sequence of&nbsp; patterns
+and for each pattern a command of <strong>:accept </strong>(permit the access) or <strong>:deny</strong>
+(forbid the access).&nbsp;&nbsp;&nbsp; The first pattern that matches determines if the
+request is accepted or denied.&nbsp; If the pattern list is empty or if no pattern
+matches, then the request is accepted.&nbsp; </p>
+
+<p>The single slot of an object of class <strong>location-authorizer</strong> is</p>
+
+<table border="1" width="100%">
+  <tr>
+    <td width="13%"><big><strong>Slot Name</strong></big></td>
+    <td width="11%"><big><strong>initarg</strong></big></td>
+    <td width="76%"><big><strong>what</strong></big></td>
+  </tr>
+  <tr>
+    <td width="13%"><strong>patterns</strong></td>
+    <td width="11%">:<strong>patterns</strong></td>
+    <td width="76%">a list of patterns and commands, where the syntax of a pattern-command is
+    described below.</td>
+  </tr>
+</table>
+
+<p>A pattern can be 
+
+<ul>
+  <li><strong>:accept</strong> -- this is a pattern that matches all IP addresses and causes
+    the access to be authorized</li>
+  <li><strong>:deny</strong> -- this is a pattern that matches all IP addresses and causes the
+    access to be rejected</li>
+  <li><strong>(:accept ipaddress [bits])</strong> --&nbsp; if the request's IP address matches
+    the most significant <strong>bits</strong> of <strong>ipaddress</strong> then this access
+    is accepted.&nbsp;&nbsp; <strong>bits</strong> is optional and defaults to 32 (the whole
+    address).&nbsp; The ipaddress can be an integer (the 32 bit IP address) or it can be a
+    string in either dotted form &quot;123.23.43.12&quot;&nbsp; or a host name
+    &quot;foo.bar.com&quot;.&nbsp;&nbsp; In the case of a host name, a lookup must be done to
+    map the host name to an&nbsp; IP address.&nbsp;&nbsp; If this lookup fails then it is
+    assumed that the pattern doesn't match.&nbsp;&nbsp; If <strong>ipaddress</strong> is a
+    string, then the first time it is examined during authorization it is converted to an
+    integer IP address and that value replaces the string in the pattern (thus caching the
+    result of the conversion to an IP address).</li>
+  <li><strong>(:deny ipaddress [bits])</strong> -- just like the case above except the request
+    is rejected if it matches the <strong>ipaddress</strong>.&nbsp;&nbsp; One difference is
+    this: if the <strong>ipaddress </strong>is a host name and that host name cannot be
+    translated to an IP address, then it is assumed to match, and thus the request will be
+    denied.&nbsp; </li>
+</ul>
+
+<p>The example of using a <strong>location-authorizer</strong> only permits connections
+coming in via the loopback network (which occurs if you specify <a
+href="http://localhost/whatever">http://localhost/whatever</a>) or if they come from one
+particular machine (tiger.franz.com).&nbsp; Note that we end the pattern list with <strong>:deny</strong>
+so that anything not matching the preceding patterns will be denied.</p>
+
+<pre>(publish :path &quot;/local-secret-auth&quot;
+    :content-type &quot;text/html&quot;
+    :authorizer (make-instance 'location-authorizer
+                         :patterns '((:accept &quot;127.0&quot; 8)
+                                     (:accept &quot;tiger.franz.com&quot;)
+                                     :deny))
+
+    :function
+    #'(lambda (req ent)
+        (with-http-response (req ent)
+           (with-http-body (req ent)
+               (html (:head (:title &quot;Secret page&quot;))
+                     (:body (:b &quot;Congratulations. &quot;)
+                       &quot;You made it to the secret page&quot;))))))
+
+</pre>
+
+<h2><a name="cookies"></a>Cookies</h2>
+
+<p>Cookies are name value pairs that a web server can direct a web browser to save and
+then pass back to the web server under certain circumstances.&nbsp;&nbsp; Some users
+configure their web browsers to reject cookies, thus you are advised against building a
+site that depends on cookies to work.</p>
+
+<p>Each cookie has these components: 
+
+<ol>
+  <li><strong>name</strong> - a string.&nbsp;&nbsp; Since you can get multiple cookies sent to
+    you by a web browser, using a unique name will allow you to distinguish the values.</li>
+  <li><strong>value</strong> - a string</li>
+  <li><strong>path</strong> - a string which must be the prefix of the request from the web
+    browser for this cookie to be sent.&nbsp; The string &quot;/&quot; is the prefix of all
+    requests.</li>
+  <li><strong>domain </strong>- a string which must be the suffix of the name of the machine
+    where the request is being sent in order for this cookie to be sent.</li>
+  <li><strong>expiration</strong> - a time when this cookie expires. </li>
+  <li><strong>secure</strong> - either true or false.&nbsp; If true then this cookie will only
+    be sent if the connection is through a secure socket</li>
+</ol>
+
+<p>&nbsp;</p>
+
+<p><a name="f-set-cookie-header"></a><strong><font face="Courier New">(set-cookie-header
+request &amp;key name value expires domain path secure)</font></strong></p>
+
+<p>This function should be called between the calls to <strong>with-http-response </strong>and
+<strong>with-http-body</strong>.&nbsp;&nbsp; It can be called more than once.&nbsp; Each
+call will cause one Set-Cookie directive to be sent to the web browser. &nbsp;&nbsp;&nbsp;
+The <strong>name</strong> and <strong>value</strong> arguments should be given (and they
+should be strings).&nbsp; They will be automatically encoded using the same encoding used
+in urls (we call it <em>uriencoding). </em>The purpose of this encoding is to convert
+characters that are either unprintable or those that have a special meaning into a
+printable string.&nbsp;&nbsp;&nbsp; The web browser doesn't care about the <strong>name</strong>
+and <strong>value</strong>, it just stores them and sends them back to the web server.
+&nbsp;&nbsp;&nbsp; If you use the <strong>get-cookie-values </strong>function to retrieve
+the cookie <strong>name</strong> and <strong>value</strong> pairs, then it will
+automatically decode the uriencoding.<br>
+If the <strong>path </strong>argument isn't given, it will default to &quot;/&quot; which
+will allow this cookie to match all requests.<br>
+If the <strong>domain</strong> argument isn't given then it will default to the host to
+which this request was sent.&nbsp; If you wish to specify this you are only allowed to
+specify a subsequence of the host to which this request was sent (i.e the name of the
+machine running the webserver).&nbsp;&nbsp; The <strong>domain</strong> should have at
+least two periods in it (i.e.&nbsp; &quot;.foo.com&quot;).<br>
+<strong>expiration</strong> can be a lisp universal time or it can be the symbol <strong>:never</strong>
+meaning this should never expire.&nbsp; If <strong>expiration </strong>isn't given or is <strong>nil</strong>
+then this cookie will expire when the user quits their web browser.<br>
+<strong>secure</strong> should be true or false.&nbsp; Any non-nil value is interpreted as
+true. The default value is false.</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-get-cookie-values"></a><strong><font face="Courier New">(get-cookie-values
+request)</font></strong></p>
+
+<p>Return the cookie <strong>name</strong> and <strong>value</strong> pairs from the
+header of the request.&nbsp;&nbsp; Each <strong>name</strong> <strong>value</strong> pair
+will be in a cons whose <strong>car</strong> is the <strong>name</strong> and whose <strong>cdr</strong>
+is the <strong>value</strong>.&nbsp;&nbsp; The names and values will be decoded (in other
+words the decoding done by <strong>set-cookie-header</strong> will be undone).</p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<h2><a name="iseve-request-proc"></a>AllegroServe request processing protocol</h2>
+
+<p>We'll describe here the steps AllegroServe goes through from the time it receives a
+request until a response to that request has been sent back to the
+browser.&nbsp;&nbsp;&nbsp; We want the protocol to be open so that users can extend
+AllegroServe's behavior to suit their needs.&nbsp; However given that AllegroServe is a
+new program and will be undergoing extensive review from its users, we expect that the
+protocol will change.&nbsp;&nbsp; It shouldn't lose any of its current extensibility but
+the names and argument lists of generic functions may change.&nbsp; </p>
+
+<p>When a client connects to the port on which AllegroServe is listening, AllegroServe
+passes that connected socket to a free worker thread which then wakes up and calls the
+internal function <strong>net.aserve::process-connection</strong>.&nbsp;&nbsp; If there
+are no free worker threads then AllegroServe waits for one to be available.</p>
+
+<p>In each worker thread the variable <strong>*wserver*</strong> is bound to the <strong>wserver</strong>
+object that holds all the information about the webserver on which the connection was made
+(remember that one AllegroServe process can be running more than one
+webserver).&nbsp;&nbsp; <strong>process-connection</strong> reads the request from the
+socket (but doesn't read past the header lines). &nbsp;&nbsp;&nbsp; If the request can't
+be read within <strong>*read-request-timeout* </strong>seconds (currently 20) then the
+request is rejected.&nbsp;&nbsp;&nbsp; The request is stored in an object of class <strong>http-request</strong>.&nbsp;&nbsp;&nbsp;
+Next <strong>process-connection</strong> calls <strong>handle-request</strong> to do all
+the work of the request and then <strong>log-request</strong> to log the action of the
+request.&nbsp; Finally if the response to the request indicated that the connection was to
+be kept open rather than being closed after the response, then <strong>process-connection</strong>
+loops back to the top to read the next request.</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-handle-request"></a><strong><font face="Courier New">(handle-request (req
+http-request))</font></strong> &nbsp;&nbsp; [generic function]</p>
+
+<p>This generic function must locate the entity to handle this request and then cause it
+to respond to the request.&nbsp;&nbsp; If there is no matching entity then <strong>handle-request</strong>
+must send a response back to the client itself.&nbsp; <strong>handle-request</strong> uses
+locators to find the entity (more on this below), and then if an entity is found and that
+entity has an authorizer, it calls <strong>authorize</strong> to see if this request is
+allowed to access the selected entity.&nbsp; If the entity passes the authorization then <strong>process-entity</strong>
+is called to cause the entity to respond to the request.&nbsp; <strong>process-entity</strong>
+returns true if it processed the entity, and nil if did not in which case the search
+continues for an entity.&nbsp; If there is no entity to respond then <strong>failed-request</strong>
+is called to send back a failure message.</p>
+
+<p>A <strong>locator</strong> is an object used to map requests into entities.
+&nbsp;&nbsp; The value of <strong>(wserver-locators *wserver*)</strong> is a list of
+locator objects.&nbsp;&nbsp; <strong>handle-request</strong> calls </p>
+
+<p><a name="f-standard-locator"></a><strong><font face="Courier New">(standard-locator
+(req http-request) (loc locator)) </font></strong>[generic function]</p>
+
+<p>on each successive locator in that list until one returns an entity object.
+&nbsp;&nbsp;&nbsp; AllegroServe has two built-in locator classes, <strong>locator-exact</strong>
+and <strong>locator-prefix</strong>, that are subclasses of <strong>locator.&nbsp;&nbsp; </strong>When
+you call <strong>publish</strong> or <strong>publish-file</strong> you are adding the
+entity to locator of class <strong>locator-exact</strong> found in the <strong>wserver-locators
+</strong>list.&nbsp;&nbsp; When you call <strong>publish-directory</strong> you are adding
+to the locator of class <strong>locator-prefix.</strong>&nbsp;&nbsp;&nbsp; Users are free
+to define new locator classes.&nbsp;&nbsp;&nbsp; Locators should define the <strong>standard-locator</strong>
+method as well as </p>
+
+<p><a name="f-unpublish-locator"></a><strong><font face="Courier New">(unpublish-locator
+(loc locator))</font></strong> &nbsp;&nbsp; [generic&nbsp; function]</p>
+
+<p>which if called should remove all published entities from the locator.</p>
+
+<p>&nbsp;</p>
+
+<p>Let's return to <strong>handle-request.</strong>&nbsp; It has called <strong>standard-locator</strong>
+and found an entity.&nbsp;&nbsp; Next it checks to see if the entity has an authorizer
+value and if so calls</p>
+
+<p><a name="f-authorize"></a><strong><font face="Courier New">(authorize (auth authorizer)
+(req http-request) (ent entity)) </font></strong>&nbsp; [generic function]</p>
+
+<p>The return value will be one of 
+
+<ul>
+  <li><strong>t -- </strong>The request is authorized,&nbsp; call <strong>process-entity</strong>
+    to make the entity respond.</li>
+  <li><strong>nil</strong> -- The request is not authorized, call <strong>failed-request </strong>to
+    send back a response.</li>
+  <li><strong>:deny</strong> -- The request is denied and we want the user to know that it was
+    denied rather than sending a generic failed message, call <strong>denied-request</strong>
+    to send back a response.</li>
+  <li><strong>:done</strong> -- The <strong>authorize</strong> function has sent back a
+    response, there is nothing more for <strong>handle-request</strong> to do for this
+    request.</li>
+</ul>
+
+<p>If there is no authorizer for this entity then we just call <strong>process-entity.</strong>
+&nbsp;&nbsp; If there is no entity, then we call <strong>failed-request</strong>. </p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-failed-request"></a><strong><font face="Courier New">(failed-request (req
+http-request))</font></strong> &nbsp;&nbsp; [generic function]</p>
+
+<p>send back a response to the effect that the url request doesn't exist on this server.</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-denied-request"></a><strong><font face="Courier New">(denied-request (req
+http-request))</font></strong> &nbsp; [generic function]</p>
+
+<p>send back a response to the effect that access to the requested url was denied. </p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-process-entity"></a><strong><font face="Courier New">(process-entity&nbsp;
+(req http-request) (ent entity))</font></strong> &nbsp;&nbsp; [generic function]</p>
+
+<p>Send back a response appropriate to the given entity.&nbsp;&nbsp;&nbsp;&nbsp; The
+macros with-http-response and with-http-body should be used in the code that sends the
+response.</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<h2><a name="cliient-request"></a>Client functions</h2>
+
+<p>AllegroServe has a set of functions that perform http client-side actions.&nbsp;&nbsp;
+These functions are useful in generating computed pages that reflect the contents of other
+pages.&nbsp; We also use the client-side http functions to test AllegroServe.</p>
+
+<p>The client-side functions described in this section are exported from the<font
+face="Courier New"> net.aserve.client</font> package.</p>
+
+<p>The function <strong>do-http-request </strong>sends a request and retrieves the whole
+response.&nbsp;&nbsp;&nbsp; This is the most convenient function to use to retrieve a web
+page.</p>
+
+<p>If you need more control over the process you can use the functions: <strong>make-http-request</strong>,
+<strong>read-client-response-headers </strong>and <strong>client-request-read-sequence</strong>.</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-do-http-request"></a><strong><font face="Courier New">(do-http-request uri
+&amp;key method protocol accept <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+content format cookies <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+redirect basic-authorization<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+keep-alive headers proxy)</font></strong></p>
+
+<p>Sends a request to <strong>uri</strong> and returns four values: 
+
+<ol>
+  <li>The body of the response.&nbsp; If there is no body the empty string is returned.</li>
+  <li>the response code (for example, 200, meaning that the request succeeded)</li>
+  <li>an alist of headers where the <strong>car</strong> of each entry is a lowercase string
+    with the header name and the <strong>cdr</strong> is a string with the value of that
+    header item.</li>
+  <li>the uri object denoting the page accessed.&nbsp; This is normally computed from the <strong>uri</strong>
+    value passed in but if redirection was done then this reflects the target of the
+    redirection.&nbsp; If you plan to interpret relative html links in the <strong>body</strong>
+    returned then you must do so with respect to <em>this</em> uri value </li>
+</ol>
+
+<p>The <strong>uri</strong> can be a uri object or a string.&nbsp;&nbsp; The scheme of the
+<strong>uri</strong> must be nil or &quot;http&quot;.&nbsp;&nbsp; The keyword arguments to
+<strong>do-http-request </strong>are</p>
+
+<table border="1" width="100%">
+  <tr>
+    <th width="22%">Name</th>
+    <th width="16%">default</th>
+    <th width="62%">description</th>
+  </tr>
+  <tr>
+    <td width="22%">method</td>
+    <td width="16%">:get</td>
+    <td width="62%">The type of request to make.&nbsp; Other possible values are <strong>:put</strong>,
+    <strong>:post</strong> and<strong> :head</strong>.&nbsp; <strong>:head</strong> is useful
+    if you just want to see if the link works without downloading the data.</td>
+  </tr>
+  <tr>
+    <td width="22%">protocol</td>
+    <td width="16%">:http/1.1</td>
+    <td width="62%">The other possible value is <strong>:http/1.0</strong>.&nbsp; Modern web
+    servers will return the response body in chunks if told to use the <strong>:http/1.1</strong>
+    protocol.&nbsp; Buggy web servers may do chunking incorrectly (even Apache has bugs in
+    this regard but we've worked around them).&nbsp; If you have trouble talking to a web
+    server you should try specifying the <strong>:http/1.0</strong> protocol to see if that
+    works.</td>
+  </tr>
+  <tr>
+    <td width="22%">accept</td>
+    <td width="16%">&quot;*/*&quot;</td>
+    <td width="62%">A list of MIME types that are acceptable as a response to this request.
+    &nbsp; The default is to accept anything.</td>
+  </tr>
+  <tr>
+    <td width="22%">content</td>
+    <td width="16%">nil</td>
+    <td width="62%">If the method is <strong>:put</strong> or<strong> :post</strong> then the
+    request should include something to be sent to the web server.&nbsp;&nbsp; The value of
+    this argument is either a string or a vector of type (unsigned-byte 8) which will be sent
+    to the web server.&nbsp; See the <strong>query</strong> argument for a more convenient way
+    to <strong>:post</strong> data to a form.</td>
+  </tr>
+  <tr>
+    <td width="22%">content-type</td>
+    <td width="16%">nil</td>
+    <td width="62%">A string which is to be the value of the Content-Type header field,
+    describing the format of the value of the <strong>content</strong> argument. &nbsp;&nbsp;
+    This is only needed for <strong>:put</strong> and <strong>:post</strong> requests.</td>
+  </tr>
+  <tr>
+    <td width="22%">query</td>
+    <td width="16%">nil</td>
+    <td width="62%">This is a query alist of the form suitable for <strong>query-to-form-urlencoded</strong>.
+    &nbsp; If the method is a <strong>:get</strong> then the value of&nbsp; this argument is <strong>urlencoded</strong>
+    and made the query string of the uri being accessed.&nbsp; If the method is <strong>:post</strong>
+    then the query string is <strong>urlencoded</strong> and made the <strong>content</strong>
+    of the request.&nbsp; Also the <strong>content-type</strong> is set to <strong>application/x-www-form-urlencoded.</strong>
+    </td>
+  </tr>
+  <tr>
+    <td width="22%">format</td>
+    <td width="16%">:text</td>
+    <td width="62%">The body of the response is returned as a string if the value is<strong>
+    :text </strong>or as an array of type (unsigned-byte 8) if the value is <strong>:binary</strong>.</td>
+  </tr>
+  <tr>
+    <td width="22%">cookies</td>
+    <td width="16%">nil</td>
+    <td width="62%">If you wish the request to include applicable cookies and for returned
+    cookies to be saved, then a <strong>cookie-jar</strong> object should be passed as the
+    value of this argument.</td>
+  </tr>
+  <tr>
+    <td width="22%">redirect</td>
+    <td width="16%">5</td>
+    <td width="62%">If the response is a redirect (code 301, 302, 303), and the method is <strong>:get</strong>
+    or <strong>:head,</strong> then if this argument is true (and, if an integer, positive), <strong>do-http-request</strong>
+    will call itself to access the page to which the redirection is pointed.&nbsp; If <strong>redirect</strong>
+    is an integer then in the recursiive call the valued passed for <strong>redirect</strong>
+    will be one less than the current value.&nbsp; This prevents infinite recursion due to
+    redirection loops.</td>
+  </tr>
+  <tr>
+    <td width="22%">basic-authorization</td>
+    <td width="16%">nil</td>
+    <td width="62%">If given, it is a cons whose <strong>car</strong> is the name and whose <strong>cdr
+    </strong>is the password to be used to get authorization to access this page.</td>
+  </tr>
+  <tr>
+    <td width="22%">keep-alive</td>
+    <td width="16%">nil</td>
+    <td width="62%">If true then the web server will be told to keep the connection alive.
+    &nbsp;&nbsp; Since <strong>do-http-request</strong> closes the connection after the
+    request this option currently does no more than allow us to experiment with how a web
+    server responds to a keep-alive request.</td>
+  </tr>
+  <tr>
+    <td width="22%">headers</td>
+    <td width="16%">nil</td>
+    <td width="62%">an alist of conses <font face="Courier New">(&quot;header-name&quot; .
+    &quot;header-value&quot;)</font> for additional headers to send with the request.</td>
+  </tr>
+  <tr>
+    <td width="22%">proxy</td>
+    <td width="16%">nil</td>
+    <td width="62%">the name and optionally the port number of a proxying web server through
+    which this request should be made.&nbsp;&nbsp; The form is of the argument is <a
+    href="http://www.machine.com">&quot;www.machine.com&quot;</a> or <a
+    href="http://www.machine.com:8000">&quot;www.machine.com:8000&quot;</a> if the web server
+    is listening on port 8000 rather than 80.&nbsp;&nbsp; Proxying web servers are often used
+    when clients are behind firewalls that prevent direct access to the internet. &nbsp;
+    Another use is to centralize the page cache for a group of clients.</td>
+  </tr>
+</table>
+
+<p>&nbsp;</p>
+
+<p>For example:</p>
+
+<pre>user(5): <strong>(do-http-request &quot;http://www.franz.com&quot;)</strong>
+</pre>
+
+<pre>&quot;&lt;HTML&gt;
+    &lt;HEAD&gt;
+        &lt;TITLE&gt;Franz Inc: Allegro Common Lisp and Common Lisp Products&lt;/TITLE&gt;
+        &lt;BASE FONTFACE=\&quot;helvetica, arial\&quot; FONTSIZE=\&quot;1\&quot;&gt;
+.....</pre>
+
+<pre>&quot;
+200
+((&quot;content-type&quot; . &quot;text/html&quot;) (&quot;transfer-encoding&quot; . &quot;chunked&quot;)
+(&quot;server&quot; . &quot;Apache/1.3.9 (Unix) PHP/3.0.14&quot;)
+(&quot;date&quot; . &quot;Mon, 24 Apr 2000 11:00:51 GMT&quot;))
+</pre>
+
+<p>&nbsp;</p>
+
+<p>It's easy to use <strong>do-http-request</strong> to fill in form objects on a page.
+&nbsp; If the form has input elements named&nbsp; <strong>width</strong> and <strong>height</strong>
+then you can send a request that specifies that information in this way:</p>
+
+<pre><font face="Courier New">(do-http-request <a href="http://www.foo.com/myform.html">&quot;http://www.foo.com/myform.html&quot;</a> 
+                 :query '((&quot;width&quot; . 23) (&quot;height&quot; . 45)))</font></pre>
+
+<p>The above assumes that the method on the form is &quot;GET&quot;.&nbsp;&nbsp; If the
+method is &quot;POST&quot; then a similar call will work:</p>
+
+<pre><font face="Courier New">(do-http-request <a href="http://www.foo.com/myform.html">&quot;http://www.foo.com/myform.html&quot;</a>  <strong>:method :post</strong>
+                 :query '((&quot;width&quot; . 23) (&quot;height&quot; . 45)))</font></pre>
+
+<p><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+
+<p>&nbsp;</p>
+
+<p>Before we describe the lower level client request functions we will describe two
+classes of objects used in that interface.</p>
+
+<h2><a name="c-client-request"></a>client-request</h2>
+
+<p>A <strong>client-request</strong> object includes the information about the request and
+the response.</p>
+
+<p>The public fields of a <strong>client-request</strong> that are filled in after a call
+to <strong>make-http-client-request</strong> are:</p>
+
+<table border="1" width="100%">
+  <tr>
+    <th width="31%">Accessor</th>
+    <th width="69%">Description</th>
+  </tr>
+  <tr>
+    <td width="31%">client-request-uri</td>
+    <td width="69%">uri object corresponding to this request</td>
+  </tr>
+  <tr>
+    <td width="31%">client-request-socket</td>
+    <td width="69%">socket object open to the web server denoted by the uri</td>
+  </tr>
+  <tr>
+    <td width="31%">client-request-cookies</td>
+    <td width="69%">the cookie-jar object (if any) passed in with this request.</td>
+  </tr>
+</table>
+
+<p>&nbsp;</p>
+
+<p>After <strong>read-client-response-headers</strong> is called, the following fields of
+the <strong>client-request</strong> objects are set:</p>
+
+<table border="1" width="100%">
+  <tr>
+    <th width="39%">Accessor</th>
+    <th width="61%">Description</th>
+  </tr>
+  <tr>
+    <td width="39%">client-request-response-code</td>
+    <td width="61%">the integer that is the response code for this request.&nbsp; The most
+    common codes are 200 for Success and 404 for Not Found.</td>
+  </tr>
+  <tr>
+    <td width="39%">client-request-headers</td>
+    <td width="61%">an alist of header values in the response.&nbsp; Each entry is a cons of
+    the form <font face="Courier New">(&quot;header-name&quot; . &quot;header-value&quot;)</font>.
+    &nbsp; The header names are all lower case.</td>
+  </tr>
+  <tr>
+    <td width="39%">client-request-protocol</td>
+    <td width="61%">A keyword symbol naming the protocol&nbsp; that the web server returned
+    (which may be different that the protocol given in the request).&nbsp;&nbsp; A typical
+    return value is <strong>:http/1.1</strong></td>
+  </tr>
+  <tr>
+    <td width="39%">client-request-response-comment</td>
+    <td width="61%">A string giving a textual version of the response code.&nbsp;&nbsp; The
+    string is arbitrary and you should not depend on all web servers returning the same string
+    for any given response code.</td>
+  </tr>
+</table>
+
+<p>&nbsp;</p>
+
+<h2><a name="c-cookie-jar"></a>cookie-jar</h2>
+
+<p>A <strong>cookie-jar</strong> is a respository for cookies.&nbsp; Cookies are stored in
+a jar when a response from a client request includes <font face="Courier New">Set-Cookie</font>
+headers.&nbsp;&nbsp; Cookies from a jar are sent along with a request when they are
+applicable to the given request.&nbsp;&nbsp; We won't describe the rules for cookie
+applicability here, you need only know that if you use our client functions &nbsp;to
+access a site that uses cookies to implement persistence, then you should create a <strong>cookie-jar</strong>
+object and pass that same object in with each request.&nbsp;&nbsp; More information on
+cookies can be found <a
+href="http://developer.netscape.com:80/docs/manuals/js/client/jsref/cookies.htm">here</a>.</p>
+
+<p>A <strong>cookie-jar</strong> is created with <font face="Courier New">(make-instance
+'cookie-jar).</font></p>
+
+<p>&nbsp;</p>
+
+<p><strong><font face="Courier New">(cookie-jar-items&nbsp; cookie-jar)</font></strong></p>
+
+<p>returns an alist of the cookies in the jar where each item has the form:</p>
+
+<p><strong>(hostname cookie-item ...)</strong></p>
+
+<p>The <strong>hostname</strong> is a string which is matched against the suffix of the
+name of the host in the request (that is, a hostname of&nbsp; <font face="Courier New">&quot;.foo.com&quot;</font>
+matches <font face="Courier New">&quot;a.foo.com&quot;</font> and <font face="Courier New">&quot;b.foo.com&quot;</font>.
+).&nbsp;&nbsp;&nbsp; The hostname should have at least two periods in it.
+&nbsp;&nbsp;&nbsp; The following <strong>cookie-item</strong> objects in the list all
+apply to that hostname. &nbsp;&nbsp; A <strong>cookie-item</strong> is a defstruct object
+and has these fields</p>
+
+<table border="1" width="100%">
+  <tr>
+    <th width="29%">Accessor</th>
+    <th width="71%">Description</th>
+  </tr>
+  <tr>
+    <td width="29%">cookie-item-path</td>
+    <td width="71%">A string that must be the prefix of the path of the request for it to
+    match.&nbsp; The prefix &quot;/&quot; matches all paths.</td>
+  </tr>
+  <tr>
+    <td width="29%">cookie-item-name</td>
+    <td width="71%">The name of the cookie.&nbsp; A string.</td>
+  </tr>
+  <tr>
+    <td width="29%">cookie-item-value</td>
+    <td width="71%">The value of the cookie.&nbsp; A string.</td>
+  </tr>
+  <tr>
+    <td width="29%">cookie-item-expires</td>
+    <td width="71%">A string holding the time the cookie expires [in a future release we may
+    make this a universal time]</td>
+  </tr>
+  <tr>
+    <td width="29%">cookie-item-secure</td>
+    <td width="71%">true if this cookie should only be sent over a secure connection.</td>
+  </tr>
+</table>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-make-http-client-request"></a><strong><font face="Courier New">(make-http-client-request
+uri &amp;key method protocol keep-alive<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+accept cookies headers proxy<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+basic-authorization query<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+content content-type content-length)</font></strong></p>
+
+<p>This function connects to the web server indicated by the <strong>uri</strong> and
+sends the request.&nbsp;&nbsp; The arguments are the same as those for <strong>do-http-request</strong>
+and are documented there.&nbsp;&nbsp; There is one additional argument: <strong>content-length</strong>.
+&nbsp;&nbsp; This argument can be used to set the <strong>content-length </strong>header
+value in the request.&nbsp; After setting the content-length the caller of <strong>make-http-client-request</strong>
+would then be responsible for sending that many bytes of data to the socket to serve as
+the body of the request.&nbsp;&nbsp; If <strong>content-length </strong>is given, then a
+value for <strong>content</strong> should not be given.</p>
+
+<p>If&nbsp; <strong>make-http-client-request</strong> succeeds in contacting the web
+server and sending a request, a <strong>client-request </strong>object is returned.
+&nbsp;&nbsp; If <strong>make-http-client-request</strong> fails, then an error is
+signalled.</p>
+
+<p>The returned <strong>client-request</strong> object contains an open socket to a web
+server, thus you must ensure that client-request object isn't discarded before <strong>client-request-close</strong>
+is called on it to close the socket and reclaim that resource.</p>
+
+<p>After calling <strong>make-http-client-request </strong>the program will send the body
+of the request (if any), and then it will call <strong>read-client-response-headers</strong>
+to partially read the web server's response to the request.</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-read-client-response"></a><strong><font face="Courier New">(read-client-response-headers
+client-request)</font></strong></p>
+
+<p>This function reads the response code and response headers from the web server.
+&nbsp;&nbsp;&nbsp; After the function returns the program can use the <strong>client-request
+</strong>accessors noted above to read the web server's response.&nbsp; The body of the
+response (if any) has not been read at this point.&nbsp;&nbsp;&nbsp; You should use <strong>client-request-read-sequence</strong>
+to read the body of the response</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-client-request-read-sequence"></a><strong><font face="Courier New">(client-request-read-sequence
+buffer client-request<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&amp;key start end)</font></strong></p>
+
+<p>This fills the <strong>buffer</strong> with the body of the response from the web
+server.&nbsp;&nbsp; The buffer should either be a character array or an array of
+(unsigned-byte 8).&nbsp;&nbsp;&nbsp; If given, <strong>start</strong> specifies the index
+of the <em>first</em> element in the buffer in which to store, and <strong>end </strong>is
+one plus the index of the <em>last</em> element in which to store.&nbsp; </p>
+
+<p>The return value is one plus the last index in the buffer filled by this function. The
+caller of the function must be prepared for having the buffer only partially filled.
+&nbsp; If the return value is zero then it indicates an End of File condition.</p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<p>&nbsp;</p>
+
+<h2><a name="debugging"></a>Debugging</h2>
+
+<p>Debugging entity handler functions is difficult since these are usually run on a
+separate lisp thread.&nbsp; Also AllegroServe catches errors in entity handler functions,
+thus preventing you from interactively diagnosing the problem.</p>
+
+<p>You can put aServe in a mode that makes debugging easier with the <font
+face="Courier New">net.aserve::debug-on</font> function.&nbsp;&nbsp; Note that this is not
+an exported function to emphasize the fact that you are working with the internals of
+aServe.</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-debug-on"></a><strong><font face="Courier New">(net.aserve::debug-on
+&amp;rest debugging-features-to-enable)</font></strong></p>
+
+<p>We've classified the debugging features and given each a keyword symbol name.
+&nbsp;&nbsp; This function turns on those named features.&nbsp; If no arguments are given,
+then <strong>debug-on</strong> prints the list of debugging features and whether each is
+enabled.</p>
+
+<p>&nbsp;</p>
+
+<p><a name="f-debug-off"></a><strong><font face="Courier New">(net.aserve::debug-off
+&amp;rest debugging-features-to-disable)</font></strong></p>
+
+<p>This function turns off the given list of features.</p>
+
+<p>&nbsp;</p>
+
+<p>The list of debug features are:</p>
+
+<table border="1" width="100%">
+  <tr>
+    <td width="18%"><strong>:info</strong></td>
+    <td width="82%">aServe prints information at certain places while doing its processing.
+    &nbsp; </td>
+  </tr>
+  <tr>
+    <td width="18%"><strong>:xmit</strong></td>
+    <td width="82%">aServe prints what it receives from and sends to the client.&nbsp; In some
+    cases the body of a request or response will not be printed.</td>
+  </tr>
+  <tr>
+    <td width="18%"><strong>:notrap</strong></td>
+    <td width="82%">When enabled, this prevents aServe from catching errors in entity handler
+    functions.&nbsp; If an error occurs and you're running in an evironment where background
+    processes automatically create new windows (such as the emacs-lisp interface) then you'll
+    be given a chance to :zoom the stack and diagnose the problem.&nbsp; Note that if a
+    timeout has been established to limit the amount of time that a certain step is allowed
+    (and this is done by default) then the interactive debugging session will be aborted when
+    the timeout is reached.</td>
+  </tr>
+</table>
+
+<p>&nbsp;</p>
+
+<p>Two pseudo debug features are <strong>:all</strong> and <strong>:log.</strong>. &nbsp;
+Specifying <strong>:all </strong>to <strong>debug-on</strong> or <strong>debug-off</strong>
+&nbsp; is the same as listing all of the debug features.&nbsp;&nbsp; Specifying <strong>:log</strong>
+is the same as specifying all features except <strong>:notrap.</strong></p>
+
+<p>&nbsp;</p>
+</body>
+</html>

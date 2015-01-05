@@ -1,0 +1,359 @@
+Corman Lisp 2.0 Release Notes    October 20, 2002
+---------------------------------------------------
+
+Corman Lisp 2.0 has been under development for over a year,
+and includes significant new capabilities. As new problems
+are discovered or enhancements are added, you will be able
+to find updates at www.cormanlisp.com.
+
+Major features include full compatibility with Windows XP,
+DLL generation, Direct Call interface for better use as an
+embedded engine, and a significantly improved IDE.
+
+If you have not purchased a license, please consider doing
+so at http://www.cormanlisp.com/license.html.
+Corman Lisp development requires a significant investment by
+us, Corman Technologies, and it can only continue if users
+support us by purchasing licenses.
+
+Following is a list of all the specific changes, bug fixes
+and enhancements that have been rolled into the 2.0 release.
+
+Compiler:
+    Added ability to generate DLLs using new function CCL:COMPILE-DLL.
+    This leverages COMPILE-FILE, and allows DLLs to be built which
+    transparently load and start the Corman Lisp kernel as
+    necessary.
+    
+    Added new Direct Call interface.
+    Added BlessThread(), UnblessThread() interfaces.
+    
+    Fixed a problem with tail recursion optimization, heap bindings 
+    and embedded lambdas.
+    
+    Added keyword argument checking. You should use 
+    &ALLOW-OTHER-KEYS if you wish to use key arguments which 
+    you have not explicitly declared.
+    Key arg checking can be turned off with speed > safety.
+    
+    DEFSTRUCT implementation:
+    Struct-template is created at evaluation time rather
+    than macroexpand time. This allows COMPILE-FILE to
+    compile DEFSTRUCT forms without dragging in tons of
+    CLOS stuff to the compiled file.
+    
+    Fixed order of evaluation problem for EQ and UREF inlined code.
+    
+    Removed an unnecessary warning in the compiler.
+    
+    Added support for DOUBLE-FLOAT, SINGLE-FLOAT and 
+    SHORT-INTEGER (16-bits) vector types. These types are stored
+    unwrapped in arrays with the proper declarations.
+    
+    Fixed a problem with ratios and comparisons (when one or more
+    ratio is negative).
+    
+    Added support for blessing foreign threads. This allows them to
+    make direct calls to Lisp functions, and to be scanned by the
+    garbage collector (among other things).
+    
+    Added ability to link Structured Exceptions into stack
+    from lisp code. This allows Direct Call to correctly catch
+    heap write exceptions and implement the write barrier
+    correctly.
+    
+    Added compiler warnings for symbols assumed special. This 
+    applies to both reading and setting variables. Since many
+    people often use variables for on the fly execution/debugging,
+    the warnings are not emitted in non-function top-level forms.
+    They are only emitted when the reference occurs inside
+    a lambda (function/macro, etc.)
+    
+    Cleaned up lots of kernel code regarding special variables,
+    eliminating warnings and fixing bugs that were discovered.
+    
+    Modified COMPILE-FILE to close the output file if an error
+    occurs trying to open the input file.
+    COMPILE-FILE handles pathname designators for input and output
+    files.
+    
+    Fixed a bug in COMPILE-FILE when using CLOS classes and
+    accessors.
+    
+    Fixed a bug in the FFI code generation for callbacks.
+    Fixed a bug in FFI--foreign callbacks now return pointer types
+    correctly.
+    Double and single floats can now be passed to and returned
+    from foreign callback functions (including functions
+    in DLLs).
+    
+    Added support for declaring (SETF func) function as inline.
+    
+    Added DEFUN-THISCALL to FFI, to support calling C++ functions.
+    
+    Incorporated Pavel Grozman's speedup to string-streams 
+    (eliminates buffer).
+    
+    Warning message for unused variable of unnamed function now says
+    "anonymous function" rather than "function NIL".
+    
+    Fixed FLET, LABELS code generation to handle local declarations
+    correctly.
+    
+    Fixed compilation of &AUX variables for better handling of declarations.
+    
+    Improved hash function for uvectors (thanks to Jeff Greif).
+    Updated hash table size list (hash tables can be larger).
+    Reworked hash tables to work better (less rehashing).
+    
+    Fixed a problem with tail call optimization and embedded lambdas.
+    
+    Compiler warnings are all now proper conditions (and can be intercepted).
+
+ANSI:
+
+    Fixed ROTATEF to handle the no arguments case.
+    Fixed SHIFTF to give an error in the no arguments case.
+    Added VECTOR-POP.
+    
+    Added support for class slots with SLOT-VALUE and related functions.
+    Fixed a problem where class slot definitions were duplicated in the
+    list.
+    
+    Added (SETF SUBSEQ) implementation.
+    Fixed a typo in SUBSEQ.
+    
+    Fixed a bug in ENSURE-DIRECTORIES-EXIST.
+    
+    Fixed FILE-POSITION set option to work with string-streams.
+    Fixed DESCRIBE for streams to look better.
+    
+    Incorporated JP Massar fix to WRITE-SYMBOL.
+    Fixed ASSERT bug (JP Massar).
+    Added support in DEFPACKAGE for :SHADOWING-IMPORT-FROM 
+    option (JP Massar).
+    A package may now inherit the same symbol from two other 
+    packages without giving an error.
+    
+    Fixed some bugs in reader functions.
+    
+    Added LOCALLY, LOAD-TIME-VALUE special operators.
+    Fixed a bug in DECLARE OPTIMIZE forms.
+    Added JP Massar's RENAME-FILE implementation.
+    
+    Added DEFINE-SETF-EXPANDER macro.
+    
+    Fixed GET-OUTPUT-STREAM-STRING behavior. It now resets the output stream.
+    
+    Fixed a problem with TYPE-DESTRUCTURE-BIND and optional parameters
+    (thanks, JP Massar). This affected type declarations.
+    
+    Fixed a problem with the read macro for characters.
+    Added names for some more characters.
+    
+    Fixed MACRO-FUNCTION to take optional environment.
+    Changed DOCUMENTATION to just return a string.
+    
+    Integrated generic functions with all lisp functions
+    including FUNCALL, APPLY, FUNCTIONP, DISASSEMBLE, etc.
+    
+    Added error-checking to some symbol-manipulation functions.
+    
+    Modified TRACE to output to *TRACE-OUTPUT*, added FORCE-OUTPUT
+    calls.
+    
+    Symbols can now be used as export names with DEFPACKAGE.
+    
+    Fixed a problem with FORMAT-UNIVERSAL-TIME
+    where standard time was not being handled correctly.
+    Fixed another problem with FORMAT-UNIVERSAL-TIME at 12:00 PM.
+    
+    Fixed a number of order-of-evaluation problems with SETF.
+    
+    Added Frank Adrian's changes to support :type, :read-only and
+    :inline slot options in DEFSTRUCT.
+    
+    Fixed a problem with ~[ in FORMAT.
+    Fixed a problem with writing to bidirectional files.
+    
+    Fixed a bug in CLOS generic function dispatching on more than
+    two arguments.
+    
+    Implemented OPEN function :if-exists functionality.
+    Cleaned up OPEN function.
+    
+    Modified conditions so that all conditions now contain formatting
+    fields.
+    
+    Fixed a bug in DEFSTRUCT, when :include was used.
+    
+    Fixed some non-standard behavior in INTERN.
+    Fixed a problem with :SHADOWING-IMPORT-FROM option in DEFPACKAGE.
+    
+    Added some complex trig functions from Mayer Goldberg.
+    
+    Modified accessor names of simple-condition slots to conform to 
+    ANSI (bug, and fix, reported by Jeff Greif).
+    Changed the way *COMPILE-FILE-PATHNAME*, *LOAD-PATHNAME* are 
+    initialized (bug, and fix, reported by Jeff Greif).
+    
+    Added CTYPECASE implementation.
+    
+    Added support for files of '(UNSIGNED-BYTE 8) and 
+    '(SIGNED-BYTE 8).
+    
+    Fixed SUBTYPEP to hande some new cases.
+    
+    Fixed a problem in WITH-INPUT-FROM-STRING.
+    
+    Fixed a problem with the calculation of the time zone offset 
+    with daylight savings time.
+    
+    Fixed the implementation of DEFSETF long form to work correctly.
+    
+    DIRECTORY function now closes the file handle.
+    
+    CLEAR-INPUT now completely clears out console input.
+    Debugger clears out all console input when starting.
+    
+    Fixed a bug in LOGAND when negative bignums are involved.
+    Fixed a bug in LOGBITP with bignums.
+
+Corman Lisp Extensions
+    Exported CCL:DIRECTORY-P function.
+    Fixed CL::FUNCTION-REFERENCES for generic functions.
+    
+    Added lisp implementation of FLOAT-PRINT function.
+    
+    Made COMPRESS-FILE, UNCOMPRESS-FILE public symbols in CCL package.
+    
+    Added WIN:MESSAGE-BOX-OK, WIN:MESSAGE-BOX-OK-CANCEL, WIN:MESSAGE-YES-NO, 
+    WIN:MESSAGE-YES-NO-CANCEL.
+    
+    Cleaned up CCL:LOAD-IMAGE and CCL:SAVE-IMAGE functions. Now they both
+    support DLLs as well as EXEs.
+    
+    Added support for reading and writing sections of executable files.
+    Added ability to save and load fasl files to executables.
+    
+    Added WIN:GET-COMPUTER-NAME, WIN:GET-USER-NAME functions.
+    Added WIN:DELETE-DIRECTORY function.
+
+Threading Issues
+    Modified CL::WITH-SYNCHRONIZATION macro.
+    Made some remaining hash-table functions synchronized.
+    Added synchronization to some CLOS hash-tables.
+    
+    Fixed a problem with Windows XP and multi-threading.
+    Under Windows XP, the code which checks
+    to make sure the garbage collection can safely run
+    mistakenly determined that the state where another
+    thread was waiting for the garbage collector was an
+    unsafe state. This effectively stopped multiple threads
+    from working correctly. This fixes that problem.
+
+Assembler/Disassembler:
+    Included Pavel Grozman's enhancements to the assembler and the 
+    assembly code.
+    
+    Enhanced disassembler--added more annotations.
+    Both function calls and literal objects are now displayed
+    whenever possible.
+    
+    Fixed a problem in assembler with JBE, JAE instructions.
+    Fixed a problem in the kernel-asm functions related to the above.
+    
+    Implemented some more assembler operators.
+    Cleaned up assembler.
+    
+    Added some addressing mode support to the assembler.
+
+IDE
+    Converted to use RichTextEdit control version 3 for text edit windows.
+    Added multi-level UNDO/REDO capability.
+    
+    Fixed a long-standing system resource leak, that would cause the editor
+    to become more sluggish the longer you edited a file.
+    
+    Cleaned up some memory usage in the IDE.
+    
+    Added Pretty Print Selection menu option.
+    
+    Added ReplaceSelection capability. This enables some nice 
+    interactive editor commands.
+    
+    Added a small left margin in text windows.
+    Fixed UNDO so it works in all cases.
+    
+    Fixed tab settings.
+    
+    Fixed a problem with tabbing selections.
+    Added context menu, using Direct Call features.
+    Added Pretty-Print option to context menu.
+    
+    Added toolbar pane to display heap usage information,
+    using Direct Call.
+    Added toolbar pane with registration information.
+    
+    Added user tooltips (for user functions as well as common lisp 
+    functions).
+    
+    Tooltips now show above the cursor if the position is at the
+    bottom of the window.
+    
+    Worksheet close button is always disabled now.
+    
+    Added IDE preference to use spaces for tabs.
+    
+    Added .cl as an extension for lisp files.
+
+Libraries:
+    Updated XP package (pretty printer) to work seamlessly with
+    Corman Lisp.
+    
+    Added CMU Infix module.
+    
+    Updated MP module to version 1.2.
+    Made some modifications to ODBC-SQL package.
+    
+    Updated ALLEGROSERVE files with Chris Double's newest.
+    Modified to avoid warnings in 2.0.
+
+Helper applications:
+    Updated console, boot apps.
+    Fixed a problem in clconsole and clconsoleapp so that control-c 
+    or control-break do not cause the process to quit.
+
+Utilities:
+    Added gzip.lisp.
+    Added Hyperspec installation utility.
+    Added support for Hyperspec 6.0.
+
+Kernel:
+    Modified to compile with VC7 (Visual Studio .NET).
+    
+    Added lisp kernel functions: COMPRESS-FILE, UNCOMPRESS-FILE.
+    
+    Added external Initialize function. This is a simple way
+    to initialize the kernel without using COM.
+    
+    Registration information is now loaded by the kernel.
+    
+    Increased ephemeral heap sizes.
+
+Sample applications:
+    Added shapes.lisp GUI example.
+    
+    Included DLLCLIENT example application.
+
+Documentation:
+    Corman Lisp User Guide is formatted for a smaller page and
+    larger font size, allowing it to be read more easily on
+    the screen. The entire manual has been reformatted and 
+    made more consistent.
+    
+    Hyperspec 6.0 is now included with distribution 
+    (thanks, Xanalys).
+    
+
+

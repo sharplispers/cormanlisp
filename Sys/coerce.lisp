@@ -1,0 +1,145 @@
+;;;;	-------------------------------
+;;;;	Copyright (c) Corman Technologies Inc.
+;;;;	See LICENSE.txt for license information.
+;;;;	-------------------------------
+;;;;
+;;;;	File:		coerce.lisp
+;;;;	Contents:	Corman Lisp coerce function.
+;;;;	History:	6/11/97    RGC  Created.
+;;;;                12/27/1998 Vassili Bykov - Added coercion to vectors.
+;;;;				7/20/01    RGC  Fixed support for coercing to type function.
+;;;;
+(in-package :common-lisp)
+
+(defun coerce-to-base-string (object result-type)
+	(let ((length (second result-type)))
+		(if (or (null length) (eq length '*))
+			(setf length (length result-type))
+			(unless (= length (length object))
+				(error "Cannot coerce ~S to type ~A" object result-type)))
+		(concatenate 'string object)))
+
+(defun coerce-to-bit-vector (object result-type)
+	(let ((length (second result-type)))
+		(if (or (null length) (eq length '*))
+			(setf length (length result-type))
+			(unless (= length (length object))
+				(error "Cannot coerce ~S to type ~A" object result-type)))
+		(concatenate 'bit-vector object)))
+
+(defun coerce-to-simple-base-string (object result-type)
+	(let ((length (second result-type)))
+		(if (or (null length) (eq length '*))
+			(setf length (length result-type))
+			(unless (= length (length object))
+				(error "Cannot coerce ~S to type ~A" object result-type)))
+		(concatenate 'string object)))
+
+(defun coerce-to-simple-bit-vector (object result-type)
+	(let ((length (second result-type)))
+		(if (or (null length) (eq length '*))
+			(setf length (length result-type))
+			(unless (= length (length object))
+				(error "Cannot coerce ~S to type ~A" object result-type)))
+		(concatenate 'bit-vector object)))
+
+(defun coerce-to-simple-string (object result-type)
+	(let ((length (second result-type)))
+		(if (or (null length) (eq length '*))
+			(setf length (length result-type))
+			(unless (= length (length object))
+				(error "Cannot coerce ~S to type ~A" object result-type)))
+		(concatenate 'string object)))
+
+(defun coerce-to-simple-vector (object result-type)
+	(let ((length (third result-type)))
+		(if (or (null length) (eq length '*))
+			(setf length (length result-type))
+			(unless (= length (length object))
+				(error "Cannot coerce ~S to type ~A" object result-type)))
+		(concatenate result-type object)))
+
+(defun coerce-to-string (object result-type)
+	(let ((length (second result-type)))
+		(if (or (null length) (eq length '*))
+			(setf length (length result-type))
+			(unless (= length (length object))
+				(error "Cannot coerce ~S to type ~A" object result-type)))
+		(concatenate 'string object)))
+
+(defun coerce-to-vector (object result-type)
+	(let ((length (third result-type)))
+		(if (or (null length) (eq length '*))
+			(setf length (length result-type))
+			(unless (= length (length object))
+				(error "Cannot coerce ~S to type ~A" object result-type)))
+		(concatenate result-type object)))
+
+;;;
+;;;	Common Lisp COERCE function.
+;;;
+;;; partial implementation for now
+(defun coerce (object result-type)
+	(setf result-type (typeexpand-all result-type))
+	(cond 
+		((typep object result-type) object)
+		((eq result-type 'T) object) 
+		((or (eq result-type 'STRING)(eq result-type 'SIMPLE-STRING)
+			 (eq result-type 'BASE-STRING)(eq result-type 'SIMPLE-BASE-STRING))
+         (if (sequencep object)
+             (concatenate 'string object)   
+		     (if (symbolp object)
+			     (symbol-name object)
+	 		     (concatenate 'string object))))
+		((or (eq result-type 'list)(eq result-type 'cons))
+	     (unless (typep object 'sequence)
+       		(error "Cannot coerce to list: ~S" object))
+		 (concatenate 'list object))
+	    ((or (eq result-type 'VECTOR)(eq result-type 'SIMPLE-VECTOR))
+	     (unless (typep object 'sequence)
+				(error "Cannot coerce to vector: ~S" object))
+	     (concatenate 'vector object))
+		((eq result-type 'CHARACTER)
+			(let ((string (string object)))
+				(if (= (length string) 1) 
+					(char string 0)
+					(error "Cannot coerce ~S to a character" object))))
+		((eq result-type 'SINGLE-FLOAT)
+		 (float object 0.0f0))
+		((or (eq result-type 'DOUBLE-FLOAT)(eq result-type 'LONG-FLOAT))
+		 (float object 0.0d0))
+		((eq result-type 'SHORT-FLOAT)
+		 (float object 0.0s0))
+		((eq result-type 'FLOAT)
+		 (float object))
+		((eq result-type 'COMPLEX)
+		 (complex object 0))
+		((eq result-type 'FUNCTION)
+		 (if (or (and (consp object)(eq (car object) 'setf))
+				(and (symbolp object)
+					(fboundp object)
+					(not (macro-function object))
+					(not (special-operator-p object))))
+				(fdefinition object)
+				(if (and (consp object)(eq (car object) 'lambda))
+					(compile nil object)
+					(error "Cannot coerce ~S to a function" object))))
+		((or (eq result-type 'BIT-VECTOR)(eq result-type 'SIMPLE-BIT-VECTOR))
+		 (concatenate 'bit-vector object))
+		((consp result-type)
+		 (let ((type (car result-type)))
+				(unless (sequencep object)
+					(error "Cannot coerce ~S to type ~A" object  result-type))
+				(case type
+					(base-string (coerce-to-base-string object result-type))
+					(bit-vector (coerce-to-bit-vector object result-type))
+					(simple-base-string (coerce-to-simple-base-string object result-type))			
+					(simple-bit-vector (coerce-to-simple-bit-vector object result-type))			
+					(simple-string (coerce-to-simple-string object result-type))			
+					(simple-vector (coerce-to-simple-vector object result-type))			
+					(string (coerce-to-string object result-type))			
+					(vector (coerce-to-vector object result-type))
+					(otherwise (error "Cannot coerce ~S to type ~A" object  result-type)))))			
+		(t (error "Not implemented: cannot coerce ~S to type ~A" 
+			object result-type))))
+

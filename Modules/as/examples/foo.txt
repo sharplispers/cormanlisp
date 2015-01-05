@@ -1,0 +1,6 @@
+this is a test of
+returning a text
+file and now this is
+it for the file
+next line
+and one more line

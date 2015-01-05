@@ -1,0 +1,121 @@
+Corman Lisp Credits (updated Sept. 12, 2006)
+------------------------------------------------
+Release 3.0 includes new contributed work and assistance by 
+a number of people, including:
+
+Edi Weitz
+Espen Wiborg
+
+Contributors to previous versions included:
+Vassili Bykov
+Frank Adrian
+Karsten Poeck
+Chris Double
+Dave Richards
+Tim Kerchmar
+John Pallister
+
+The Corman Lisp compiler, run-time system,
+IDE and most associated components and have been developed 
+by Roger Corman. Several of the included components had
+other authors, however.
+
+Frances Corman is now a part of the Corman Lisp team, and
+has revised the manual for this release. Ethan Stone is a 
+senior software engineer for Corman Technologies, and has
+made contributions to the 3.0 release, including many of the
+new GUI features and the Othello sample program.
+
+Chris Double has a great web site at:
+http://www.double.co.nz/cl/index.htm 
+
+which contains all kinds of Corman Lisp add-on features and 
+programs (which he has personally developed). He continues 
+to provide excellent support to others, and moderates the 
+Corman Lisp message board. Many of Chris's works are included,
+with his permission, with the Corman Lisp product.
+ 
+Vassili Bykov has provided the sophisticated C-header
+parser for loading foreign interface definitions. This is
+extremely nice and useful, and is included in full with the
+Corman Lisp package. He has also contributed translations of
+several Windows header files, as well as some Common Lisp 
+library functions.
+
+Reini Urban has done a lot of work to help make Corman Lisp
+function as an extension under Autocad. His modifications are
+included in this release.
+
+Chris Double has contributed many bug fixes and enhancements 
+for Corman Lisp, and has a nice Corman Lisp site at 
+http://www.double.co.nz/cl/.
+
+Erann Gat has assisted us with obtaining the cormanlisp.com
+domain registration.
+
+The CLOS implementation is derived from the work of 
+Gregor Kiczales, Jim des Rivières, and Daniel G. Bobrow
+and is very well documented in their book "Art of the 
+Metaobject Protocol". The code is Copyright (c) 1990, 1991 
+Xerox Corporation.
+
+The random number facility is from the CMU Common Lisp 
+project (CMU Lisp) and was riginally written by David Adam.  
+Rob MacLachlan also contributed.
+
+The LOOP facility is from MIT, and lists Glenn Burke as one
+of the authors. See the file LOOP.LISP for more details.
+
+Kent Pitman has developed the wonderful HyperSpec, which can
+be browsed from within Corman Lisp. This is an incredible 
+document which covers not only ANSI Common Lisp, but much 
+of the language design process as well. Thanks for your 
+efforts, Kent. In general, thanks to all the members of the 
+ANSI Common Lisp standard committee X3J13 for standardizing
+such a powerful language.
+
+Thanks to Guy Steele Jr., whose books Common Lisp: The 
+Language, both editions, are a constant source of assistance 
+and amusement (in the most positive sense). Corman Lisp also 
+includes the optimized backquote facility from the second 
+edition, as well as some other functions from the book.
+
+Rainer Joswig's e-mail discussions with me early in the
+Corman Lisp development inspired several of the features of
+Corman Lisp, including the support for OS native threads.
+
+Peter Norvig's book Paradigms of Artificial Intelligence 
+Programming: Case Studies in Common Lisp taught me a lot 
+about the language and his many sample programs were useful
+in debugging the Corman Lisp compiler.The source to his 
+Eliza program is included as an example with this release.
+
+Paul Graham has been an inspiration as well, through his
+excellent books "ANSI Common Lisp" and "On Lisp".
+
+Source examples are included from numerous people, including
+Larry Hunter and Vassili Bykov.
+
+People who have been influential in my Lisp understanding 
+over the years include:
+
+Arthur Hills
+Jim Bisso
+David Betz
+Henry Baker
+... and many others.
+
+My parrot contributed the feather in the Corman Lisp 
+3.0 graphic.
+
+Thanks also to all the licensed users of Corman Lisp and 
+PowerLisp, who helped to support me over the years with 
+advice as well as financial support.
+
+Thanks to my wife Frances, children Amy and Emmett, and
+grandson Cyrus, for helping me and putting up with me 
+when I have been unavailable or in need of sleep.
+
+-Roger Corman
+roger@corman.net
+

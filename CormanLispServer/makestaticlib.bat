@@ -1,0 +1,1 @@
+lib /out:.\bin\CormanLispStatic.lib .\bin\*.obj

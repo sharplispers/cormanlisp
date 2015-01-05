@@ -1,0 +1,156 @@
+Corman Lisp 2.6 Beta Release Notes
+Aug. 14, 2006
+
+Beta 3
+
+Generally many bugs and stability issues have been fixed in this beta 3 
+release. Beta 2 had quite a few problems so we have taken time to put 
+more work in this area. Thanks to all who have submitted reports. We still
+have not addressed all of them but we felt it was time to make another
+beta release available.
+
+This release has a lot of GUI enhancements (a new engineer is helping
+with this stuff) and a new sample program Othello (the game). Please check
+this out--it's fun.
+
+Most Lisp kernel function are now redefined in Lisp (or assembler in Lisp).
+They play by all the threading and GC rules, and I believe the stability
+is now much better. Quite a few FFI issues have been addressed as well.
+
+We are planning to stop writing so much new code and try to get a release
+soon, so your feedback now is important.
+
+-Fixed a bug with EQUALP Hashtables.
+
+-Added Macroexpand and Macroexpand-1 options to the context menu,
+
+-Misc. fixes in code generation (relative to math operators) and 
+garbage collection. These fixes were related to potential threading
+issues.
+
+-Lots of work in FFI code generation for better thread safety, particularly
+CREF and (SETF CREF).
+
+-Added Othello game (in examples/gui/).
+
+-Added :method-combination to DEFGENERIC.
+
+-Added Lisp variable display panel to IDE. By default it contains *PACKAGE*.
+
+-Added Declarations menu, which displays Lisp declarations and allows you
+to easily jump to any function or form defined in the IDE.
+
+-EQUAL, EQUALP, HASH-EQUAL, and HASH-EQUAL-P are now all defined for foreign
+pointers. This means two foreign pointers are EQUAL (and EQUALP) if and only
+if the pointers are the same (point to the same address). This allows hashing
+on OS handles and other foreign blocks.
+
+-Added Symbols menu which shows you all the packages and all the exported
+symbols in a hierarchical manner. If you select one, it calls DESCRIBE on it,
+which may not be too useful but I haven't thought of a better alternative.
+
+-The Packages submenu under the Lisp menu is still there as before, but updates
+dynamically, and can still be used to change the current package (*PACKAGE*).
+
+-Updated Zlib compression package (used by various exported Lisp functions such
+as COMPRESS-BYTES, as well as compression of Lisp image files and compiled files)
+from version 1.1.3 to 1.2.3.
+
+-Added CT:DEFUN-KERNEL macro. This is mainly for internal use, and allows us
+to write thread-safe wrapper functions (that use the FFI) around C functions
+exposed by the kernel.
+
+-Fixed a problem with INLINE functions.
+
+-Redefined dozens more kernel functions in Lisp or assembler for thread-safety
+and stability.
+
+-Garbage collection heap sizes may be set by the COM host when the kernel is 
+initialized via new InitializeEx() function.
+
+-Garbage collection fix: if call to SuspenThread() fails the collector will keep
+trying until the thread is suspended. We suspect this was the cause of some
+heap corruption problems.
+
+-Updated Testdll to compile with VS2005.
+
+-Fixed a bug in foreign calls returning bignums.
+
+
+May 31, 2006
+
+Beta 1
+
+Thanks for reviewing the beta release of Corman Lisp 2.6.
+
+In this version we have NOT included the following features that we are
+still hoping to include in 2.6:
+
+-Updated user guide (this release contains the 2.5 user guide)
+-ASDF integration
+-Logical pathnames
+-Assorted bug fixes, contributions from users
+
+This release DOES contain:
+
+Completely rewritten math libraries and generated code for math operators
+Improvements in stability and floating point performance
+Better error reporting and shutdown
+Improved FFI
+Numerous bug fixes
+Integration with .NET (Edi Weitz' RDNZL package is included)
+New CCL:MEMORY-REPORT function.
+New CCL:LISP-SHUTDOWN function.
+
+To use RDNZL, you need to use:
+
+(require :rdnzl)
+
+This will run the file modules/rdnzl.lisp, a file provided with Corman Lisp, which
+will appropriately set up the RDNZL system. Edi's documentation with RDNZL is
+still appropriate, but the delivery code is not necessary. We allow for multiple
+versions of RDNZL to be installed (under libraries/rdnzl) and the rdnzl.lisp file
+can be used to set the selected version.
+
+Note: the first time you invke rdnzl it will compile the files. Edi's distribution
+had file compilation turned off but it has been working consistently for me so
+I removed the Corman Lisp specific code that disables compilation. The compilation
+doesn't accomplish much except possibly speed up the load by a small amount (since
+they will otherwise compile when they are being loaded). If you have any problems
+with compiling please let me know (other than warnings which I also get).
+The messagebox and apropos examples work fine on the systems I have tried 
+(after copying AproposGui.dll into the Corman Lisp root directory).
+
+The FFI and system stability improvements appear to have fixed problems with
+the IDE text colorizing feature. It is again on by default--but if you have
+problems please turn it off in the editor preferences.
+
+When an error happens during garbage collection, the collector will now
+invoke the MEMORY-REPORT functionality, on a separate thread, which creates
+a (large) dump file in the Lisp home directory. It will then call LISP-SHUTDOWN.
+LISP-SHUTDOWN is intended to provide a graceful exit from Lisp in the event
+a serious system error occurs, and you may call it in your own code. In the
+IDE it will cause Lisp to be disabled, but the editor will otherwise still
+function (allows you to save your files). In the console app it will cause
+the console to exit. The message passed to LISP-SHUTDOWN will be presented
+to the user in the IDE or console application.
+
+Please let me know of any bugs or issues you find in this release. 
+I have not set a final release date but hope to have it finished 
+within 30 days. Therefore if you can provide feedback by mid-June it will be
+most helpful to us.
+
+Since so much work has been done on the math code, I would appreciate any
+testing that people can do on that area--including bignums, floating
+point (all three types), ratios and complex numbers. Generally I believe
+the math code is now better than before, as I fixed numerous bugs during the
+rewrite. Performace should be improved throughout, particularly for floating
+point code.
+
+Also note, this release is built with Visual Studio 2005 (also known is VC++ 8).
+It requires msvcr80.dll.
+
+Thanks,
+Roger Corman
+roger@corman.net
+

@@ -1,0 +1,348 @@
+Corman Lisp 2.51 Release Notes
+April 14, 2005
+
+Corman Lisp 2.51 changes (since 2.5):
+
+-Fixed a bug in hash-tables: CLRHASH and REMHASH now adjust the count correctly.
+
+-The HASH-TABLE-COUNT is now set properly.
+
+-Fixed a problem when SAVE-IMAGE is called when other threads are 
+ active (such as in the IDE). Other threads are now suspended.
+
+-Added check of *compiler-fold-constants* var when symbol constant is folded.
+
+-Fixed a problem with %chars-to-float implementation (reading of floats).
+
+-Fixed DEFSTRUCT to handle named structures of specified types (to generate a 
+ predicate).
+
+-Changed :encoding-func property to x86::encoding-func to conform to common 
+ lisp standard.
+
+-Converted projects to Visual Studio 2003.
+
+-Fixed a bug in WRITE: print-escape works correctly with ';' in symbols.
+
+-Fixed DEFINE-MODIFY-MACRO by using CMU implementation.
+
+-Added ability to overwrite read-only files in the IDE.
+
+-Added Windows DebugBreak() call to Win32 functions.
+
+-Added support for :readably option to WRITE function.
+ This provides ANSI compatibility and corrects an issue with 
+ ct:TRANSCRIBE-FILE.
+
+-Fixed a problem with ISQRT and certain bignums.
+
+-Corrected the types of error conditions in many cases.
+
+-Fixed a problem with TIME.
+
+-Fixed a problem with UPGRADED-ARRAY-ELEMENT-TYPE.
+
+-Fixed a problem with DEFMACRO, DESTRUCTURE-BIND.
+
+-Fixed a problem with DEFPACKAGE.
+
+-Added implementation of WITH-OPEN-STREAM.
+
+-Manual syntax coloring now saves the current selection.
+
+-Fixed a problem with DEFSETF long form.
+
+-Fixed a problem with pretty-printing, having to do 
+ with how the column position is retrieved when writing to a stream 
+ other than the console.
+
+-DECODE-UNIVERSAL-TIME now handles daylight time in a manner 
+ consistent with other common lisp implementations (I couldn't understand 
+ the standard) and the time zone does not include the adjustment for daylight 
+ time.
+
+-Fixed a problem with gc.lisp when the lisp heap grows--it will generate an 
+ error rather than crashing if the reserve area is exceeded.
+
+-If the array being allocated exceeeds the array size limit an error will be 
+ thrown.
+
+-Modified garbage collector to try to better handle cases where there are large 
+ numbers of finalization objects.
+
+-Fixed a bug in the FFI for handling of 16 bit signed and unsigned quantities.
+
+-Added ability to see variable values displayed as a tooltip in the edit window.
+
+
+Corman Lisp 2.5 includes:
+
+-improved ANSI Common Lisp compatibility 
+-enhanced IDE features
+-defect fixes
+-performance improvements
+-threading synchronization improvements
+-new library functions and macros
+-rolls in all existing patches
+
+These notes detail changes made since the Corman Lisp 2.01 release. Please
+see the Corman Lisp 2.01 release notes for information regarding 2.01
+changes (which are also included in this release).
+
+This is a free upgrade to everyone who purchased a license for 
+Corman Lisp 2.0, and is offered at a low upgrade price to 
+registered owners of prior versions of Corman Lisp. 
+Licensing details are the same as for previous versions.
+
+IDE:
+
+- Editor now supports automatic syntax colorization of Lisp code. The 
+  implementation of this is in the file sys/edit-window.lisp and can
+  be customized (even live while the editor is running).
+
+- When the IDE exits, the state of all open windows (position, etc.) are
+  saved. They are reopened in the same position when it is restarted. These
+  options can be disabled in the Preferences dialog. In addition, the IDE
+  screen position is saved and restored.
+
+- Edit windows now show the whole file path in the title bar.
+
+- Added Close All Documents command.
+
+- New preferences for window saving, auto-colorization, pathname in title.
+
+- Added Make Uppercase, Make Lowercase options to context menu popup
+  (when text is selected in the editor and you righ-click).
+
+- Context menu supports pretty-printing of selected text, which uses the
+  XP pretty-printer library (with very nice results). You can use this for
+  in-place formatting of selected lisp expressions.
+
+- IDE now loads a lisp file correctly when double-clicked from the Windows
+  Explorer.
+
+
+Compiler and Kernel:
+
+- A NIL block no longer implicitly wraps lambdas. This behavior was 
+  inconsistent with ANSI, and allowed all sorts of non-portable code
+  to creep in (the Corman Lisp libraries and example programs, for example).
+  The behavior is now consistent with ANSI, and all Corman Lisp code has
+  been corrected. If your code starts giving errors about "no NIL enclosing
+  block" you probably need to convert (RETURN) to (RETURN-FROM <func-name>).
+
+- Added compiler support for IGNORABLE declaration.
+
+- Added compiler debug info to assembler (DEFASM) functions. This means
+  you can see the name and arguments of assembly functions in a stack trace.
+
+- Added synchronization objects to all packages.
+
+- Added synchronization to all exported package functions. This fixed some
+  occasional threading problems. Only one thread at a time can manipulate
+  packages. This was sometimes resulting in messed up heaps.
+
+- Added proper support for LOAD-TIME-VALUE. It is now 
+  supported properly for LOAD, EVAL, COMPILE and COMPILE-FILE. 
+  LOAD-IMAGE will not cause LOAD-TIME-VALUE to evaluate (I don't 
+  believe it should).
+
+- Improvements to DEFSTRUCT to improve COMPILE-FILE with structures.
+
+- Removed warnings on unreferenced dispatching variables in CLOS methods.
+
+- Improved performance of MAKE-ARRAY when :initial-contents 
+  is a large list, and this greatly improves performance of reading long 
+  literal strings.
+
+- Fixed a code generation problem with BLOCK returns when used a parameter 
+  to a function call.
+
+- Fixed a code generation problem, where special declarations were not 
+  properly shadowing lexical variable declarations.
+
+- Added GROW-CODE-BUFFER implementation to assembler (to allow arbitrarily
+  large assembler functions).
+
+- Improved message when the package for a read symbol does not exist.
+
+- Added CT:DUMP-C-STRUCT implementation, for dumping contents
+  of foreign structures.
+
+- Modified TRACE to work with methods and generic functions.
+
+- Added some functions to assist reading/writing binary floats:
+    CCL:WRITE-DOUBLE-FLOAT, CCL:READ-DOUBLE-FLOAT.
+
+- Added COMPILE-FILE-PATHNAME implementation.
+
+- CLOS class objects are now handled specially by COMPILE-FILE, 
+  making the compiled code much smaller (and work correctly). 
+
+- Fixed a bug in the compiler when multiple blocks with the same 
+  name are used in a function.
+
+- Foreign heap blocks with null pointers are no longer saved as size 0 
+  blocks when the heap is written.
+
+- Added code to heap loading code to allow for garbage collection to 
+  occur.
+
+- Increased the max number of jump table entries from #x4000 to #x8000.
+
+- Increased the initial lisp heap size from 12 megs to 16 megs.
+
+- Removed name on internal InitializationEvent--the name was
+  causing it to be shared with other Corman Lisp processes (which
+  caused problems if multiple instances were running).
+
+- Kernel stringNode() now handles chars > 127 correctly, which
+  means CT:C-STRING-TO-LISP-STRING handles them correctly.
+
+- Added WIN:WITH-COM-INTERFACE macro.
+
+- Cleaned up some places in the kernel that would occasionally hit an 
+  unexpected debugger breakpoint.
+
+Common Lisp:
+
+- DEFSTRUCT: Included structure definitions are now considered 
+  superclasses.
+
+- Added LISTEN implementation.
+
+- When DEFSTRUCT :include option is used, accessors are no longer generated 
+  for included slots.
+
+- DEFSTRUCT: supplied-p args are supported in BOA constructor functions.
+
+- Fixed an order-of-evaluation inconsistency in SETF.
+
+- Fixed problem with SETF and macros defined via MACROLET.
+
+- PSETQ now always returns NIL, even if only one variable is set.
+
+- GO tags can now be bignums.
+
+- Added BOOLEAN type specifier.
+
+- Backquoted expressions now print correctly.
+
+- Fixed a problem with zero-length symbols.
+
+- Fixed a problem with COERCE.
+
+- Fixed a formatting problem in DESCRIBE with function argument.
+
+- Fixed #. reader macro to respect *READ-EVAL*.
+
+- Fixed a problem with parsing of floating point literals.
+
+- Fixed a problem with strings separated by ~; in ~[ constructs (FORMAT).
+
+- Included xp.lisp in the standard image. All pretty-printing now uses this
+  (it permanently replaces the previous pretty-printer). This is the one 
+  the ANSI standard was based on.
+
+- New improved macro implementations: DEFSETF, DEFINE-SETF-EXPANDER, PUSH
+
+- Added STRUCTURE-CLASS definition, and made it the metaclass of all
+  structure classes.
+
+- Added WITH-ACCESSORS implementation (Karsten Poeck).
+
+- Added support for ~< ~> FORMAT directive.
+
+- BIT-VECTORs with fill pointers now print correctly.
+
+- Fixed DEFPACKAGE to work when a symbol is used as the package name.
+
+- HANDLER-BIND now checks that valid types have been passed to it.
+
+- ASSERT now handles the case with no places correctly.
+
+- DEFSTRUCT handles doc string correctly.
+
+- WITH-PACKAGE-ITERATOR now calls FIND-PACKAGE on each package in the list.
+
+
+Enhancements and fixes from Frank Adrian:
+
+- Improved DEFGENERIC macro.
+
+- Updated MAKE-PACKAGE macro implementation.
+
+- Replaced DEFPACKAGE macro implementation.
+
+ 
+Enhancements and fixes from JP Massar:
+
+- Fixed a problem with CASE, TYPECASE
+
+- Rewritten CTYPECASE macro
+
+- Improved (ANSI) MULTIPLE-VALUE-BIND macro
+
+- Improved DEFUN-CALLBACK. It now puts an implicit named block around
+  the code, and allows doc string and declarations.
+
+- Corrected behavior of DEFUN when used with (SETF name).
+
+- Improved code generated by win:DEFWINxxx macros.
+
+- Added WITH-STANDARD-IO-SYNTAX implementation.
+
+- Added compiler error for erroneous symbol declarations in 
+  DO, DO*.
+
+- Fixed READ to handle stream of t or nil correctly.
+
+- GENSYM no longer increments before it is used.
+
+- If a file is loaded with a pathname, a string is saved for 
+  DB:FIND-SOURCE functionality.
+
+- Enhancement to EVAL enhancement for handling of top-level PROGN 
+  forms.
+
+- Change to WITH-OPEN-FILE to avoid trying to close NIL.
+
+- Enhanced directory functions CL::DIRECTORY-SUBDIRS, etc.
+
+Modules/Libraries:
+
+- Modified build script to list files as they are compiled from the console.
+
+- "LOOP". "DESCRIBE", and "THREADS" packages are now loaded into default 
+  image (no longer auto-loaded).
+
+- New Registry functions added: WIN:REGISTRY-SET, WIN:REGISTRY-LOOKUP
+
+
+GUI Library:
+
+- MOstly rewritten, cleaned up. This version is not compatible (without
+  some significant changes) with code written using the previous version.
+  The changes were intended to support serious development on this framework
+  going forward.
+
+- Numerous enhancements. Commands are supported, and many event types.
+
+- Status bars are supported.
+
+- MDI-Example now uses edit windows and has a status bar and a menu, and
+  accepts commands. It also has a functional Window menu.
+
+- Updated example files. Added some new ones.
+
+Code contributors (thanks!):
+
+-JP Massar
+-Frank Adrian
+-Karsten Poeck
+-Dave Richards
+-Chris Double
+
+and others...
+
+

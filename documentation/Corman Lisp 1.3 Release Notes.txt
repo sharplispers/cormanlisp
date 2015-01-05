@@ -1,0 +1,47 @@
+Corman Lisp 1.3 Release Notes
+May 25, 1999
+
+Corman Lisp Kernel:
+
+Memory allocation is much more flexible, and should allow Corman
+Lisp to function properly as an embedded compiler/evaluator in
+most applications.
+
+SETF has been modified to allow a macro to be used as the place
+argument (as per the ANSI specification).
+
+DEFSETF "short form" has been modified to require that the passed
+function take its value as the last argument, rather than the first,
+as per the ANSI specification. This may affect your source code,
+so be aware of this.
+
+The SOME function has been fixed.
+
+
+Other Modifications:
+
+Some documentation errors were corrected.
+
+Reini Urban's Autocad support (thanks, Reini!)
+
+The console application has been rewritten as a normal console
+app, supporting i/o redirection and any other native console 
+app features. The source code is much smaller and simpler.
+
+Both the clboot application and the clconsole application are
+modified to reflect that virtual memory is allocated more
+dynamically than before.
+
+The Corman Lisp IDE, console and boot apps are now linked to run
+with release DLLs as opposed to debug DLLs.
+
+The code for each of these apps has been modified to always
+look for a copy of CormanLispServer.dll in the same directory
+as the running .exe file. Only if not found there will it use
+the registered COM server version. This should make it 
+easier to support having more than one version of Corman Lisp
+apps running on a system.
+
+
+
+

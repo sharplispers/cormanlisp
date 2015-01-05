@@ -1,0 +1,149 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+#include "version.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral (Sys. Default) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEUSD)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_SYS_DEFAULT
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+// platform specifics
+#define VER_FILEDESCR_STR  	"CormanLisp ARX for AutoCAD 2000"
+#define VER_SUFFIX_STR          "15"
+#define VER_EXTENSION_STR       ".arx"
+#ifndef ALL_IN_ONE_FILE
+#define VER_COMMENTS_STR        \
+				"Loads CommonLispServer.dll dynamically. " \
+				"Needs <filebase>.img in the ARX directory. " \
+				VER_COMMONCOMMENTS_STR
+#else
+#define VER_COMMENTS_STR        \
+				VER_COMMONCOMMENTS_STR
+#endif
+
+// throw it together
+#ifdef _DEBUG
+#define VER_FILEDESCRIPTION_STR VER_FILEDESCR_STR, " (debug)\0"
+#define VER_FILENAME_STR        VER_FILEBASE_STR VER_SUFFIX_STR "d" VER_EXTENSION_STR "\0"
+#else
+#define VER_FILEDESCRIPTION_STR VER_FILEDESCR_STR "\0"
+#define VER_FILENAME_STR        VER_FILEBASE_STR VER_SUFFIX_STR VER_EXTENSION_STR "\0"
+#endif
+
+
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION    VER_FILEVERSION
+ PRODUCTVERSION VER_PRODUCTVERSION
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "08000000"
+        BEGIN
+            VALUE "FileDescription",  VER_FILEDESCRIPTION_STR
+            VALUE "InternalName",     VER_FILENAME_STR
+            VALUE "OriginalFilename", VER_FILENAME_STR
+            VALUE "Comments",         VER_COMMENTS_STR
+            VALUE "CompanyName",      VER_COMPANYNAME_STR
+            VALUE "FileVersion",      VER_FILEVERSION_STR
+            VALUE "LegalCopyright",   VER_LEGALCOPYRIGHT_STR
+            VALUE "ProductName",      VER_PRODUCTNAME_STR
+            VALUE "ProductVersion",   VER_PRODUCTVERSION_STR
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x800, 0
+    END
+END
+
+#endif    // !_MAC
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+// This clutters up the version dependent APP with the version independent
+// Lispimage and DLL. So it's a waste of space if more acad versions should be 
+// supported.
+// However, one file only, the img and dll inside the arx as resource, 
+// might be better to ship and maintain.
+
+#ifdef ALL_IN_ONE_FILE
+IMAGENAME         RCDATA  DISCARDABLE  
+BEGIN 
+	"cormanlisp.img\0"
+END
+IMAGEDATA             RCDATA  "cormanlisp.img"
+DLLDATA               RCDATA  "CormanLispServer.dll"
+#endif
+
+#endif    // Neutral (Sys. Default) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED

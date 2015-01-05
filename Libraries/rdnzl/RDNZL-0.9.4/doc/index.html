@@ -1,0 +1,1100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html> 
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>RDNZL - A .NET layer for Common Lisp</title>
+  <style type="text/css">
+  pre { padding:5px; background-color:#e0e0e0 }
+  a { text-decoration: none; }
+  a.noborder { border:0px }
+  a.noborder:hover { border:0px }
+  a.none { border:1px solid white; }
+  a.none:hover { border:1px solid white; }
+  a { border:1px solid white; }
+  a:hover   { border: 1px solid black; } 
+  </style>
+</head>
+
+<body bgcolor=white>
+
+<h2>RDNZL - A .NET layer for Common Lisp</h2>
+
+<blockquote>
+<br>&nbsp;<br><h3><a name=abstract class=none>Abstract</a></h3>
+
+<a href="http://globalia.net/donlope/fz/songs/RDNZL.html">RDNZL</a> (pronounced "Redunzl") enables Common Lisp applications to interact with <a href="http://en.wikipedia.org/wiki/Microsoft_.NET">.NET</a>
+libraries.  It's more or less a foreign function interface for .NET
+languages like <a href="http://en.wikipedia.org/wiki/C_Sharp_programming_language">C#</a> built atop the C foreign function interface.
+
+<p>
+
+RDNZL comes with a <a
+href="http://www.opensource.org/licenses/bsd-license.php">BSD-style
+license</a> so you can basically do with it whatever you want.
+
+<p>
+<font color=red>Download shortcut:</font> <a href="http://weitz.de/files/RDNZL.tar.gz">http://weitz.de/files/RDNZL.tar.gz</a>.
+
+</blockquote>
+
+<center>
+<a class=none title="Apropos Example" href="#apropos"><img src="apropos.png" border=0 width=624 height=411></a>
+</center>
+
+<br>&nbsp;<br><h3><a class=none name="contents">Contents</a></h3>
+<ol>
+  <li><a href="#examples">Examples</a>
+  <li><a href="#download">Download and installation</a>
+  <li><a href="#mail">Support and mailing lists</a>
+  <li><a href="#implementations">Supported Lisp implementations</a>
+  <li><a href="#dictionary">The RDNZL dictionary</a>
+  <ol>
+    <li><a href="#objects">Representation and creation of .NET objects</a>
+    <ol>
+      <li><a href="#container-p"><code>container-p</code></a>
+      <li><a href="#box"><code>box</code></a>
+      <li><a href="#unbox"><code>unbox</code></a>
+      <li><a href="#new"><code>new</code></a>
+      <li><a href="#cast"><code>cast</code></a>
+      <li><a href="#make-null-object"><code>make-null-object</code></a>
+      <li><a href="#*coerce-double-floats-to-single*"><code>*coerce-double-floats-to-single*</code></a>
+    </ol>
+    <li><a href="#methods">Accessing .NET methods, properties, and fields</a>
+    <ol>
+      <li><a href="#invoke"><code>invoke</code></a>
+      <li><a href="#property"><code>property</code></a>
+      <li><a href="#field"><code>field</code></a>
+      <li><a href="#ref"><code>ref</code></a>
+    </ol>
+    <li><a href="#arrays">Arrays and enumerations</a>
+    <ol>
+      <li><a href="#aref*"><code>aref*</code></a>
+      <li><a href="#do-rdnzl-array"><code>do-rdnzl-array</code></a>
+      <li><a href="#list-to-rdnzl-array"><code>list-to-rdnzl-array</code></a>
+      <li><a href="#rdnzl-array-to-list"><code>rdnzl-array-to-list</code></a>
+      <li><a href="#integer-to-enum"><code>integer-to-enum</code></a>
+      <li><a href="#enum-to-integer"><code>enum-to-integer</code></a>
+      <li><a href="#or-enums"><code>or-enums</code></a>
+    </ol>
+    <li><a href="#exceptions">Handling of .NET exceptions</a>
+    <ol>
+      <li><a href="#rdnzl-error"><code>rdnzl-error</code></a>
+      <li><a href="#rdnzl-error-exception"><code>rdnzl-error-exception</code></a>
+      <li><a href="#rdnzl-handler-case"><code>rdnzl-handler-case</code></a>
+    </ol>
+    <li><a href="#types">Type names and assemblies</a>
+    <ol>
+      <li><a href="#import-type"><code>import-type</code></a>
+      <li><a href="#load-assembly"><code>load-assembly</code></a>
+      <li><a href="#import-assembly"><code>import-assembly</code></a>
+      <li><a href="#import-types"><code>import-types</code></a>
+      <li><a href="#use-namespace"><code>use-namespace</code></a>
+      <li><a href="#unuse-namespace"><code>unuse-namespace</code></a>
+      <li><a href="#unuse-all-namespaces"><code>unuse-all-namespaces</code></a>
+    </ol>
+    <li><a href="#reader">Special reader syntax</a>
+    <ol>
+      <li><a href="#enable-rdnzl-syntax"><code>enable-rdnzl-syntax</code></a>
+      <li><a href="#disable-rdnzl-syntax"><code>disable-rdnzl-syntax</code></a>
+    </ol>
+    <li><a href="#direct">Direct calls</a>
+    <ol>
+      <li><a href="#define-rdnzl-call"><code>define-rdnzl-call</code></a>
+    </ol>
+    <li><a href="#delivery">Saving images and application delivery</a>
+    <ol>
+      <li><a href="#shutdown-rdnzl"><code>shutdown-rdnzl</code></a>
+      <li><a href="#init-rdnzl"><code>init-rdnzl</code></a>
+    </ol>
+  </ol>
+  <li><a href="#details">Implementation details and things to watch out for</a>
+  <li><a href="#ack">Acknowledgements</a>
+</ol>
+
+<br>&nbsp;<br><h3><a class=none name="examples">Examples</a></h3>
+
+Here's a short example session (using <a href="#implementations">AllegroCL</a>):
+
+<pre>
+<img alt="The Message Box" title="The Message Box" align=right border=0 vspace=10 hspace=10 width=185 height=100 src="box.png">CL-USER(1): <a class=noborder href="#download">(load "/home/lisp/RDNZL/load.lisp")</a>
+<font color=orange>; Loading C:\home\lisp\RDNZL\load.lisp
+;   Fast loading C:\home\lisp\RDNZL\packages.fasl
+;   Fast loading C:\home\lisp\RDNZL\specials.fasl
+;   Fast loading C:\home\lisp\RDNZL\util.fasl
+;   Fast loading C:\home\lisp\RDNZL\port-acl.fasl
+;     Fast loading from bundle code\IORDEFS.fasl.
+;       Fast loading from bundle code\EFMACS.fasl.
+;   Fast loading C:\home\lisp\RDNZL\ffi.fasl
+;     Foreign loading RDNZL.dll.
+;   Fast loading C:\home\lisp\RDNZL\container.fasl
+;   Fast loading C:\home\lisp\RDNZL\reader.fasl
+;   Fast loading C:\home\lisp\RDNZL\arrays.fasl
+;   Fast loading C:\home\lisp\RDNZL\adapter.fasl
+;   Fast loading C:\home\lisp\RDNZL\import.fasl</font>
+T
+CL-USER(2): (in-package :rdnzl-user)
+#&lt;The RDNZL-USER package&gt;
+RDNZL-USER(3): (<a class=noborder href="#enable-rdnzl-syntax">enable-rdnzl-syntax</a>)
+RDNZL-USER(4): (<a class=noborder href="#import-types">import-types</a> "System.Windows.Forms"
+                             "MessageBox" "MessageBoxButtons" "DialogResult")
+NIL
+RDNZL-USER(5): (<a class=noborder href="#use-namespace">use-namespace</a> "System.Windows.Forms")
+RDNZL-USER(6): (defun message-box (text &amp;optional (caption "RDNZL"))
+                 <font color=orange>;; check if the "OK" button was pressed</font>
+                 [Equals [MessageBox.Show text caption
+                                          <font color=orange>;; we want the message box to have "OK" and "Cancel" buttons</font>
+                                          [$MessageBoxButtons.OKCancel]]
+                         [$DialogResult.OK]])
+MESSAGE-BOX
+RDNZL-USER(7): (message-box "Hello World!") <font color=orange>;; user presses "OK" button</font>
+T
+RDNZL-USER(8): (message-box "Hello World!") <font color=orange>;; user presses "Cancel" button</font>
+NIL
+</pre>
+
+(Note: All examples shown here are included in the <code>examples</code> folder of the distribution.)
+<p>
+For a more interesting example which interacts with custom .NET code
+and demonstrates callbacks into Lisp consider the .NET library
+<code>AproposGUI.dll</code> (put it into your Lisp's application folder) created
+with this C# code:
+
+<pre>
+// compile this with:
+//   csc.exe /target:library AproposGui.cs
+
+using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
+using System.Windows.Forms;
+
+namespace AproposGUI {
+  public class AproposControl : System.Windows.Forms.UserControl {
+    public System.Windows.Forms.TextBox textBox;
+    public System.Windows.Forms.TextBox listBox;
+    private System.Windows.Forms.Label label;
+    public System.Windows.Forms.Label title;
+    private delegate string callback(string input);
+
+    private System.ComponentModel.Container components = null;
+    
+    public AproposControl() {
+      InitializeComponent();
+    }
+
+    protected override void Dispose(bool disposing) {
+      if (disposing) {
+        if (components != null)
+          components.Dispose();
+      }
+      base.Dispose(disposing);
+    }
+
+    private void InitializeComponent() {
+      this.textBox = new System.Windows.Forms.TextBox();
+      this.listBox = new System.Windows.Forms.TextBox();
+      this.label = new System.Windows.Forms.Label();
+      this.title = new System.Windows.Forms.Label();
+      this.SuspendLayout();
+
+      this.textBox.Location = new System.Drawing.Point(16, 344);
+      this.textBox.Name = "textBox";
+      this.textBox.Size = new System.Drawing.Size(584, 20);
+      this.textBox.TabIndex = 0;
+      this.textBox.Text = "";
+
+      this.listBox.Location = new System.Drawing.Point(16, 56);
+      this.listBox.Multiline = true;
+      this.listBox.Name = "listBox";
+      this.listBox.ReadOnly = true;
+      this.listBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+      this.listBox.Size = new System.Drawing.Size(584, 248);
+      this.listBox.TabIndex = 1;
+      this.listBox.Text = "";
+
+      this.label.Location = new System.Drawing.Point(24, 312);
+      this.label.Name = "label";
+      this.label.Size = new System.Drawing.Size(576, 23);
+      this.label.TabIndex = 2;
+      this.label.Text = "Enter text below and press RETURN";
+      this.label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+
+      this.title.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+      this.title.Location = new System.Drawing.Point(24, 16);
+      this.title.Name = "title";
+      this.title.Size = new System.Drawing.Size(568, 24);
+      this.title.TabIndex = 3;
+      this.title.Text = "RDNZL Apropos Demo";
+      this.title.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+
+      this.Controls.Add(this.title);
+      this.Controls.Add(this.label);
+      this.Controls.Add(this.listBox);
+      this.Controls.Add(this.textBox);
+      this.Name = "MainControl";
+      this.Size = new System.Drawing.Size(616, 384);
+      this.ResumeLayout(false);
+    }
+  }
+}
+</pre>
+
+Now load <a class=none name="apropos"><code>examples/apropos.lisp</code></a> which looks like this:
+
+<pre>
+<img alt="Another Message Box" title="Another Message Box" align=right border=0 vspace=10 hspace=10 width=308 height=100 src="box2.png">(in-package :rdnzl)
+
+(<a class=noborder href="#enable-rdnzl-syntax">enable-rdnzl-syntax</a>)
+
+(<a class=noborder href="#import-types">import-types</a> "System.Windows.Forms"
+              "Application" "DockStyle" "Form" "MessageBox" "KeyPressEventHandler" "TextBox")
+
+(import-types "AproposGUI"
+              "AproposControl")
+
+(<a class=noborder href="#use-namespace">use-namespace</a> "System.Windows.Forms")
+(use-namespace "AproposGUI")
+
+(defun copy-to-clipboard (text-box)
+  (let ((selection-start [%SelectionStart text-box])
+        (selection-length [%SelectionLength text-box])
+        (text-length [%Length (box [%Text text-box])]))
+    (setf [%SelectionStart text-box] 0
+          [%SelectionLength text-box] text-length)
+    [Copy text-box]
+    (setf [%SelectionStart text-box] selection-start
+          [%SelectionLength text-box] selection-length)))
+
+(let (message-shown)
+  (defun fill-list-box (object event)
+    (when (char= [%KeyChar event] #\Return)
+      (cast object "TextBox")
+      (let* ((input-string [%Text object])
+             (input-length (length input-string)))
+        (when (plusp input-length)
+          (let ((apropos-text
+                  (with-output-to-string (*standard-output*)
+                    (apropos input-string)))
+                (list-box [$listBox (cast [%Parent object] "AproposControl")]))
+            (setf [%Text list-box] apropos-text)
+            (copy-to-clipboard list-box)
+            (unless message-shown
+              [MessageBox.Show "The output of APROPOS has been copied to the clipboard."
+                               "RDNZL"]
+              (setq message-shown t)))
+          (setf [%SelectionStart object] 0
+                [%SelectionLength object] input-length))))))
+
+(defun run-apropos-form ()
+  (let* ((control (new "AproposControl"))
+         (form (new "Form")))
+    (setf [%Dock control] [$DockStyle.Fill]
+          [%ClientSize form] [%ClientSize control]
+          [%Text form] "RDNZL Apropos Demo"
+          [%Text [$title control]]
+            (format nil "RDNZL Apropos Demo (~A)"
+                    (lisp-implementation-type)))
+    [+KeyPress [$textBox control]
+               (new "KeyPressEventHandler" #'fill-list-box)]
+    [Add [%Controls form] control]
+    [Application.Run form]))
+
+(<a class=noborder href="#disable-rdnzl-syntax">disable-rdnzl-syntax</a>)
+</pre>
+
+and evaluate <code>(RUN-APROPOS-FORM)</code>. If you want to try this
+several times, start the function in its own thread. In AllegroCL or LispWorks
+that'd be:
+
+<pre>
+(mp:process-run-function "apropos" #+:lispworks nil #'run-apropos-form)
+</pre>
+
+The last example shows how easy it is to access web pages using the
+.NET standard library:
+
+<pre>
+RDNZL-USER(9): (<a class=noborder href="#import-types">import-types</a> "System" "Net.WebClient")
+NIL
+RDNZL-USER(10): (defun download-url (url)
+                  (let ((web-client (new "System.Net.WebClient")))
+                    [GetString (new "System.Text.ASCIIEncoding")
+                               [DownloadData web-client url]]))
+DOWNLOAD-URL
+RDNZL-USER(11): (download-url "http://nanook.agharta.de/")
+"&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;META HTTP-EQUIV=\"refresh\" CONTENT=\"5;URL=http://www.weitz.de/\"&gt;
+&lt;/HEAD&gt;
+&lt;BODY&gt;&lt;center&gt;
+&lt;table border=3 bordercolor=green cellpadding=5 cellspacing=5&gt;&lt;tr&gt;&lt;td align=center&gt;
+&lt;pre&gt;
+Linux nanook 2.6.7 #1 Thu Jul 22 01:01:58 CEST 2004 i686 GNU/Linux
+
+ 01:23:23 up 100 days, 19:43,  0 users,  load average: 0.00, 0.00, 0.00
+
+&lt;/pre&gt;
+        &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/center&gt;
+
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+"
+</pre>
+
+A bit more evolved:
+
+<pre>
+RDNZL-USER(12): (<a class=noborder href="#import-types">import-types</a> "System" "Net.WebException")
+NIL
+RDNZL-USER(13): (<a class=noborder href="#use-namespace">use-namespace</a> "System.Net")
+RDNZL-USER(14): (defun download-url (url)
+                  (<a class=noborder href="#rdnzl-handler-case">rdnzl-handler-case</a>
+                     (let ((web-client (new "WebClient")))
+                       [GetString (new "System.Text.ASCIIEncoding")
+                                  [DownloadData web-client url]])
+                    ("WebException" (e)
+                      (warn "Ooops, probably a typo: ~A" [%Message e])
+                      nil)))
+DOWNLOAD-URL
+RDNZL-USER(15): (download-url "http://nanook.aharta.de/")
+Warning: Ooops, probably a typo:
+         The underlying connection was closed: The remote name could not be resolved.
+NIL
+</pre>
+
+This'll also work with https URLs.
+
+
+
+<br>&nbsp;<br><h3><a class=none name="download">Download and installation</a></h3>
+
+RDNZL together with this documentation can be downloaded from
+<a href="http://weitz.de/files/RDNZL.tar.gz">http://weitz.de/files/RDNZL.tar.gz</a>, the current version is 0.9.4.  It
+doesn't depend on any other Lisp libraries.  The C++ source for the
+shared library <code>RDNZL.dll</code> can be downloaded separately from
+<a href="http://weitz.de/files/RDNZL_cpp.tar.gz">http://weitz.de/files/RDNZL_cpp.tar.gz</a> but you don't need this archive
+to deploy RDNZL - <code>RDNZL.tar.gz</code> already contains <code>RDNZL.dll</code>.
+You can also access the current RDNZL source code (Lisp and C++) via <a href="http://common-lisp.net/cgi-bin/viewcvs.cgi/?cvsroot=rdnzl">CVS</a>.
+<p>
+Before you load RDNZL make sure you have the <a href="http://msdn.microsoft.com/netframework/downloads/framework1_1/">.NET framework</a> installed.
+Then move the file <code>RDNZL.dll</code> to a location where your Lisp's FFI will
+find it - the folder where your Lisp executable is located is
+generally a good place for that.
+<p>
+Now, to compile and load RDNZL just <a href="http://www.lispworks.com/documentation/HyperSpec/Body/f_load.htm"><code>LOAD</code></a> the file <code>load.lisp</code> - that's
+all.  (Or alternatively use <a href="http://www.cliki.net/asdf">ASDF</a> if you like - RDNZL comes with a
+system definition for ASDF.)
+<p>
+Oh, and - for the moment - <em>don't</em> use <a
+href="http://common-lisp.net/project/slime/">SLIME</a> together with
+LispWorks when loading RDNZL - see <a href="http://common-lisp.net/pipermail/slime-devel/2004-December/002877.html">this message</a> for an explanation.
+
+
+<br>&nbsp;<br><h3><a name="mail" class=none>Support and mailing lists</a></h3>
+
+For questions, bug reports, feature requests, improvements, or patches
+please use the <a
+href="http://common-lisp.net/mailman/listinfo/rdnzl-devel">rdnzl-devel
+mailing list</a>. If you want to be notified about future releases,
+subscribe to the <a
+href="http://common-lisp.net/mailman/listinfo/rdnzl-announce">rdnzl-announce
+mailing list</a>. These mailing lists and the CVS repository were made available thanks to
+the services of <a href="http://common-lisp.net/">common-lisp.net</a>.
+
+<br>&nbsp;<br><h3><a class=none name="implementations">Supported Lisp implementations</a></h3>
+
+RDNZL is currently targeted at Microsoft Windows.  There are <a href="http://en.wikipedia.org/wiki/Microsoft_.NET#Alternative_implementations">other
+implementations</a> of the CLR runtime for other operating systems but to
+port the "glue" library <code>RDNZL.dll</code> you'll need something similar to
+Microsoft's "<a href="http://en.wikipedia.org/wiki/Managed_C_Plus_Plus">Managed C++</a>" which can mix managed and unmanaged code.
+I'll gladly accepts patches to make RDNZL work on other platforms.
+<p>
+The current status for the main Win32 Common Lisp implementations is
+as follows:
+<ul>
+<li><a href="http://www.cormanlisp.com/">Corman Common Lisp</a>: Corman Lisp is fully supported thanks to the help of Roger Corman.
+
+<li><a href="http://ecls.sourceforge.net/">ECL</a>: I'm not familiar enough with ECL to port RDNZL
+  myself. Please send patches if you know how to do it.
+
+<li><a href="http://www.franz.com/products/allegrocl/">Franz AllegroCL</a>: AllegroCL is fully supported thanks to the efforts of Charles A. Cox from Franz Inc.
+
+<li><a href="http://clisp.cons.org/">GNU CLISP</a>: RDNZL has been ported to CLISP by Vasilis Margioulas. However, the port currently has some GC issues - it only works for simple, non-callback cases.  This is probably due to missing MP support.
+
+<li><a href="http://www.lispworks.com/">LispWorks</a>: LispWorks is fully supported.
+
+<li><a href="http://www.sbcl.org/">SBCL</a>: Experimental support for the "port in progress" of SBCL to Win32.  Based on the <a href="http://prdownloads.sourceforge.net/sbcl/sbcl-0.9.9-x86-win32-binary.tar.bz2?download">0.9.9&nbsp;binary release</a>.  The <a href="#apropos"><code>APROPOS</code> example</a> doesn't work, most likely because SBCL/Win32 doesn't have MP yet.
+
+</ul>
+All implementation-specific parts of RDNZL are located in files called
+<code>port-acl.lisp</code>, <code>port-ccl.lisp</code>, <code>port-lw.lisp</code>,  and so on. If you want to port RDNZL to
+another Lisp, it should suffice to just create the corresponding
+<code>port-xx.lisp</code> file for your implementation.
+
+
+<br>&nbsp;<br><h3><a class=none name="dictionary">The RDNZL dictionary</a></h3>
+
+<h4><a class=none name="objects">Representation and creation of .NET objects</a></h4>
+
+.NET objects are represented as <em>containers</em> and are printed like this
+
+<pre>
+#&lt;RDNZL::CONTAINER System.Object #xAE28E0&gt;
+</pre>
+
+where <code>System.Object</code> is the name of  the .NET type of this
+object and <code>#xAE28E0</code> is the hexadecimal representation of a C&nbsp;pointer
+that won't change during the lifetime of this object. (Internally
+containers are implemented as structures but this might change in
+future versions so you shouldn't rely on it.)
+<p>
+Note that each container has a .NET type that can be manipulated
+independently from its object - see <a href="#cast"><code>CAST</code></a>.
+<p>
+As long as a container is accessible in Lisp its underlying .NET
+object won't be garbage-collected in the CLR.
+<p>
+Whenever a RDNZL function accepts .NET objects as arguments (except
+for the first argument of <a href="#invoke"><code>INVOKE</code></a>, <a href="#property"><code>PROPERTY</code></a>, and <a href="#field"><code>FIELD</code></a>) you can also
+provide the corresponding "native" Lisp objects as long as they can be
+converted to .NET objects by the function <a href="#box"><code>BOX</code></a>.  On the other hand, if
+a RDNZL function returns a .NET object, it will be automatically
+translated to a Lisp object by <a href="#unbox"><code>UNBOX</code></a> if possible.  If a RDNZL function
+call doesn't return a result (i.e. if its return type is <code>System.Void</code>),
+then the keyword <code>:VOID</code> is returned. If a <code>NULL</code> object is returned,
+RDNZL returns <code>NIL</code> and <code>T</code> as a second return value because otherwise
+there'd be no difference from returning a false boolean value.
+
+
+<p><br>[Function]
+<br><a class=none name="container-p"><b>container-p</b> <i> object </i> =&gt; <i> generalized-boolean</i></a>
+
+<blockquote><br>
+Returns <em>true</em> if <code><i>object</i></code> is a container, <code>NIL</code> otherwise.
+</blockquote>
+
+<p><br>[Function]
+<br><a class=none name="box"><b>box</b> <i> object </i> =&gt; <i> container</i></a>
+
+<blockquote><br>
+Converts Lisp objects to containers wrapping a
+corresponding .NET object if possible, otherwise an error is
+signaled. Currently the following conversions are implemented:
+
+<p>
+<table border=1 cellspacing=1 cellpadding=3>
+<tr><th>Lisp type   </th><th>        .NET type  </th><th>     Remark</th></tr>
+<tr><td><code>(signed-byte 32)</code> </td><td>   <code>System.Int32</code></td><td></td></tr>
+<tr><td><code>(signed-byte 64)</code> </td><td>   <code>System.Int64</code>  </td><td>  Only integers which aren't <code>(SIGNED-BYTE 32)</code>.</td></tr>
+<tr><td><code>character</code>     </td><td>      <code>System.Char</code></td><td></td></tr>
+<tr><td><code>string</code>       </td><td>       <code>System.String</code></td><td></td></tr>
+<tr><td><code>pathname</code>     </td><td>       <code>System.String</code> </td><td>  The <a href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_n.htm#namestring">namestring</a> of the pathname is used.</td></tr>
+<tr><td><code>double-float</code>       </td><td>        <code>System.Double</code></td><td>See <a href="#*coerce-double-floats-to-single*"><code>*COERCE-DOUBLE-FLOATS-TO-SINGLE*</code>.</a></td></tr>
+<tr><td><code>float</code>       </td><td>        <code>System.Single</code></td><td> Only floating point numbers which aren't <code>DOUBLE-FLOAT</code>.</td></tr>
+<tr><td><code>boolean</code>     </td><td>        <code>System.Boolean</code></td><td></td></tr>
+</table>
+
+</blockquote>
+
+
+<p><br>[Function]
+<br><a class=none name="unbox"><b>unbox</b> <i> container </i> =&gt; <i> object</i></a>
+
+<blockquote><br>
+Converts .NET objects wrapped in a container to a corresponding Lisp
+object if possible, otherwise <code><i>container</i></code> is returned ummodified. Currently the following conversions are implemented:
+<p>
+<table border=1 cellspacing=1 cellpadding=3>
+<tr><th>.NET type      </th><th>     Lisp type</th></tr>
+<tr><td><code>System.Int32</code>   </td><td>       <code>integer</code></td></tr>
+<tr><td><code>System.Int64</code>  </td><td>        <code>integer</code></td></tr>
+<tr><td><code>System.Char</code>   </td><td>        <code>character</code></td></tr>
+<tr><td><code>System.String</code>  </td><td>       <code>string</code></td></tr>
+<tr><td><code>System.Double </code> </td><td>       <code>double-float</code></td></tr>
+<tr><td><code>System.Single </code> </td><td>       <code>float</code></td></tr>
+<tr><td><code>System.Boolean</code>  </td><td>      <code>boolean</code></td></tr>
+</table>
+</blockquote>
+
+
+<p><br>[Function]
+<br><a class=none name="new"><b>new</b> <i> type <tt>&amp;rest</tt> args </i> =&gt; <i> new-instance</i></a>
+
+<blockquote><br>
+Creates and return a new instance of the .NET type <code><i>type</i></code>. Chooses the
+constructor based on the signature determined by <code><i>args</i></code>. <code><i>type</i></code> can either
+be a container representing a .NET type or a string naming the type.
+<p>
+If <code><i>type</i></code> is a delegate type, then there should be exactly one more
+argument to <code>NEW</code> and it must be a Lisp closure with a corresponding
+signature. This is how callbacks from .NET into Lisp are implemented. (See the <a href="#apropos">second example</a> above and look for <code>KeyPressEventHandler</code>.)
+</blockquote>
+
+
+<p><br>[Function]
+<br><a class=none name="cast"><b>cast</b> <i> container type </i> =&gt; <i> container</i></a>
+
+<blockquote><br>
+Changes the type of the .NET object represented by <code><i>container</i></code> to <code><i>type</i></code>
+(a string naming the type or a container representing the type).
+Returns <code><i>container</i></code>.
+</blockquote>
+
+<p><br>[Function]
+<br><a class=none name="make-null-object"><b>make-null-object</b> <i> type-name </i> =&gt; <i> container</i></a>
+
+<blockquote><br>
+Returns a new NULL .NET object of the type named by the string <code><i>type-name</i></code>.
+</blockquote>
+
+
+<p><br>[Special variable]
+<br><a class=none name="*coerce-double-floats-to-single*"><b>*coerce-double-floats-to-single*</b></a>
+
+<blockquote><br> If the value of this variable is <em>true</em>,
+then <a href="#box"><code>BOX</code></a> will convert a
+Lisp <a
+href="http://www.lispworks.com/documentation/HyperSpec/Body/t_short_.htm#double-float"><code>DOUBLE-FLOAT</code></a>
+value to <code>System.Single</code>.  This is mainly interesting for
+LispWorks, where Lisp floats are always <code>DOUBLE-FLOAT</code>.
+</blockquote>
+
+
+<h4><a class=none name="methods">Accessing .NET methods, properties, and fields</a></h4>
+
+This section describes the "low-level" access to .NET class members. See the <a href="#reader">section about the special reader syntax</a> for another approach.
+
+<p><br>[Function]
+<br><a class=none name="invoke"><b>invoke</b> <i> object method-name <tt>&amp;rest</tt> other-args </i> =&gt; <i> result</i></a>
+
+<blockquote><br>
+Invokes the public .NET method named by the string <code><i>method-name</i></code>.  If
+<code><i>object</i></code> is a container, an instance method is
+invoked.  If <code><i>object</i></code> is a string, the static method
+of the type named by this string (which is looked up
+using <code>System.Type::GetType</code>) is invoked.
+Otherwise, <code><i>object</i></code> should be a two-element list
+where the first element is a container representing an assembly and
+the second element is a string denoting a static method (which will be
+looked up in that specific assembly).
+</blockquote>
+
+<p><br>[Accessor]
+<br><a class=none name="property"><b>property</b> <i> object property-name <tt>&amp;rest</tt> indexes </i> =&gt; <i> property-value</i></a>
+<br><tt>(setf (</tt><b>property</b> <i> object <tt>&amp;rest</tt> indexes) new-value)</i>
+
+<blockquote><br>
+Gets or sets the public .NET property named by the string
+<code><i>property-name</i></code>. If <code><i>object</i></code> is a container, an instance property is
+accessed.  If <code><i>object</i></code> is a string, the static property of the type named
+by this string is accessed.
+</blockquote>
+
+<p><br>[Accessor]
+<br><a class=none name="field"><b>field</b> <i> object field-name </i> =&gt; <i> field-value</i></a>
+<br><tt>(setf (</tt><b>field</b> <i> object) new-value)</i>
+
+<blockquote><br>
+Gets or sets the public .NET field named by the string <code><i>field-name</i></code>. If
+<code><i>object</i></code> is a container, an instance field is accessed.  If <code><i>object</i></code> is a
+string, the static field of the type named by this string is accessed.
+</blockquote>
+
+<p><br>[Function]
+<br><a class=none name="ref"><b>ref</b> <i>object</i> =&gt; <i> container</i></a>
+
+<blockquote><br>
+
+Makes a <em>pass-by-reference</em> type out of
+<code><i>object</i></code> and returns <code><i>object</i></code>.  If
+<code><i>object</i></code> is not a <a href="#objects">container</a>,
+it'll be <a href="#box">boxed</a> first.  This function makes only
+sense if <code><i>object</i></code> is used as an argument to <a
+href="#invoke"><code>INVOKE</code></a>!  (And after <a href="#invoke"><code>INVOKE</code></a> has been
+called <code><i>object</i></code> will be reset to its underlying type so you have to
+re-apply <code>REF</code> if you want to use it as a pass-by-reference argument in
+another .NET call.)   Note that while this is kind of tedious it
+corresponds to the C# semantics.
+<p>
+Here's an example: If you have a .NET class defined like this (in C#)
+<pre>
+public class Class1 {
+  public static void foo (ref int a) {
+    a++;
+  }
+}
+</pre>
+then you can do this (see <a href="#reader">below</a> for the reader syntax) in Lisp
+<pre>
+RDNZL-USER(16): (let ((a (<a class=noborder href="#box">box</a> 41)))
+                  [Class1.foo (<a class=noborder href="#ref">ref</a> a)]
+                  (<a class=noborder href="#unbox">unbox</a> a))
+42
+</pre>
+
+while the evaluation of <code>[Class1.foo&nbsp;41]</code> (or <code>[Class1.foo&nbsp;(<a href="#box">box</a>&nbsp;41)]</code> which is equivalent) will signal an error because the
+method won't even be found - the signature of <code>foo</code> is <code>(System.Int32&amp;)</code>, not <code>(System.Int32)</code>.
+</blockquote>
+
+<h4><a class=none name="arrays">Arrays and enumerations</a></h4>
+
+This section assembles some convenience functions for .NET arrays and
+enumerations.
+
+<p><br>[Accessor]
+<br><a class=none name="aref*"><b>aref*</b> <i> array <tt>&amp;rest</tt> subscripts </i> =&gt; <i> value</i></a>
+<br><tt>(setf (</tt><b>aref*</b> <i> array <tt>&amp;rest</tt> subscripts) new-value)</i>
+
+<blockquote><br>
+Gets or sets the element of the .NET array <code><i>array</i></code> with the
+subscripts <code><i>subscripts</i></code>.
+</blockquote>
+
+
+<p><br>[Macro]
+<br><a class=none name="do-rdnzl-array"><b>do-rdnzl-array</b> <i> (var array-form <tt>&amp;optional</tt> result) <tt>&amp;body</tt> body </i> =&gt; <i> value*</i></a>
+
+<blockquote><br>
+<code><i>array-form</i></code> should be a form which evaluates to a <a href="#objects">container</a> wrapping a
+.NET array of rank&nbsp;1.  The <code><i>body</i></code> will be evaluated with <code><i>var</i></code> bound to
+each element of this array in turn.  Finally, the result of evaluating
+the form <code><i>result</i></code> is returned.
+</blockquote>
+
+
+<p><br>[Function]
+<br><a class=none name="list-to-rdnzl-array"><b>list-to-rdnzl-array</b> <i> list <tt>&amp;optional</tt> base-type </i> =&gt; <i> array</i></a>
+
+<blockquote><br>
+Creates and returns a .NET array of base type <code><i>base-type</i></code> and rank&nbsp;1
+with the elements from the Lisp list <code><i>list</i></code>.  <code><i>base-type</i></code> can be a
+container representing a .NET type or a string naming the type.  The
+default for <code><i>base-type</i></code> is the .NET root type <code>System.Object</code>.
+</blockquote>
+
+<p><br>[Function]
+<br><a class=none name="rdnzl-array-to-list"><b>rdnzl-array-to-list</b> <i> array </i> =&gt; <i> list</i></a>
+
+<blockquote><br>
+Converts a .NET array <code><i>array</i></code> of rank&nbsp;1 to a Lisp list with the same
+elements.
+</blockquote>
+
+
+<p><br>[Function]
+<br><a class=none name="integer-to-enum"><b>integer-to-enum</b> <i> number type </i> =&gt; <i> enum</i></a>
+
+<blockquote><br>
+Converts the Lisp integer <code><i>number</i></code> to a .NET <code>System.Enum</code> object of
+type <code><i>type</i></code> (a string naming the type or a container representing the type).
+</blockquote>
+
+
+<p><br>[Function]
+<br><a class=none name="enum-to-integer"><b>enum-to-integer</b> <i> enum </i> =&gt; <i> number</i></a>
+
+<blockquote><br>
+Converts the .NET object <code><i>enum</i></code> of type <code>System.Enum</code> to a Lisp integer.  This is a destructive operation on <code><i>enum</i></code>.
+</blockquote>
+
+<p><br>[Function]
+<br><a class=none name="or-enums"><b>or-enums</b> <i> <tt>&amp;rest</tt> enums </i> =&gt; <i> enum</i></a>
+
+<blockquote><br>
+Combines several .NET objects of type System.Enum with a <a href="http://www.lispworks.com/documentation/HyperSpec/Body/f_logand.htm#logior">bit-wise logical <em>or</em></a>
+and returns the result.  All arguments must be of the same .NET type
+and there must be at least one argument.
+</blockquote>
+
+
+<h4><a class=none name="exceptions">Handling of .NET exceptions</a></h4>
+
+.NET exceptions are propagated to Lisp as described below.
+
+<p><br>[Condition type]
+<br><a class=none name="rdnzl-error"><b>rdnzl-error</b></a>
+
+<blockquote><br>
+Exceptions raised during .NET calls are signaled in Lisp as errors of this type.
+</blockquote>
+
+<p><br>[Function]
+<br><a class=none name="rdnzl-error-exception"><b>rdnzl-error-exception</b> <i> condition </i> =&gt; <i> exception</i></a>
+
+<blockquote><br>
+If <code><i>condition</i></code> is an error of type <a href="#rdnzl-error"><code>RDNZL-ERROR</code></a>, then this function will
+return the .NET exception object that was actually raised.
+</blockquote>
+
+<p><br>[Macro]
+<br><a class=none name="rdnzl-handler-case"><b>rdnzl-handler-case</b> <i>form <tt>&amp;rest</tt> clauses</i> => <i>result*</i></a>
+
+<blockquote><br>
+Like <a
+href="http://www.lispworks.com/documentation/HyperSpec/Body/m_hand_1.htm"><code>HANDLER-CASE</code></a>
+but only for conditions of type <a
+href="#rdnzl-error"><code>RDNZL-ERROR</code></a>.  The typespecs are
+either strings (naming a .NET error type) or of the form <code>(OR&nbsp;string-<i>1</i>&nbsp;...&nbsp;string-<i>n</i>)</code>.  A <code>:NO-ERROR</code> clause is also allowed.
+</blockquote>
+
+<h4><a class=none name="types">Type names and assemblies</a></h4>
+
+Whenever a RDNZL function accepts a string as a type name you usually
+have to provide the full <em>assembly-qualified name</em> of that type (with
+the exception of types in <code>mscorlib.dll</code>), i.e. something like
+
+<pre>
+"System.Windows.Forms.Button, System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+</pre>
+
+This is boring and error-prone, so RDNZL provides two ways to make it
+easier for you: You can <a href="#import-type"><em>import types</em></a> and you can <a href="#use-namespace"><em>use namespaces</em></a>.
+<p>
+If you import a type, RDNZL internally remembers its assembly-qualified
+name and you can now use its <em>full name</em> (like
+<code>"System.Windows.Forms.Button"</code>) instead.
+<p>
+If this is still too long for you, you can <em>use</em> namespaces to further
+abbreviate type names. So, if you are using the namespace
+<code>"System.Windows.Forms"</code>, you can just call the type <code>"Button"</code>. Note that
+this'll only work for imported types, though.
+
+<p><br>[Function]
+<br><a class=none name="import-type"><b>import-type</b> <i> type <tt>&amp;optional</tt> assembly </i> =&gt; <i> type'</i></a>
+
+<blockquote><br>
+Imports the .NET type <code><i>type</i></code>, i.e. registers its name as one that can be
+abbreviated (see <a href="#use-namespace"><code>USE-NAMESPACE</code></a>) and creates a mapping from its short
+name to its assembly-qualified name (if necessary).  If <code><i>type</i></code> is a
+string and <code><i>assembly</i></code> is <code>NIL</code>, then the function will try to create the
+type from the string with the static .NET method <code>System.Type::GetType</code>.
+If <code><i>type</i></code> is a string and <code><i>assembly</i></code> is a container representing an
+assembly, then instead the .NET instance method
+<code>System.Reflection.Assembly::GetType</code> will be used.  If <code><i>type</i></code> is already
+a .NET object (i.e. a <a href="#objects">container</a>), then the function will just register
+its name.  If <code><i>assembly</i></code> is a <em>true</em> value, then the name will also be
+mapped to its assembly-qualified name.  In all cases the type itself
+(as a container) will be returned.
+</blockquote>
+
+
+<p><br>[Function]
+<br><a class=none name="load-assembly"><b>load-assembly</b> <i> name </i> =&gt; <i> assembly</i></a>
+
+<blockquote><br>
+Loads and returns the assembly with the name <code><i>name</i></code> (a string), uses the
+static .NET method <code>System.Reflection.Assembly::LoadWithPartialName</code>
+internally.
+</blockquote>
+
+
+<p><br>[Function]
+<br><a class=none name="import-assembly"><b>import-assembly</b> <i> assembly </i> =&gt; <i> assembly'</i></a>
+
+<blockquote><br>
+Imports all public types of the assembly <code><i>assembly</i></code> (a string or a
+container).  If <code><i>assembly</i></code> is a string, then the assembly is first loaded
+with <a href="#load-assembly"><code>LOAD-ASSEMBLY</code></a>.  Returns <code><i>assembly</i></code> as a container.
+</blockquote>
+
+
+<p><br>[Function]
+<br><a class=none name="import-types"><b>import-types</b> <i> assembly-name <tt>&amp;rest</tt> type-names </i> =&gt; <i><tt>NIL</tt></i></a>
+
+<blockquote><br>
+This is a shortcut. It loads the assembly named by the string <code><i>assembly-name</i></code> and
+imports all types listed from this assembly.  The assembly name is
+prepended to the type names before importing them.  All arguments
+should be strings.
+</blockquote>
+
+
+<p><br>[Function]
+<br><a class=none name="use-namespace"><b>use-namespace</b> <i> namespace </i> =&gt; |</a>
+
+<blockquote><br>
+Adds the .NET namespace <code><i>namespace</i></code>
+(a string) to the list of namespaces that will be prefixed when trying
+to resolve a type name.  After calling this function
+<code><i>namespace</i></code> will be the first entry in this list
+unless it has already been there. <code><i>namespace</i></code> must
+not end with a dot because a dot will be prepended automatically.
+</blockquote>
+
+<p><br>[Function]
+<br><a class=none name="unuse-namespace"><b>unuse-namespace</b> <i> namespace </i> =&gt; |</a>
+
+<blockquote><br>
+Removes the .NET namespace <code><i>namespace</i></code> (a string) from the list of
+namespaces that will be prefixed when trying to resolve a type name.
+</blockquote>
+
+<p><br>[Function]
+<br><a class=none name="unuse-all-namespaces"><b>unuse-all-namespaces</b> <i> </i> =&gt; |</a>
+
+<blockquote><br>
+Removes all entries from the list of namespaces that will be prefixed
+when trying to resolve a type name.
+</blockquote>
+
+
+<h4><a class=none name="reader">Special reader syntax</a></h4>
+
+In order to make entering .NET forms easier RDNZL provides a modified
+read syntax which consists of two parts.
+<p>
+First, the left and right bracket characters are modified to be
+<a href="http://www.lispworks.com/documentation/HyperSpec/Body/02_b.htm">terminating macro characters</a>. A form like
+
+<pre>
+[IsSubclassOf type other-type]
+</pre>
+
+is read as follows: Directly following the left bracket should be a
+symbol (<code>IsSubclassOf</code> in this example) which is read as if the standard
+readtable was used (except for the special role of the brackets) but
+<em>with case preserved</em>. The rest (<code>type other-type</code> in this case) is read
+up to the closing bracket by <a href="http://www.lispworks.com/documentation/HyperSpec/Body/f_rd_del.htm#read-delimited-list"><code>READ-DELIMITED-LIST</code></a>. This results in a call
+to <a href="#invoke"><code>INVOKE</code></a> like this:
+<pre>
+(<a class=noborder href="#invoke">invoke</a> type "IsSubclassOf" other-type)
+</pre>
+If the symbol starts with a percent or dollar, sign then it is removed
+and the result is a call to <a href="#property"><code>PROPERTY</code></a> or <a href="#field"><code>FIELD</code></a> respectively:
+
+<pre>
+[%IsInterface type]  =&gt;  (<a class=noborder href="#property">property</a> type "IsInterface")
+[$textBox control]  =&gt;  (<a class=noborder href="#field">field</a> control "textBox")
+</pre>
+
+If the symbol contains a dot, then in all three cases this'll result in
+a static invocation where the part before the (last) dot is used as the name
+of the type:
+
+<pre>
+[System.Environment.Exit]  =&gt; (<a class=noborder href="#invoke">invoke</a> "System.Environment" "Exit")
+[%System.Environment.UserName]  =&gt;  (<a class=noborder href="#property">property</a> "System.Environment" "UserName")
+[$OpCodes.Switch]  =&gt;  (<a class=noborder href="#field">field</a> "Opcodes" "Switch")
+</pre>
+
+If the symbol starts with a plus or minus sign, then this sign is replaced
+with <code>"add_"</code> or <code>"remove_"</code> respectively. This is the convention used to
+add or remove event handlers:
+
+<pre>
+[+KeyPress text-box (<a class=noborder href="#new">new</a> "KeyPressEventHandler" #'reply)] =&gt; (<a class=noborder href="#invoke">invoke</a> text-box "add_KeyPress" (<a class=noborder href="#new">new</a> "KeyPressEventHandler" #'reply))
+</pre>
+
+The second syntax change is the addition of a new dispatch character
+to the <a href="http://www.lispworks.com/documentation/HyperSpec/Body/02_dh.htm"><code>#</code> (sharpsign) reader macro</a>, namely <code>`</code> (backquote). This is
+intended to be used similarly to <a href="http://www.lispworks.com/documentation/HyperSpec/Body/02_dhb.htm"><code>#'</code></a> but with the syntax described
+above, i.e. you can write things like
+
+<pre>
+(mapcar #`%CanFocus list-of-forms)
+(apply #`GetMethod method-info other-args)
+(funcall #`(setf $textBox) new-text-box control)
+</pre>
+
+Note that this dispatch character also recognizes <a href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_f.htm#function_name">function names</a> of
+the form <code>(SETF&nbsp;<i>symbol</i>)</code>.
+The RDNZL source code contains more examples of using this modified
+syntax.
+<p>
+Read <a href="http://www.tfeb.org/lisp/obscurities.html#RDL">Tim Bradshaw's article</a>
+ about the implications
+of a reader syntax as described above.
+
+
+<p><br>[Macro]
+<br><a class=none name="enable-rdnzl-syntax"><b>enable-rdnzl-syntax</b> <i> </i> =&gt; |</a>
+
+<blockquote><br>
+Enables RDNZL reader syntax. After loading RDNZL this reader syntax is by default <em>not</em> enabled.
+</blockquote>
+
+<p><br>[Macro]
+<br><a class=none name="disable-rdnzl-syntax"><b>disable-rdnzl-syntax</b> <i> </i> =&gt; |</a>
+
+<blockquote><br>
+Restores the readtable which was active before the last call to
+<a href="#enable-rdnzl-syntax"><code>ENABLE-RDNZL-SYNTAX</code></a>. If there was no such call, the standard readtable
+is used.
+</blockquote>
+
+<h4><a class=none name="direct">Direct calls</a></h4>
+
+Usually, each time you call into .NET via <a
+href="#invoke"><code>INVOKE</code></a>, <a
+href="#property"><code>PROPERTY</code></a>, or <a
+href="#field"><code>FIELD</code></a> RDNZL will have to search for the
+corresponding .NET member via reflection.  This can be avoided by
+defining <em>direct calls</em> via <a
+href="#define-rdnzl-call"><code>DEFINE-RDNZL-CALL</code></a>. For example, instead of calling 
+<pre>
+(invoke "System.Math" "Max" 3.5 3.6)
+</pre>
+you'd first define a function <code>DOTNET-MAX</code> like this
+<pre>
+(define-rdnzl-call dotnet-max
+    (:dotnet-name "Max"
+     :type-name "System.Math")
+  ((x "System.Double")
+   (y "System.Double")))
+</pre>
+and then call it as if it were a normal Lisp function (no need for the pesky <a href="#reader">reader syntax</a>):
+<pre>
+(dotnet-max 3.5 3.6)
+</pre>
+Experiments with AllegroCL and LispWorks show that in the example above you'll safe about half the execution time and half the consing if you use a direct call instead of <a href="#invoke"><code>INVOKE</code></a>. (It's still faster to call <a href="http://www.lispworks.com/documentation/HyperSpec/Body/f_max_m.htm">MAX</a>, though... :)
+<p>
+The file <code>examples/apropos2.lisp</code> shows how you'd code the <a href="#apropos"><code>APROPOS</code> example</a> with direct calls.
+
+<p><br>[Macro]
+<br><a class=none name="define-rdnzl-call"><b>define-rdnzl-call</b> <i> lisp-name (<tt>&amp;key</tt> member-kind dotnet-name type-name doc-string) args</i> =&gt; <i> lisp-name </i></a>
+
+<blockquote><br>
+Defines a Lisp function named by the <a href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_f.htm#function_name">function name</a> <code><i>lisp-name</i></code> which invokes the .NET member named by the string <code><i>dotnet-name</i></code>. <code><i>member-kind</i></code> must be one of the keywords <code>:METHOD</code>, <code>:PROPERTY</code>, or <code>:FIELD</code> and obviously determines whether a method, a property, or a field is to be invoked - the default is <code>:METHOD</code>. If <code><i>type-name</i></code> is <code>NIL</code> (which is the default), an instance member is invoked, otherwise <code><i>type-name</i></code> should be a string naming a .NET type and a static member of this type is invoked instead. <code><i>doc-string</i></code>, if provided, should be a string, namely the documentation string for the Lisp function which is created. If <code><i>doc-string</i></code> is <code>NIL</code> (which is the default), a generic documentation string will be created.
+<p>
+If <code><i>dotnet-name</i></code> is <code>NIL</code> (which is the default), then the name of the .NET member will be created from <code><i>lisp-name</i></code> be the following rules:
+Take the <a href="http://www.lispworks.com/documentation/HyperSpec/Body/f_symb_2.htm">symbol name</a> of <code><i>lisp-name</i></code> and if it does <em>not</em> consist solely of hyphens and single-case letters, just return it. Otherwise remove the hyphens and downcase all letters except for the first one and those that follow a hyphen - these are upcased.  If lisp-name is a list <code>(SETF <i>symbol</i>)</code>, then we use <code><i>symbol</i></code> instead of <code><i>lisp-name</i></code>. Here are some examples (note that the package doesn't matter):
+<p>
+<table border=1 cellspacing=1 cellpadding=3>
+<tr><th><code><i>lisp-name</i></code>      </th><th>     <code><i>dotnet-name</i></code></th></tr>
+<tr><td><code>|Foo|</code>   </td><td>       <code>"Foo"</code></td></tr>
+<tr><td><code>FOO</code>  </td><td>        <code>"Foo"</code></td></tr>
+<tr><td><code>HELP-ME</code>   </td><td>        <code>"HelpMe"</code></td></tr>
+<tr><td><code>(SETF TEXT-BOX)</code>  </td><td>       <code>"TextBox"</code></td></tr>
+</table>
+
+<p>
+Finally, <code><i>args</i></code> describes the arguments to the
+newly-created function. It is a list of pairs
+<code>(ARG-NAME&nbsp;TYPE-NAME)</code> where <code>ARG-NAME</code> is
+a symbol naming the argument and <code>TYPE-NAME</code> is a string
+naming the .NET type of the argument.  Note that for instance members
+the type of the first argument is the .NET type the member belongs to
+- this is <em>not</em> the case for static members.
+<p>
+For properties and fields, <code><i>lisp-name</i></code> can also be a
+list <code>(SETF <i>symbol</i>)</code> in which case a setter function
+for the corresponding property or field is generated. Note that the
+parameter for the new value is <em>not</em> part of the signature described by <code><i>args</i></code>.
+<p>
+Note: Currently (version&nbsp;0.6.0) there are some issues with direct
+calls and Corman Lisp, so you shouldn't use <a
+href="#define-rdnzl-call"><code>DEFINE-RDNZL-CALL</code></a> with CCL
+(or you could help fixing these problems).
+
+</blockquote>
+
+<h4><a class=none name="delivery">Saving images and application delivery</a></h4>
+
+It is possible to save images with RDNZL loaded or to deliver RDNZL
+executables. However, you have to watch out for certain things: Make
+sure that no references to .NET objects remain in the image and
+finally call <a href="#shutdown-rdnzl"><code>SHUTDOWN-RDNZL</code></a> prior to saving or delivering.
+<p>
+If you restart the image or start the executable, make sure to call
+<a href="#init-rdnzl"><code>INIT-RDNZL</code></a> before accessing any RDNZL functionality. That should do
+the trick.
+<p>
+The <code>examples</code> directory of the RDNZL distribution contains sample
+delivery files for AllegroCL, Corman Lisp, and LispWorks to demonstrate this.
+
+<p><br>[Function]
+<br><a class=none name="shutdown-rdnzl"><b>shutdown-rdnzl</b> <i> <tt>&amp;optional</tt> no-gc </i> =&gt; |</a>
+
+<blockquote><br>
+Prepares RDNZL for delivery or image saving.  After calling this
+function RDNZL can't be used anymore unless <a href="#init-rdnzl"><code>INIT-RDNZL</code></a> is called
+again.  If <code><i>no-gc</i></code> is <code>NIL</code> (the default), a full garbage collection is
+also performed.
+</blockquote>
+
+
+<p><br>[Function]
+<br><a class=none name="init-rdnzl"><b>init-rdnzl</b> <i> </i> =&gt; |</a>
+
+<blockquote><br>
+Initializes RDNZL.  This function must be called once before RDNZL is
+used. It is automatically called when you load RDNZL.
+</blockquote>
+
+
+<br>&nbsp;<br><h3><a class=none name="details">Implementation details and things to watch out for</a></h3>
+
+The first implementation of RDNZL (which I <a href="http://weitz.de/RDNZL.htm">demoed</a> <a href="http://weitz.de/files/RDNZL.zip">in</a> <a href="http://weitz.de/files/RDNZL.pps">Amsterdam</a>) used
+the <a href="http://www.cliki.net/AMOP">MOP</a> to map .NET types to CLOS classes.  I have removed this code
+in favor of a simpler approach because using the MOP results in a lot
+of overhead at runtime and doesn't work well with application
+delivery. In fact, a lot of the design decisions in RDNZL are based on the
+fact that I want to be able to easily deliver small executables. If it were just for speed and/or convenience, RDNZL would look differently.
+<p>
+If you're concerned about speed, keep in mind that calls into .NET are
+expensive because a lot of marshalling of arguments is happening
+behind the scenes and the system deploys the .NET reflection API at
+runtime. It is advisable to keep interaction between .NET and Lisp out
+of tight loops, i.e. to implement such loops either fully in Lisp or
+fully in .NET.
+<p>
+If you want to know more about the way methods are
+looked up in RDNZL, read <a href="http://www.rivendell.ws/dot-scheme/scheme-workshop-2003-paper.pdf">Pedro Pinto's paper</a>
+about the implementation of <a href="http://www.rivendell.ws/dot-scheme/">Dot-Scheme</a> the basics of which apply to
+RDNZL as well.
+<p>
+The garbage collectors of Lisp and .NET should generally be able to
+co-exist without problems. However, with delegates there's a potential
+problem. Consider this example (from Pedro Pinto):
+<pre>
+(let ((button (<a class=noborder href="#new">new</a> "System.Windows.Form.Button")))
+  [+Click form (new "System.EventHandler"
+                    (lambda (sender event-args)
+                      (declare (ignore sender event-args))
+                      (setf [%Text button] "Clicked!")))])
+</pre>
+Now, RDNZL keeps a reference to <code>BUTTON</code> which is closed over by the
+event-handler defined above and thus the .NET garbage collector won't
+be able to get rid of the button. As a result it can't release the
+event handlers of this button either and thus the Lisp garbage
+collector won't be notified that the closure is no longer
+used. Currently, the only way to avoid these problems with cyclic
+references is: "So don't do that!"
+<p>
+If .NET calls back into Lisp from a "foreign" thread (one that wasn't
+created by Lisp), this'll not work in some implementations.
+Specifically, <a
+href="http://common-lisp.net/pipermail/rdnzl-devel/2006-January/000048.html">as
+Dominic Robinson has pointed out</a>, there might be GC issues in this
+case.
+See <a href="http://weitz.de/lw-callbacks/">here</a>
+and <a
+href="http://common-lisp.net/pipermail/rdnzl-devel/2005-December/000044.html">here</a>
+for possible workarounds for LispWorks.
+<p>
+About the name: It was pretty clear to me from the beginning that the
+name of the library should be "<a
+href="http://globalia.net/donlope/fz/songs/RDNZL.html">RDNZL</a>."
+However, I'm not sure what this acronym exactly stands for. Surely, "L" is
+for "Lisp" and "DN" is for "DotNet". The rest? You'll figure it out...&nbsp;:)
+
+<br>&nbsp;<br><h3><a class=none name="ack">Acknowledgements</a></h3>
+
+RDNZL owes very much to Pedro Pinto's <a href="http://www.rivendell.ws/dot-scheme/">Dot-Scheme</a> project, especially
+as far as the C++ part is concerned. In fact, I couldn't have written
+RDNZL without studying (and partly copying) the Dot-Scheme
+implementation. Pedro was also very helpful during the development of
+RDNZL and answered a couple of dumb questions of mine. Thank you very
+much! (All errors in RDNZL are mine, of course.)
+<p>
+Thanks to Charles A. Cox for the port of RDNZL to AllegroCL. Thanks to Vasilis Margioulas for the CLISP port. Thanks to Roger Corman for his help with the CCL port. Thanks to Franz Inc. (and particularly Jans Aasman) for supporting the development of RDNZL.
+<p>
+$Header: /usr/local/cvsrep/rdnzl_lisp/doc/index.html,v 1.66 2006/02/18 22:14:15 edi Exp $
+<p><a href="http://weitz.de/index.html">BACK TO MY HOMEPAGE</a>
+
+</body>
+</html>
+

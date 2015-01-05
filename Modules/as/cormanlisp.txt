@@ -1,0 +1,23 @@
+This distribution of AllegroServe was based on AllegroServe 1.1.25 and
+modified by Chris Double to work with Corman Lisp 1.42. It is not
+supported by Franz, authors of AllegroServe, and is not fully working
+- more work still needs to be done on the port. In particular
+keep-alive and chunking support does not work. That said, much of the
+web server functionality works fine, and it can serve pages without
+too much problem.
+
+Note that I made some modifications to the client support to allow
+using SSL sockets to retrieve web pages.
+
+I've distributed it now to allow others to use it in case I don't get
+a chance to work on it in the near future. Comments, bugs and
+suggestions can be sent to chris@double.co.nz.
+
+The original AllegroServe distribution is available at:
+
+http://allegroserve.sourceforge.net/
+
+--
+Chris Double.
+http://www.double.co.nz/cl
+6 March 2001

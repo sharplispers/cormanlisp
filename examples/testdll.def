@@ -1,0 +1,8 @@
+LIBRARY TestDLL
+EXPORTS
+    testfunc1		PRIVATE
+    testfunc2		PRIVATE
+    testfunc3       PRIVATE
+    testfunc4       PRIVATE
+    testfunc5       PRIVATE
+    testfunc6       PRIVATE

@@ -1,0 +1,69 @@
+;; SQL/ODBC module for MCL, LWW and ACL
+;; (C) Paul Meurer 1999
+;; paul.meurer@hit.uib.no
+
+Release notes for version 0.85
+25.10.1999
+
+1. Some minor bug fixes
+
+2. Enhancements:
+
+- Support for SQL_BINARY datatype
+- new function: db-data-sources (gets list of all available data sources from driver)
+- odbc::get-odbc-info accepts all info codes
+- Small changes to make MySQL/MyODBC work. Tested on NT and (not by me) on Linux.
+
+Release notes for 0.83:
+
+Fixes and enhancements for its use with the SQL authentication support in CL-HTTP
+
+Release notes for 0.82:
+
+Bug fixes in 0.8
+
+Release notes for 0.8:
+
+1. Bug fixes:
+   -  A serious memory leak found and fixed.
+   -  WITH-TRANSACTION works everywhere.
+   -  Data sizes > +max-precision+ works (but see Problems below).
+
+2. Changes:
+   - The SQL-EXP and SQL packages are merged.
+   - Instead of use-module, in LW and ACL, their respective defsystems are used.
+   - The directory structure is changed.
+   - Renamed functions (for more consistent terminology: a statement is a query if
+      it returns a result set, else a command):
+     query -> execute-query
+     prepare-command -> prepare-statement
+     with-prepared-command -> with-prepared-statement
+   - The QUERY slot in DATABASE objects is no longer used.
+
+3. Support for ACL/Linux 5.0 (and very probably other Unices)
+
+4. Thread-safe command execution. (It is guaranteed that no two threads share an active QUERY object.)
+
+5. Support for long datatypes.
+   A stream protocol (conformant with the Gray streams proposal) for reading and writing long (character and binary) data.
+
+6. Prepared and parameterized select statements.
+
+7. A generic command syntax for SQL constructs not covered elsewhere. 
+
+8. Misc. enhancements:
+   - More info on available databases and drivers for Macintosh and Linux
+   - DO-QUERY handles &REST variables.
+   - Some SQL commands and operators added. 
+   - Outside of [...], symbols beginning with ? are read with the standard readtable.
+
+Problems:
+
+There are problems with the InterSolve (DataDirect) drivers wich apparently are
+connected to the fact that they return "Y" for info type $SQL_NEED_LONG_DATA_LEN.
+In MCL, SQLPutData very often reports a "Data truncated" error or plainly crashes the machine. I have no clue why.
+This has as consequence that long types (and varchar(n) with n sufficiently high) do not work properly with those drivers.
+
+Help is appreciated.
+
+Paul Meurer

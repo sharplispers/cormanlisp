@@ -1,0 +1,220 @@
+Corman Technologies Software License Agreement
+
+READ THE TERMS OF THIS AGREEMENT AND ANY PROVIDED
+SUPPLEMENTAL LICENSE TERMS (COLLECTIVELY "AGREEMENT")
+CAREFULLY BEFORE OPENING THE SOFTWARE MEDIA PACKAGE.  BY
+OPENING THE SOFTWARE MEDIA PACKAGE, YOU AGREE TO THE TERMS
+OF THIS AGREEMENT.  IF YOU ARE ACCESSING THE SOFTWARE
+ELECTRONICALLY, INDICATE YOUR ACCEPTANCE OF THESE TERMS BY
+SELECTING THE "ACCEPT" BUTTON AT THE END OF THIS AGREEMENT.
+IF YOU DO NOT AGREE TO ALL THESE TERMS, PROMPTLY RETURN THE
+UNUSED SOFTWARE TO YOUR PLACE OF PURCHASE FOR A REFUND OR,
+IF THE SOFTWARE IS ACCESSED ELECTRONICALLY, SELECT THE
+"DECLINE" BUTTON AT THE END OF THIS AGREEMENT.
+
+1.  LICENSE TO USE.  Corman Technologies grants you a 
+non-exclusive and non-transferable license for the internal use 
+only of the accompanying software and documentation and any error
+corrections provided by Corman Technologies (collectively 
+"Software"), by the number of users and the class of computer 
+hardware for which the corresponding fee has been paid. Software
+which has been distributed for evaluation purposes or free for
+limited use is still subject to the provisions of this agreement.
+
+2.  RESTRICTIONS.  Software is confidential and copyrighted.
+Title to Software and all associated intellectual property
+rights is retained by Corman Technologies and/or its licensors.  
+
+3.  LIMITED WARRANTY.  Corman Technologies warrants to you 
+that for a period of ninety (90) days from the date of 
+purchase, as evidenced by a copy of the receipt, the media 
+on which Software is furnished (if any) will be free of 
+defects in materials and workmanship under normal use.  
+Except for the foregoing, Software is provided "AS IS".  
+Your exclusive remedy and Corman Technologies' entire liability 
+under this limited warranty will be at Corman Technologies' 
+option to replace Software media or refund the fee paid 
+for Software.
+
+4.  DISCLAIMER OF WARRANTY.  UNLESS SPECIFIED IN THIS
+AGREEMENT, ALL EXPRESS OR IMPLIED CONDITIONS,
+REPRESENTATIONS AND WARRANTIES, INCLUDING ANY IMPLIED
+WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE OR NON-INFRINGEMENT ARE DISCLAIMED, EXCEPT TO THE
+EXTENT THAT THESE DISCLAIMERS ARE HELD TO BE LEGALLY
+INVALID.
+
+5.  LIMITATION OF LIABILITY.  TO THE EXTENT NOT PROHIBITED
+BY LAW, IN NO EVENT WILL CORMAN TECHNOLOGIES OR ITS LICENSORS 
+BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR 
+SPECIAL, INDIRECT, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE 
+DAMAGES, HOWEVER CAUSED REGARDLESS OF THE THEORY OF LIABILITY, 
+ARISING OUT OF OR RELATED TO THE USE OF OR INABILITY TO USE 
+SOFTWARE, EVEN IF CORMAN TECHNOLOGIES HAS BEEN ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGES. In no event will Corman 
+Technolgies' liability to you, whether in contract, tort 
+(including negligence), or otherwise, exceed the amount paid by 
+you for Software under this Agreement. The foregoing limitations 
+will apply even if the above stated warranty fails of its 
+essential purpose.
+
+6.  Termination.  This Agreement is effective until
+terminated.  You may terminate this Agreement at any time by
+destroying all copies of Software.  This Agreement will
+terminate immediately without notice from Corman Technologies if 
+you fail to comply with any provision of this Agreement.  Upon
+Termination, you must destroy all copies of Software.
+
+7.  Export Regulations.  All Software and technical data
+delivered under this Agreement are subject to US export
+control laws and may be subject to export or import
+regulations in other countries.  You agree to comply
+strictly with all such laws and regulations and acknowledge
+that you have the responsibility to obtain such licenses to
+export, re-export, or import as may be required after
+delivery to you.
+
+8.  U.S.  Government Restricted Rights.  If Software is
+being acquired by or on behalf of the U.S.  Government or by
+a U.S.  Government prime contractor or subcontractor (at any
+tier), then the Government's rights in Software and
+accompanying documentation will be only as set forth in this
+Agreement; this is in accordance with 48 CFR 227.7201
+through 227.7202-4 (for Department of Defense (DOD)
+acquisitions) and with 48 CFR 2.101 and 12.212 (for non-DOD
+acquisitions).
+
+9.  Governing Law.  Any action related to this Agreement
+will be governed by California law and controlling U.S.
+federal law.  No choice of law rules of any jurisdiction
+will apply.
+
+10.  Severability.  If any provision of this Agreement is
+held to be unenforceable, this Agreement will remain in
+effect with the provision omitted, unless omission would
+frustrate the intent of the parties, in which case this
+Agreement will immediately terminate.
+
+11.  Integration.  This Agreement is the entire agreement
+between you and Corman Technologies relating to its 
+subject matter.  It supersedes all prior or contemporaneous 
+oral or written communications, proposals, representations 
+and warranties and prevails over any conflicting or 
+additional terms of any quote, order, acknowledgment, or 
+other communication between the parties relating to its 
+subject matter during the term of this Agreement.  
+No modification of this Agreement will be binding, unless in 
+writing and signed by an authorized representative of each party.
+
+CORMAN LISP 2.6 SUPPLEMENTAL LICENSE TERMS
+
+Each purchased license for Corman Lisp 2.6 grants
+one single user the following privileges. These privileges
+are expressly NOT granted to users of Corman Lisp software
+who have not purchased a license.
+
+1.  Software Internal Use and Development License Grant.
+Subject to the terms and conditions of this Agreement, 
+Corman Technologies grants you a non-exclusive, 
+non-transferable, limited license to reproduce internally and 
+use internally the Software complete and unmodified for the 
+sole purpose of designing, developing and 
+testing your Common Lisp programs ("Programs"). Only a single
+user may use the software at one time, although it may be
+installed and used by that user on more than one machine and
+platform.
+
+2.  License to Distribute Software.  Subject to the terms
+and conditions of this Agreement, and the provisions
+listed below (i - vi), Corman Technologies 
+grants you a non-exclusive, non-transferable, limited 
+license to reproduce and distribute the Corman Lisp runtime
+libraries, which consists of the following files:
+
+a. CormanLispServer.dll
+b. CormanLisp.img
+c. Any executable files or lisp image files built with the 
+   SAVE-APPLICATION or SAVE-IMAGE functions
+d. Any executable files or lisp image files used in conjunction
+   with DLLs created with the COMPILE-DLL function
+
+provided that:
+
+(i) you distribute the Software complete and unmodified 
+(other than the addition of your program code) 
+and only bundled as part of, and for the sole purpose of 
+running, your Programs,
+
+(ii) the Programs add significant and primary functionality
+to the Software, 
+
+(iii) you do not distribute additional software intended to 
+replace any component(s) of the Software, 
+
+(iv) you do not remove or alter any proprietary legends or 
+notices contained in the Software,
+
+(v) you only distribute the Software subject to a license
+agreement that protects Corman Technologies' interests 
+consistent with the terms contained in this Agreement
+
+CORMAN LISP 3.0 EDUCATIONAL USE
+
+Corman Lisp software may be used in an educational setting
+subject to the conditions and restrictions in this agreement.
+All participants, including the teacher and students, must
+use a purchased license. Students may purchase educational
+licenses for a discounted price, typically 50% of the standard
+price. Volume or class discounts are available upon request.
+
+CORMAN LISP 3.0 SOURCE CODE
+
+The source code used to build the Corman Lisp product is
+included for informational purposes only. It may not be 
+redistributed in any way, for any purpose. 
+
+The source code consists of all included files with the
+extensions:
+.lisp
+.cpp
+.h
+
+The source code MAY be used to:
+
+Modify and rebuild Corman Lisp libraries, but these may not
+be redistributed (unless written permission from Corman 
+Technologies has been received).
+
+Diagnose problems in your programs or Corman Lisp libraries.
+In the latter case, you may suggest fixes and forward 
+sections of modified code to Corman Technologies for the
+purpose of assisting in the remedy of said problems.
+
+You may use the source code to determine how to improve
+your own programs, and to determine how to better utilize the
+functionality provided by Corman Technologies.
+
+CORMAN LISP 3.0 EVALUATION LICENSE
+
+Any copy of Corman Lisp 3.0 which has been installed, and 
+for which a license has not been purchased, is considered 
+an Evaluation License. An Evaluation License may be used, 
+free of charge, subject to the following limitations:
+
+The Corman Lisp IDE (CormanLisp.exe) may not be used for 
+more than 30 days from the date of installation.
+
+No Corman Lisp libraries, source code or any other 
+component may be distributed in any way. In addition, 
+programs that are developed using an Evaluation License 
+of Corman Lisp may not be sold or otherwise distributed 
+without first purchasing a license.
+
+The Evaluation License may not be used in an educational 
+or commercial environment, such as a university, school 
+or workplace, for more than 30 days.
+
+An Evaluation License MAY be used for personal, non-commercial
+use for an indefinite period as a command line compiler (using
+the console version CLConsole.exe).
+

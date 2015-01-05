@@ -1,0 +1,259 @@
+Corman Lisp 1.5 Release Notes
+
+August 5, 2001
+
+Registered users:  Please see Registration section at bottom.
+
+Changes and new features include:
+
+ANSI Common Lisp Compatibility
+
+	Modified structures to be integrated better with CLOS.
+	i.e. CLASS-OF returns a class unique to that structure type.
+	
+	Fixed bug in lexical macro handling.
+	
+	Added *LOAD-PATHNAME*, *LOAD-TRUENAME* variables.
+	These are bound during LOAD.
+
+	Added DIRECTORY-NAMESTRING, TRUENAME implementations.
+	
+	Modified APROPOS to more accurately report the package
+	that symbols are found in.
+	
+	Added code to ensure all keywords are constant.
+	
+	Added bootstrap code to patch common lisp structures 
+	which are created prior to CLOS loading to properly 
+	support method dispatching (such as HASH-TABLE).
+	
+	Modified code generation of UNWIND-PROTECT
+	to correctly handle return from the cleanup
+	clauses via RETURN or GO.
+	
+	Fixed a bug in READ-SEQUENCE that caused the wrong index 
+	to be returned when an EOF caused the entire sequence 
+	range to not be read.
+	
+	Modified LOAD to accept a pathname as well as a filename 
+	string.
+	
+	Fixed ENCODE-UNIVERSAL-TIME so it now defaults
+	to the current time zone.
+	
+	Fixed TYPEP implementation to handle vector lengths correctly.
+	
+	Lots of modifications to COERCE, CONCATENATE to support
+	vectors properly.
+	
+	Fixed problem with reading structs.
+	Fixed problem writing arrays with fill pointers.
+	
+	MAKE-SEQUENCE now handles result type NULL.
+	
+	Added LOGBITP, LOGCOUNT, LDB, (SETF LDB), EXPT, LDB-TEST
+	
+	More efficient implementation of MOD for integers.
+	
+	Added *COMPILE-FILE-PATHNAME* and *COMPILE-FILE-TRUENAME*
+	
+	Fixed some string manipulation functions.
+	
+	Fixed a bug in GCD when one or more arguments are zero.
+	
+	ASSERT now evaluates interactively entered arguments (as implied
+	by examples in the spec).
+	
+	Fixed problem with macroexpansion in FLET and LABELS function forms.
+	
+	Implemented SUBST, SUBST-IF, SUBST-IF-NOT, NSUBST, NSUBST-IF, 
+	NSUBST-IF-NOT.
+	
+	Frank Adrian's changes to better handle package designators.
+	
+	Fixed problem with declarations in lambdas.
+	
+	Fixed a problem with READ-DELIMITED-LIST with
+	lists ending with ". NIL". Thanks to Gilbert Perfetti
+	for assistance with this.
+	
+	Incorporated Gilbert Perfetti's fix to handle dotted pairs 
+	in backquotes.
+	
+	Added ENSURE-DIRECTORIES-EXIST.
+	
+	Fixed a problem where OPEN was not reporting an error
+	when a file did not exist.
+	
+	Fixed support for coercing to type FUNCTION.
+	
+	Fixed bug in INTEGER-DECODE-FLOAT (thanks to Gilbert Perfetti).
+	
+	Improved DECODE-FLOAT handling of 0.0.
+	
+	Fixed a bug with times and dates and daylight time.
+	
+	Fixed a bug in CLOS macroexpansion.
+	
+	Integrated EQL specializers with CLOS. The overhead of defining
+    methods that specialize on EQL types is only incurred for those
+    generic functions that actually have those methods.
+	
+	Added support for shared slots to CLOS (:allocation :class).
+
+	Added SETF registry functions, converted code to use them.
+	SETF functions no longer stored in symbol property lists,
+	rather in a hash-table.
+	
+	Added support for (SETF APPLY).
+	
+	Fixed a problem with escaped : characters in symbols.
+
+	Reimplemented a couple kernel function (read macros) in lisp.
+	This fixes a bug with the reader and #n= syntax.
+
+	Fixed two problems with pathnames:
+	(pathname ".ext") now correctly returns #P".ext"
+	(MERGE-PATHNAMES #P"n.e" #P"d:\") now correctly returns #P"d:\n.e"
+
+	Fixed a bug with UNION, INTERSECTION and SET-DIFFERENCE with key arguments.
+	
+	(SETF GETF) now returns the set value.
+
+	Fixed handling of initial contents and reading vectors.
+	
+	MAKE-ARRAY now signals error if initializer list is too short.
+	
+	Fixed array displacements when displacing to an already displaced array.
+
+	Fixed a bug in READ-FROM-STRING.
+
+	Cleaned up pathname, directory handling.
+
+	Added SHIFTF, improved ROTATEF.
+	Added some missing SETF functions.
+
+	Added GET-INTERNAL-REAL-TIME.
+
+	Changed the type of the doc strings in DEFMACRO forms to FUNCTION 
+	(rather than MACRO) for ansi-compliance.
+
+	Added GET-SETF-EXPANSION.
+	Added DEFINE-MODIFY-MACRO macro.
+
+	Fixed MOD function (for negative integers).
+
+	Added functions:
+	assoc-if, assoc-if-not, rassoc, rassoc-if, rassoc-if-not,
+	tree-equal, revappend, copy-alist, nintersection, nset-difference, nunion
+
+Compiler
+	Optimized generic function dispatch (overhead reduced 50%).
+	
+	Added tail recursion elimination.
+	
+	Class and structure optimizations.
+	
+	Fixed a problem with LET* and special variable bindings 
+	that would show up if the initializer of a variable caused 
+	a non-local exit.
+	
+	Fixed a problem with THROW and the number of returned values.
+
+	Added support for alternate keyword naming i.e.
+		(defun func (x &key ((:y z) 'default)) ...
+	
+	Added code to signal an error if an attempt is made to convert a
+	bignum to a short float or a single float, and the float cannot 
+	contain a number of that magnitude (i.e. it is larger than
+	most-positive-single-float or smaller than most-negative-single-float). 
+
+Corman Lisp
+	Added WIN32 to features.
+	
+	Added WIN:SHELL command to call out to the system.
+	
+	Added WIN:GET-COMMAND-LINE to get the current application's
+	command line parameters.
+	
+	Updated DIRECTORY. Added :recurse option.
+	
+	Added GetFileAttributes function.
+	Added CCL::GET-FILE-ATTRIBUTES and CCL::DIRECTORY-P.
+	
+	Init.lisp will now be loaded from the same directory as the 
+	kernel.
+	
+	Added FIND-IN-FILES function. A fast way to search for all occurrences
+    of a string e.g. (find-in-files "foo" "sys/*.lisp").
+	
+	Added declaration of SetWindowText.
+	
+	Fixed a bug in the debugger (works better now with saved 
+	applications).
+	
+	Added more support for file attributes setting/getting.
+	
+	Fixed a bug in SAVE-APPLICATION, now allow 3-letter or shorter names.
+
+GUI
+	Modified Miniwin to keep the width and height of all windows.
+	
+	Added new GUI module. This is meant to be an expanded version
+	of Miniwin, largely rewritten, with much additional 
+	functionality. Currently supports both single document
+	and multi-document windows applications.
+
+IDE
+	Fixed a crash bug when you press tab and the highlighted area
+	extended to the end of the buffer. It now is disabled in this 
+	case.
+	
+	Fixed bug in IDE when double-clicking on .lisp file.
+	
+	Modified IDE to support changing font size, style.
+	Tab and font size are now changed in the Preferences dialog
+	(and saved in the registry).
+	
+	Added options to modify colors in Preferences.
+	Rearranged Preferences dialog.
+	
+	Now force mouse cue off when scrolling.
+	
+	Added icons for different document types.
+
+	Added Lisp menu command to return the user to the top level
+	(useful if you are in the debugger and you want to exit).
+	
+	If the IDE is expired, a nag screen comes up every 30 minutes.
+	(everybody's favorite :-)
+
+Examples
+	Added JavaClass console program. Parses java .class files
+	and prints report to console. This includes demonstration code
+	for getting and using command-line parameters, recursive directory
+	listings.
+	
+	Added touch.lisp console application.
+
+	Added four new sample programs which use the new GUI package:
+		hello
+		life-gui
+		mdi-example
+		menu1
+
+Registration
+	The registration codes for 1.5 are different than for previous versions.
+	You will get an additional 30 days with the IDE, beginning with installation
+	of 1.5.
+	
+	Registered users of versions 1.4, 1.41 and 1.42 are entitled to a free
+	registration of 1.5. Please e-mail lisp@corman.net to obtain your new
+	code.
+	
+	Registered users of earlier versions may upgrade their registration
+	to 1.5 for US $50. See the registration section of the web site
+	for details. If you have any questions, e-mail lisp@corman.net.
+	
+	
+	

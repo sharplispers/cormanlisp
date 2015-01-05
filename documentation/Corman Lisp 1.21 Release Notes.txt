@@ -1,0 +1,23 @@
+Corman Lisp 1.21 Release Notes
+March 28, 1999
+
+Corman Lisp Kernel
+
+This release fixes several bugs in the kernel, and several new
+functions have been added. CLOS implementation is now
+faster, and will work better when combined with foreign function
+callbacks.
+
+CLOS instances are now native types, and are no longer implemented
+as structures.
+
+Corman Lisp IDE
+
+A preferences dialog has been added, which allows you to turn
+off various features of the editor. These will be saved automatically
+each time you exit the IDE.
+
+Automatic prototyping of Common Lisp functions occurs when you
+are working in the editor. This may be turned off in the 
+Preferences dialog.
+

@@ -1,0 +1,235 @@
+Corman Lisp runs inside Acad now!
+The garbage collector was fixed with version 1.3
+This is the very first test version, so beware! (alpha)
+
+Get corman lisp at http://corman.net/lisp/
+You'll need at least version 1.3 (not released yet as of today!)
+Wade through the examples and read the documentation.
+The latest version of CLARX should be at 
+http://xarch.tu-graz.ac.at/autocad/lsp_tools/#cormanlisp
+
+You may save your own cormanlisp.img to the Libraries\acad directory 
+for a private image for acad. (see "sys\compile-sys.lisp")
+
+If you want your private DLL, type "regsvr32 cormanlispserver.dll" 
+at the command line then. Also if you never started the IDE before 
+and the DLL is not in your path.
+This is needed to register the COM interface for Corman Lisp.
+
+start ACAD<xx>   xx := 14 | 15
+arx load cormanlisp<xx>		; best done with drag & drop
+
+type CLIDE
+
+Load any lisp file
+The module search path for require is per default "Modules" and "SYS" 
+under the ACAD path. 
+LOAD has no search path nor any default extension.
+Sorry, the interface is very harsh yet. This will be fixed and improved.
+
+Type :acad to get back to acad, and CLIDE to switch back 
+or :quit to close the console
+
+The debug versions cormanlisp14d.arx and cormanlisp15d.arx just 
+provide some helping messages, which might be annoying in standalone 
+applications. The release versions don't work reliably now.
+
+Commands:
+(CLFUNC string)		Evaluate a single string inside ACAD
+C:CLFUNC		Interactive top-level inside Acad
+(CLIDE)  or C:CLIDE	Open or switch to the console
+(CLQUIT) or C:CLQUIT	Close the console, Keep cormanlisp in memory
+(CL-LOAD-IMAGE [filename]) Load a new lisp image
+
+
+Problems:
+- CLIDE 
+  :quit		(or worse: using the close button)
+  CLIDE will fail
+  Better don't close the console at all for now.
+
+- The actual path is the ACAD dir for now (the base module), so the 
+  search path is under ACAD.EXE and not under the DLL location as it 
+  should be. (or not)
+  This can be fixed either 1) by a better init.lisp, which can use the 
+  PL::*CORMANLISP-DIRECTORY* variable (when it will be fixed) or 
+  2) by changing the core to define the base dir dependent of the DLL 
+  and not of the base module (which is ACAD.EXE right now). 
+  The current state is that there will appear a second variable that 
+  points to the path of the base module.
+  I fixed that for now in init.lisp.
+
+- There's no default lisp extension for LOAD.
+  So you you have to type (load "example.lisp") not (load "example")
+
+- There's no default search path for LOAD. This might be changed in the 
+  clide-init.lisp to point to subdirectories under PL::*CORMANLISP-DIRECTORY* 
+  "Modules", "Sys", "examples" and "test"
+  but I guess this will work only for REQUIRE which is btw. better than 
+  LOAD. Or I'll provide an AL:LOAD which is more AutoLISP alike.
+
+- PL::*CORMANLISP-DIRECTORY* points to the base module dir which is 
+  the ACAD.EXE dir and not the server.dll dir. see above.
+
+- CLFUNC and C:CLFUNC output is one line behind so far. I'll try to synch 
+  that.
+
+- The error message: ";; Error: Could not open file ~A for reading" 
+  at startup means that the image file couldn't be found or opened.
+  Please enter then (LOAD-IMAGE "<path-to>\\cormanlisp.img")
+
+- SAVE-APPLICATION supports creating standalone ARX applications now. 
+  Standalone applications just override the default top-level loop, 
+  see sys\toplevel.lisp
+  The only problem is to redirect STDOUT to the the ACAD text window.
+  For now STDOUT goes to the console buffer, you may see no output at 
+  all inside acad.
+  This must be handled by your application, you may want to create your 
+  own input and output windows.
+
+More 0.2.011 notes:
+  release ARX works now, 
+  makefiles and msvc project files provided
+  reg-query-value supports now numbers too
+ 
+More 0.2.010 notes:
+  New directory layout: under Libraries\acad
+  registry-utils.lisp is now a module and should be under Modules
+  More AutoLISP macros (repeat, while, foreach)
+
+More 0.2.009 notes:
+  ACAD.LISP loads now properly and works.
+  If you start hacking with acad at first you must set the correct package:
+  (in-package :acad)
+  Then:
+  (load (concatenate 'string
+       pl::*basemodule-directory*
+       "acad.lisp"))
+
+  The automatic startup is still screwed in acad. (buffer problems)
+  with console.exe it works fine.
+
+More 0.2.008 notes:
+  I implemented some missing and useful initialization stuff now.
+  clide-init.lisp is now loaded and some vars are exported as workaround.
+  but then i found many missing core API functions
+  (registry, strings, filenames) so it looks like an endless story.
+  vlax-product-key is almost okay,
+  vlax-reg-app not quite yet.
+    i want to register CLIDE for demandload at startup.
+
+next on my list is vlax-get-acad-object to connect to COM the first 
+time. then after COM i will try the exported ACAD.EXE functions 
+directly, as ARX does, without COM.
+
+you may just start with the console, if inside or outside acad
+doesn't care that much, i do both together.
+if there's an loading error the lisp file is locked, so you
+cannot save changes, you'll have to close the console.
+(or re-init the connection but i have no command for this yet)
+
+the most important thing is to enable the quickedit mouse for the
+console, to be able to paste everything in from our favourite editor
+vlisp. or just repaste the previous command.
+
+this is my most common error:
+always ensure to be in the correct package!
+pl::*package*           prints it
+(in-package :win32)     changes it
+(use-package :win32)    imports the exported names
+
+xx::name direct access to private names
+xx:name  access to exported funcs
+name     access to internal or imported names
+
+if the console doesn't react properly (does nothing)
+just press ctrl-break until all pending exceptions are caught.
+
+Still problematic:
+- don't know how to temp. get the server.dll path,
+  roger fixes that he said.
+- acad still got destroyed too often.
+  hope that roger fixes that too.
+- the non-debug versions don't work yet.
+
+Samples: 
+CLFUNC
+CL> (in-package :win)
+CL> (load "devcaps1.lisp")
+CL> (test-devcaps1)
+
+or:
+CLIDE
+
+*package*
+(in-package :user)
+(use-package :ct)
+(use-package :ccl)
+(use-package :win32)
+(get-current-directory)
+(print pl::*cormanlisp-directory*)
+
+copy some examples to the actual dir:
+
+(load "devcaps1.lisp")
+(win::test-devcaps1)
+(load "poppad1.lisp")
+(win::test)
+
+or better:
+(in-package :win)
+(test-devcaps1)
+(test)
+
+Other Tutorials:
+Windows programming techniques:
+- http://www.relisoft.com/win32/ is a very impressive site for windows 
+  programming. Better download and read these books there. (Even if 
+  they deal with C++)
+- The MSDN SDK Samples. (C++)
+- The "Programming Windows 95" book from Petzold, where Roger got his 
+  samples from.
+- For COM I would recommend "Inside OLE 2", Brockschmidt which is available 
+  online at the Microsoft MSDN site and in the MSDN docs.
+  VLISP has the easiest abstraction so far, but no callbacks ("Events").
+- For a fine abstraction framework for Windows (contrary to MFC) see 
+  Harlequins's CAPI manuals, which are either online or come with their
+  free LWW version on their site.
+- FFI is described in the CCL docs, and see the sources. You'll need a 
+  better understanding of Windows programming techniques; a better one as 
+  it would be useful for Lisp programmers. But you can do everything inside 
+  Lisp now, that's the good thing. I'll try to be as compatible as possible 
+  in my own implementation of my FFI, the WinAPI for AutoLISP, so it might 
+  be helpful to get known to it.
+- Windows programmers often talk about "Hiding Implementation Details" but 
+  I never see this philosophy in code. Maybe Lisp is an answer, but not yet. 
+  So far I only see it in VB, python, Tcl/Tk, perlTk, java and in ACLW and 
+  LWW, but not in CCL so far.
+
+Lisp programming techniques:
+- Start with "ANSI Common Lisp" by Paul Graham. This is the easiest and best
+  for the beginning. Note: The german translation is full of small errors, 
+  mostly by wrong LaTEX macros: ` mixed with ´ and ' mixed with <<. 
+  So beware. My private errata list is one half A4 page. I don't have the 
+  original english version, so I cannot speak for this.
+
+Done: 
+Also see the detailed version history in the clarx.cpp header
+Fixed the focus (set, not catch yet).
+Provided PL::*BASEMODULE-NAME*, PL::*BASEMODULE-DIRECTORY*
+CLIDE-INIT.LISP support, a basic ACAD.LISP, some registry fixes.
+
+Todo:
+Synch the output buffer in CLFUNC. (hmm, not that easy. Tried it.)
+Fix CLIDE :quit CLIDE (kills ACAD. X kills it, :quit works halfway now)
+AcadARX.lisp module and samples. (See ACAD.LISP)
+WinUI samples. (Later)
+Add menus (console -> winapp client) and maybe toolbar buttons. 
+  (Later. So far i'm quite happy to have a "more reliable" console for 
+  debugging.)
+
+--
+Have fun and let me know of improvements
+Reini Urban <rurban@x-ray.at>
+Last modification time: 17:57 21.05.99
+Version: CormanLisp.ARX v0.2.010

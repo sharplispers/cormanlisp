@@ -1,0 +1,571 @@
+<html>
+
+<head>
+<title>AllegroServe Tutorial</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body>
+
+<h1 align="center">AllegroServe Tutorial</h1>
+
+<p align="left"><strong><small>copyright (c) 2000 Franz Inc</small></strong></p>
+
+<p>This document is a companion to the AllegroServe reference manual.&nbsp;&nbsp; Here we
+will take you through various examples and demonstrate how to use the facilities of the
+AllegroServe web server.&nbsp;&nbsp; Refer to the reference manual for more details on the
+functions we mention here.</p>
+
+<h1>Loading AllegroServe</h1>
+
+<p>AllegroServe is distributed as a single fasl file: AllegroServe.fasl.&nbsp;&nbsp;&nbsp;
+If the file is installed where <strong>require</strong> can find it then you need only
+type</p>
+
+<pre>(require :aserve)</pre>
+
+<p>to ensure that it's loaded.&nbsp; Otherwise you'll have to call the <strong>load</strong>
+function.&nbsp;&nbsp; In the subsequent steps we've assumed that you've loaded
+AllegroServe into Lisp.</p>
+
+<h1>Package setup</h1>
+
+<p>AllegroServe consists of two components: a web server and an html generator.&nbsp;
+These are located in two Lisp packages: <strong>net.aserve</strong> and <strong>net.html.generator</strong>.
+&nbsp;&nbsp; These are long package names to type so the first thing to do is to create a
+package that <em>uses</em> these packages as well as the normal Lisp packages.&nbsp; Let's
+create a package called <strong>tutorial</strong> and make that the current package:</p>
+
+<pre>(defpackage :tutorial 
+    (:use :common-lisp :excl :net.aserve :net.html.generator))
+
+(in-package :tutorial)
+</pre>
+
+<h1>Starting AllegroServe</h1>
+
+<p>Normally you would publish all the pages for your site and then start the web server.
+&nbsp; That way everyone would see a consistent view of your site.&nbsp; However, for this
+tutorial we'll start the server first so that we can immediately see the pages we're
+publishing.</p>
+
+<p>Web servers normally listen on port <strong>80</strong>.&nbsp; On Unix port <strong>80 </strong>can
+only be allocated by the the superuser (called<strong> root</strong>). &nbsp;&nbsp;&nbsp;
+On Windows any user can open port <strong>80</strong> as long as it's not yet
+allocated.&nbsp;&nbsp;&nbsp; In order to make this tutorial work on both Unix and Windows
+(and not require that you run as <strong>root</strong> on Unix), we'll put our web server
+on port <strong>8000</strong>. </p>
+
+<pre>tutorial(4): (start :port 8000)
+#&lt;wserver @ #x206929aa&gt;
+tutorial(5): </pre>
+
+<p>Now the web server is up and running.&nbsp;&nbsp; Let's assume that we're running
+AllegroServe on a machine named <strong>test.franz.com</strong>.&nbsp; If you now go to a
+web browser and ask for <a href="http://test.franz.com">http://test.franz.com</a>&nbsp;
+you will contact this AllegroServe server and it will respond that whatever you asked for
+wasn't found on the server (since we haven't published any pages).&nbsp; You can also try <a
+href="http://test">http://test</a> and get the same result (although the response message
+will be slightly different).&nbsp; If you are running the web browser on test.franz.com as
+well you can ask for <a href="http://localhost">http://localhost</a> and get a similar
+&quot;not found&quot; response.&nbsp;&nbsp;&nbsp; This demonstrates that web servers are
+known by many names.&nbsp; If you choose to take advantage of that (creating what are
+known as <strong>Virtual Hosts</strong>) then AllegroServe will support you .&nbsp;
+However if you want to create web pages that are served by whatever name can be used to
+reach the server, then AllegroServe will allow you to do that as well.</p>
+
+<p>Type <strong>:proc</strong> to Lisp and look at which Lisp lightweight processes are
+running:</p>
+
+<pre>tutorial(6): :proc
+P Dis Sec dSec Priority State Process Name, Whostate, Arrest
+* 8 3 3.2 0 runnable Initial Lisp Listener
+* 2 0 0.0 0 waiting Connect to Emacs daemon, waiting for input
+* 1 0 0.0 0 inactive Run Bar Process
+* 1 0 0.0 0 waiting Editor Server, waiting for input
+<strong>* 1 0 0.0 0 waiting AllegroServe-accept-6, waiting for input</strong>
+<strong>* 0 0 0.0 0 inactive 1-aserve-worker
+* 0 0 0.0 0 inactive 2-aserve-worker
+* 0 0 0.0 0 inactive 3-aserve-worker
+* 0 0 0.0 0 inactive 4-aserve-worker
+* 0 0 0.0 0 inactive 5-aserve-worker</strong>
+tutorial(7): </pre>
+
+<p>We've emboldened the threads that are part of AllegroServe.&nbsp;&nbsp;&nbsp; The
+thread named <strong>aserve-accept-6</strong> is waiting for an http request.&nbsp; When
+one arrives it passes it off to one of the <strong>aserve-worker</strong> threads and then
+loops back to wait for the next request.&nbsp; The number of of worker threads is
+determined by the <strong>:listeners</strong> argument to the <strong>start</strong>
+function.</p>
+
+<h1>Publishing a file</h1>
+
+<p>The simplest way to publish something is to publish files stored on the disk.
+&nbsp;&nbsp; Create&nbsp; a file (here we called it <strong>/tmp/sample.txt</strong>) and
+put some words in it, and then</p>
+
+<pre>tutorial(30): (publish-file :path &quot;/foo&quot; :file &quot;/tmp/sample.txt&quot;)
+#&lt;net.aserve::file-entity @ #x2076e0c2&gt;
+tutorial(31):</pre>
+
+<p>Now if we ask a web browser for <a href="http://test.franz.com/foo">http://test.franz.com:8000/foo</a>
+we'll see the contents of the file in the web browser.&nbsp; Since we didn't specify a
+content-type in the call to <strong>publish-file</strong> the content-type will be
+determined by the &quot;<strong>txt</strong>&quot; file type, which is associated with the
+&quot;<strong>text/plain</strong>&quot; content-type.</p>
+
+<p>Because we didn't specify a <strong>:host</strong> argument to <strong>publish-file </strong>AllegroServe
+will return this page to any browser regardless of the host name used to name the machine.
+&nbsp; So AllegroServe will respond to requests for <a href="http://test.franz.com/foo">http://test.franz.com:8000/foo</a>
+and <a href="http://test/foo">http://test:8000/foo</a> and <a href="http://localhost/foo">http://localhost:8000/foo</a>.
+&nbsp;&nbsp; </p>
+
+<p>If we do </p>
+
+<pre>tutorial(30): (publish-file :path &quot;/foo&quot; :file &quot;/tmp/sample.txt&quot; 
+                            :host &quot;test.franz.com&quot;)
+#&lt;net.aserve::file-entity @ #x2076e0c2&gt;
+tutorial(31):</pre>
+
+<p>Then AllegroServe will only respond to requests for <a href="http://test.franz.com/foo">http://test.franz.com:8000/foo</a>.
+&nbsp; If we do</p>
+
+<pre>tutorial(30): (publish-file :path &quot;/foo&quot; :file &quot;/tmp/sample.txt&quot; 
+                            :host (&quot;test&quot; &quot;test.franz.com&quot;))
+#&lt;net.aserve::file-entity @ #x2076e0c2&gt;
+tutorial(31):</pre>
+
+<p>Then AllegroServe will only respond to <a href="http://test.franz.com/foo">http://test.franz.com:8000/foo</a>
+and <a href="http://test/foo">http://test:8000/foo</a>.&nbsp;&nbsp;&nbsp; This type of
+restriction is useful if you want to create the illusion that a single machine is really a
+set of machines, each with its own set of web pages.&nbsp;&nbsp; Suppose that the machine <strong>test.franz.com</strong>
+also had the name <strong>sales.franz.com</strong>.&nbsp; You could publish two different
+ways to respond to the &quot;<strong>/foo</strong>&quot; url, depending on the host name
+specified in the request</p>
+
+<pre>tutorial(30): (publish-file :path &quot;/foo&quot; :file &quot;/tmp/<strong>test</strong>-sample.txt&quot; 
+                            :host &quot;<strong>test</strong>.franz.com&quot;)
+#&lt;net.aserve::file-entity @ #x2076e0c2&gt;
+tutorial(31): (publish-file :path &quot;/foo&quot; :file &quot;/tmp/<strong>sales</strong>-sample.txt&quot; 
+                            :host &quot;<strong>sales</strong>.franz.com&quot;)
+#&lt;net.aserve::file-entity @ #x2076e324&gt;</pre>
+
+<p>Now you will get different results if you ask for&nbsp; <a
+href="http://test.franz.com/foo">http://test.franz.com:8000/foo</a> and <a
+href="http://sales.franz.com/foo">http://sales.franz.com:8000/foo</a>. </p>
+
+<h1>Publishing a computed page</h1>
+
+<p>The most important reason for using the AllegroServe web server is that you can compute
+a web page when a request comes in.&nbsp;&nbsp; This allows your program to display the
+most up to date information on the page or tailor the page to each browser.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Using the <strong>publish</strong> function, a lisp
+function called a <em>response function</em> is associated with a <strong>url.&nbsp; </strong>When
+a request comes in that matches that url, the response function is run and it must
+generate the correct response which is sent back to the browser.&nbsp;&nbsp;&nbsp; The
+simplest response function is published here:</p>
+
+<pre>(publish :path &quot;/hello&quot;
+    :content-type &quot;text/plain&quot;
+    :function 
+    #'(lambda (req ent)
+          (with-http-response (req ent)
+              (with-http-body (req ent)
+                  (princ &quot;Hello World!&quot; *html-stream*)))))
+        </pre>
+
+<p>&nbsp;</p>
+
+<p>Response functions take two arguments:&nbsp; a request object and an entity object.
+&nbsp;&nbsp;&nbsp; The request object contains all of the information about the request
+(such as the machine from which the request was made, and the headers passed along with
+the request).&nbsp; The request object is also used to store information about the
+response that is made to the request.&nbsp;&nbsp; The entity object contains the
+information passed to the <strong>publish</strong> function.&nbsp; One important item in
+the entity is the <strong>content-type</strong> which serve as the default content-type
+for the response (it can be overridden by an argument to <strong>with-http-response</strong>).</p>
+
+<p>A response function must use the <strong>with-http-response</strong> and <strong>with-http-body
+</strong>macros and then send any additional data to the stream <strong>*html-stream*</strong>.
+&nbsp;&nbsp;&nbsp; Despite the name of the stream, the data need not always be html.
+&nbsp;&nbsp;&nbsp; The purpose of <strong>with-http-response</strong> is to allow
+AllegroServe to determine how it will setup streams to respond to the
+request.&nbsp;&nbsp;&nbsp; AllegroServe will also check to see if the browser already has
+an up-to-date copy of this page cached in which case it will not even run the code in the
+body of the <strong>with-http-response</strong> macro.&nbsp;&nbsp; <strong>with-http-body</strong>
+is responsible for sending back the response code and headers,&nbsp; and the body of <strong>with-http-body
+</strong>is where lisp code can send data which will be the body of the response.&nbsp; </p>
+
+<p>The preceding example sends a very simple plain text string, specifying the
+content-type to be &quot;text/plain&quot;.&nbsp; Typically you'll want to return an html
+page.&nbsp; AllegroServe has a very concise macro for creating html.&nbsp; Here's a
+response function that sends html:</p>
+
+<pre>(publish :path &quot;/hello2&quot;
+    :content-type &quot;text/html&quot;
+    :function 
+    #'(lambda (req ent)
+         (with-http-response (req ent)
+            (with-http-body (req ent)
+               (html 
+                  (:html (:head (:title &quot;Hello World Test&quot;))
+                         (:body 
+                           ((:font :color &quot;red&quot;) &quot;Hello &quot;)
+                           ((:font :color &quot;blue&quot;) &quot;World!&quot;))))))))
+</pre>
+
+<p>While both of the preceding response functions generate their response at request time,
+they both send back the exact same response every time.&nbsp;&nbsp; That's not a very good
+demonstration of dynamic web pages.&nbsp;&nbsp; The following page shows how you can
+implement a simple counter for the number of accesses:</p>
+
+<pre>(publish :path &quot;/hello-count&quot;
+    :content-type &quot;text/html&quot;
+    :function
+    (let ((count 0))
+      #'(lambda (req ent)
+          (with-http-response (req ent)
+            (with-http-body (req ent)
+              (html
+                (:html
+                  (:head (:title &quot;Hello Counter&quot;))
+                  (:body 
+                     ((:font :color (nth (random 5)
+                                     '(&quot;red&quot; &quot;blue&quot; 
+                                       &quot;green&quot; &quot;purple&quot; 
+                                       &quot;black&quot;)))
+                       &quot;Hello World had been called &quot; 
+                       (:princ (incf count)) 
+                       &quot; times&quot;)))))))))
+</pre>
+
+<p>This page counts the number of accesses and also displays the text in a color it
+selects randomly.&nbsp; </p>
+
+<p>&nbsp;</p>
+
+<h1>Publishing a form</h1>
+
+<p>A form displays information, has places for the user to enter information, and has one
+or more ways for the user to signal that he is done entering information and the the form
+should be processed.&nbsp;&nbsp; There may be more than one form on a web page but the
+forms can't be nested or overlap.</p>
+
+<p>When the user clicks on the &quot;Submit&quot; (or equivalent) button and the form data
+is sent by the browser to the web server, the web server has to process that data and
+return a web page to display on the browser screen.&nbsp; This is an important situation
+where using Lisp to process the form data is significantly easier than the alternatives
+(such as the shell, or perl or some other primitive scripting language).</p>
+
+<p>There are three ways that form data is sent to the web browser 
+
+<ol>
+  <li>query string -- the form data is appended to the url, with a question mark separating
+    the path of the url from the form data.&nbsp;&nbsp;&nbsp; This is the default way that
+    form data is returned.&nbsp; It's fine for small amounts of data, and it allows the user
+    to bookmark the result of filling out a form. </li>
+  <li>encoded in the body of the request --&nbsp; If the form specifies the <strong>POST </strong>method
+    is to be used to return the data, then the data is encoded and placed in the body of the
+    request after the headers.&nbsp;&nbsp; This allows the form data to be huge.</li>
+  <li>multipart body -- in this scheme, the data from the web browser looks like a multipart
+    MIME message.&nbsp; This is commonly used when the form data consists of complete files,
+    since in this case you want to pass along the name of the file (which is in the MIME
+    header) and you don't want to pay the cost of encoding the contents of the file.</li>
+</ol>
+
+<p>The three attributes of a <strong>:form</strong> tag that determine how data is sent to
+the server are: 
+
+<ol>
+  <li><strong>:method</strong>&nbsp; -- this is either &quot;GET&quot; (the default) or
+    &quot;POST&quot;.&nbsp;&nbsp;&nbsp;&nbsp; When &quot;GET&quot; is used the data will be
+    sent as a query string.</li>
+  <li><strong>:enctype -- </strong>this is either
+    &quot;application/x-www-form-urlencoded&quot; (the default)&nbsp; or is
+    &quot;multipart/form-data&quot; if you want the data sent as a multipart body.&nbsp; The
+    value of this attribute only matters if the <strong>:method</strong> is set to
+    &quot;POST&quot;.</li>
+  <li><strong>:action</strong> -- this is the url to which the request with the data is sent.
+    &nbsp;&nbsp; With AllegroServe it's often convenient to make this url the same as the url
+    of the entity that created the form, and have the entity handling function determine
+    whether it is being called to display the form or to handle the results of filling out the
+    form.</li>
+</ol>
+
+<p>Let's examine in detail each of the methods for sending form data:</p>
+
+<h2>form data in a query string</h2>
+
+<p>In a url like <a href="http://www.machine.com/foo/bar?name=joe&amp;age=34">http://www.machine.com/foo/bar?name=gen&amp;age=28</a>
+the characters after the question mark are the <strong>query-string</strong>. &nbsp;&nbsp;
+The query string is <strong>not</strong> used by AllegroServe to determine the entity to
+handle the request.&nbsp; When the entity begins processing the request it can ask for the
+<strong>request-query </strong>of the <strong>request</strong> object. &nbsp;&nbsp; <strong>request-query
+</strong>will return an assoc list where the <strong>car</strong> &nbsp; of each entry is
+a string (e.g. &quot;name&quot; in the example) and the <strong>cdr</strong> is also a
+string (e.g. &quot;gen&quot; in the example).&nbsp;&nbsp;&nbsp; You can ask for the <strong>request-query</strong>
+of any request object and if there is no query string for the request, <strong>request-query
+</strong>will return <strong>nil</strong>. &nbsp;&nbsp; </p>
+
+<p>This is a typical entity handler that generates a form and handles the result of
+filling out the form:</p>
+
+<pre>(publish :path &quot;/queryform&quot;
+    :content-type &quot;text/html&quot;
+    :function
+    #'(lambda (req ent)
+       (let ((name (cdr (assoc &quot;name&quot; (request-query req) 
+                               :test #'equal))))
+         (with-http-response (req ent)
+           (with-http-body (req ent)
+             (if* name
+               then ; form was filled out, just say name
+                    (html (:html
+                            (:head (:title &quot;Hi to &quot; (:princ-safe name)))
+                            (:body &quot;Your name is &quot;
+                                   (:b (:princ-safe name)))))
+               else ; put up the form
+                    (html (:html
+                            (:head (:title &quot;Tell me your name&quot;))
+                            (:body
+                              ((:form :action &quot;queryform&quot;)
+                                &quot;Your name is &quot;
+                                ((:input :type &quot;text&quot;
+                                         :name &quot;name&quot;
+                                         :maxlength &quot;20&quot;))))))))))))</pre>
+
+<p>In the function above we first check to see what value is associated wtih the tag
+&quot;name&quot; in the query string.&nbsp;&nbsp; If there is a name then we know that
+we've been called after the form was filled out, so we process the form data, which in
+this case means just printing out the name.&nbsp;&nbsp; Note that we use <strong>:princ-safe</strong>
+to display the name in html.&nbsp;&nbsp; It's important to use <strong>:princ-safe</strong>
+instead of <strong>:princ</strong> in situations like this where we are printing a string
+that may contain characters special to html.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the <strong>:action</strong>
+attribute for the <strong>:form</strong> we specified &quot;queryform&quot; instead of
+&quot;/queryform&quot; since it's best to keep all urls relative rather than absolute in
+order to make it possible to access the pages through a proxy server that might prepend a
+string to the root of the url.&nbsp;&nbsp; We could have separated the functionality in
+the above example so that one entity handler put up the form&nbsp; and another one
+processed the form.&nbsp;&nbsp;&nbsp; For simple forms it just seems simpler&nbsp; to do
+it all with one url and one entity function.</p>
+
+<p>&nbsp;</p>
+
+<h2>form data encoded in the request body</h2>
+
+<p>When the data from the form is very large or it's important to hide it from view in the
+url, the typical method to accomplish this is to specify the &quot;POST&quot; method for
+the form.&nbsp;&nbsp; In this case the data for the form appears in the body of the
+request.&nbsp; There are two supported encodings of the form data in the body.&nbsp; In
+this section we'll describe how to handle&nbsp; the default encoding, called:
+&quot;application/x-www-form-urlencoded&quot;.&nbsp; First you must call <strong>get-request-body
+</strong>to read and return the body of the request.&nbsp;&nbsp; Second you must call <strong>form-urlencoded-to-query</strong>
+to convert the encoded body into an assoc list, where every entry is a cons consisting of
+a string naming the value and then the string containing the value.</p>
+
+<p>The following sample shows a single entity handler function that can put up a form and
+can process data from the form.&nbsp;&nbsp; It isn't necessary to use the same handler for
+putting up and processing the data from a form.&nbsp;&nbsp;&nbsp; In this example we
+create a form with a big box for entering text.&nbsp;&nbsp; We invite the user to enter
+text in the box and click on a button when he is finished.&nbsp;&nbsp;&nbsp; At that point
+the entity handler gets and decodes the body of the request,&nbsp; and finds the data from
+the text box.&nbsp; It then generates a table showing how often the characters <strong>a</strong>
+through <strong>z</strong> are found in the text selection.</p>
+
+<pre>(publish :path &quot;/charcount&quot;
+    :content-type &quot;text/html&quot;
+    :function
+    #'(lambda (req ent)
+        (let* ((body (get-request-body req))
+               (text (if* body
+                      then (cdr (assoc &quot;quotation&quot;
+                                  (form-urlencoded-to-query body)
+                                  :test #'equal)))))
+         (with-http-response (req ent)
+           (with-http-body (req ent)
+             (if* text
+               then ; got the quotation, analyze it
+                    (html 
+                     (:html
+                       (:head (:title &quot;Character Counts&quot;)
+                       (:body 
+                         (:table
+                           (do ((i #.(char-code #\a) (1+ i)))
+                               ((&gt; i #.(char-code #\z)))
+                             (html (:tr
+                                     (:td (:princ (code-char i)))
+                                     (:td (:princ 
+                                            (count (code-char i)
+                                                    text)))))))))))
+               else ; ask for quotation
+                    (html
+                      (:html
+                         (:head (:title &quot;quote character counter&quot;)
+                         (:body 
+                            ((:form :action &quot;charcount&quot;
+                                    :method &quot;POST&quot;)
+                              &quot;Enter your favorite quote &quot;
+                              :br
+                              ((:textarea
+                                  :name &quot;quotation&quot;
+                                  :rows 30
+                                  :cols 50))
+                              :br
+                              ((:input :type &quot;submit&quot;
+                                  :name &quot;submit&quot;
+                                  :value &quot;count it&quot;)))))))))))))</pre>
+
+<p>In this example we ask for the body of the request and then the value of the field
+named &quot;quotation&quot;.&nbsp; If that isn't found then we assume that we are being
+called to display the form.&nbsp;&nbsp; We could have checked the value of <strong>(request-method
+req)</strong> which will be <strong>:get</strong> when we should put up the form and <strong>:post</strong>
+when we should analyze data from the form.</p>
+
+<p>&nbsp;</p>
+
+<h2>form data encoded as a multipart body</h2>
+
+<p>The final method of sending form data is as a multipart message.&nbsp;&nbsp; This
+occurs when you specify a <strong>:method</strong> of &quot;POST&quot; and an <strong>:enctype</strong>
+of &quot;multipart/form-data&quot;.&nbsp;&nbsp;&nbsp; The handler for this must detect
+when it is being called from a <strong>:post</strong> request and must call a sequence of
+functions to retrieve each item from the message body.&nbsp; First it calls <strong>get-multipart-header</strong>
+to get the next header (or <strong>nil</strong> if there are no more headers).
+&nbsp;&nbsp;&nbsp; The header data is an assoc list where the values have different
+formats as described in the AllegroServe manual.&nbsp; After reading the header&nbsp; the
+handler must call <strong>get-multipart-sequence</strong> to read successive chunks of
+data associated with this header.</p>
+
+<p>An example demonstrating this is too large to include here but can be found in the
+AllegroServe examples.cl file (search in that file for&nbsp; &quot;getfile-got&quot;)</p>
+
+<h1>Authorizing a request</h1>
+
+<p>You don't necessarily want to allow everyone to access every page you publish.
+&nbsp;&nbsp; We will describe common ways to check whether someone has permission to
+access a page.&nbsp;&nbsp; There are two ways to do the authorization checks.&nbsp; You
+can write the tests yourself in the entity function, or you can create an <strong>authorizer
+</strong>object and attach it to the entity.&nbsp;&nbsp;&nbsp; Below we'll show you how to
+write the code to do the checks manually.&nbsp;&nbsp; The Allegro AllegroServe manual
+describes the <strong>authorizer</strong> objects. </p>
+
+<h2>password</h2>
+
+<p>One way to control access to a page is to request that the person at the browser enter
+a name and password.&nbsp;&nbsp; You can create a form and have the user enter the
+information and then click on a button to submit it.&nbsp;&nbsp; Another way is to return
+a 401 (response unauthorized) code to the request made to access your page. &nbsp;&nbsp;
+When given that response, the web browser will pop up a window requesting a name and
+password, and after that's entered, the browser resends the request but includes the name
+and password in the header.</p>
+
+<p>The method you choose for asking for the name and password may depend on how secure you
+want the response to be.&nbsp; Using a form the name and password are sent to the web
+server without any encoding at all (other than the simple urlencoding which only affects
+unusual characters).&nbsp;&nbsp; If your form uses the &quot;GET&quot; method then the
+name and password appear in the url which makes them very easy to spot, so you at least
+want to use the &quot;POST&quot; method if you use a form.&nbsp;&nbsp;&nbsp; If on the
+other hand you use the 401 response code, then the name and password are sent in a more
+encrypted form (using an encoding called <strong>base64</strong>) however anyone
+sufficiently motivated can decrypt this without a lot of trouble.&nbsp;&nbsp; AllegroServe
+does not yet support <strong>md5</strong> authentication which is the most secure way to
+do authentication in the HTTP/1.1 protocol.</p>
+
+<p>One advantage of using the 401 response to cause the user to enter a name and password
+is that most web browsers will continue to send the entered name and password along with
+future requests to the server until the web browser is restarted.&nbsp;&nbsp; Thus you can
+simultaneously unlock a whole group of pages.&nbsp; If you choose to handle the
+authentication in a form you may want to use a cookie to make a record that this web
+browser is now qualified to access a certain group of pages.&nbsp; Cookies aren't hard to
+store, but some users turn off cookie saving thus you will&nbsp; make your site
+inaccessible to these people.&nbsp; Another authorization mechanism is to insert hidden
+fields in forms with values that tell the server that this access is authorized for a
+certain amount of time.</p>
+
+<p>This is an example of using the 401 response to do user authorization.&nbsp;&nbsp; </p>
+
+<pre>(publish :path &quot;/secret&quot;
+    :content-type &quot;text/html&quot;
+    :function
+    #'(lambda (req ent)
+         (multiple-value-bind (name password) (get-basic-authorization req)
+            (if* (and (equal name &quot;foo&quot;) (equal password &quot;bar&quot;))
+               then (with-http-response (req ent)
+                      (with-http-body (req ent)
+                        (html (:head (:title &quot;Secret page&quot;))
+                              (:body &quot;You made it to the secret page&quot;))))
+               else ; cause browser to ask name and password
+                    (with-http-response (req ent :response 
+                                                 *response-unauthorized*)
+                      (set-basic-authorization req &quot;secretserver&quot;)
+                      (with-http-body (req ent)))))))</pre>
+
+<p>&nbsp;</p>
+
+<h2>source address</h2>
+
+<p>You can determine the address from which a request was made and restrict access based
+on that address.&nbsp;&nbsp;&nbsp; If the request came through a proxy server then you are
+really determining the address of the proxy server.&nbsp; The following code only serves
+the 'secret' page if the request came from a browser running on the same machine as the
+server, and which is made over the loopback network on the machine.&nbsp;&nbsp; The
+loopback network is a network that exists entirely inside the operating system of the
+machine.&nbsp; The convention is that a loopback network address has 127 in the most
+significant byte, and that is what we test for in the following example:</p>
+
+<pre>(publish :path &quot;/local-secret&quot;
+    :content-type &quot;text/html&quot;
+    :function
+    #'(lambda (req ent)
+    (let ((net-address (ash (socket:remote-host
+                              (request-socket req))
+                            -24)))
+       (if* (equal net-address 127)
+          then (with-http-response (req ent)
+                 (with-http-body (req ent)
+                   (html (:head (:title &quot;Secret page&quot;))
+                     (:body (:b &quot;Congratulations. &quot;)
+                        &quot;You are on the local network&quot;))))
+          else
+               (with-http-response (req ent)
+                 (with-http-body (req ent)
+                   (html
+                     (:html (:head (:title &quot;Unauthorized&quot;))
+                            (:body 
+                                &quot;You cannot access this page &quot;
+                                &quot;from your location&quot;)))))))))
+</pre>
+
+<p>To see how this examples works differently depending on whether the access is through
+the loopback network or the regular network, try accessing it via <a
+href="http://localhost:8000/local-secret">http://localhost:8000/local-secret</a> and <a
+href="http://test.franz.com:8000/local-secret">http://test.franz.com:8000/local-secret</a>
+&nbsp; (where we are assuming that you are running on <strong>test-franz.com</strong>). </p>
+
+<h1>Multiple servers</h1>
+
+<p>AllegroServe can run multiple independent web servers.&nbsp; Each web server listens
+for requests on a different port.&nbsp; Because each web server can appear to be serving
+pages for different hosts (using the virtual host facility already described in the
+discussion of the <strong>publish </strong>functions), it is usually not necessary to use
+the multiple server facility we describe here.&nbsp; </p>
+
+<p>All of the information about a web server, including the entities it serves, are stored
+in a <strong>wserver</strong> object.&nbsp;&nbsp;&nbsp;&nbsp; The <em>current<strong> </strong></em>wserver
+object is stored in the variable <strong>*wserver*</strong>.&nbsp;&nbsp;&nbsp; The publish
+functions use the value of <strong>*wserver* </strong>as the default server into which
+they publish entities.</p>
+
+<p>&nbsp;</p>
+
+<h1>Debugging a computed response handler</h1>
+
+<p>to be filled in</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+</body>
+</html>

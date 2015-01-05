@@ -1,0 +1,177 @@
+Corman Lisp 2.01 Updates
+February 22, 2003
+
+Corman Lisp 2.01 includes improved ANSI Common Lisp 
+compatibility, defect fixes, and feature enhancements. 
+Some of these have previously been available as patches 
+from the Corman Lisp web site. These changes represent the 
+difference from the released version of 2.0 without patches. 
+
+This is a free update to all licensed users of Corman Lisp 2.0,
+and is intended to replace version 2.0. Compiled image files
+must be re-compiled to use the new 2.01 kernel.
+
+
+IDE:
+
+-Fixed a problem with storing/loading the preferred font name.
+
+-Fixed a problem where file mappings were occurring each time 
+ you run the IDE.
+
+-Increased the version for CormanLisp.exe to 2.01.
+
+-Modified the installer to not map .cl files.
+
+-Removed dependency on oleacc.dll (accessibility layer).
+
+-Fixed incompatibilities with Windows 95/98.
+
+-Fixed a problem with the direct call lambda list lookup. Errors are 
+ now ignored.
+
+-Added option to edit file and line number from context menu.
+
+-Added column position indicator to edit window status bar.
+
+-Added ability to escape the splash screen at startup (escape key).
+
+
+Compiler:
+
+-Fixed a problem with compiler warnings. When a function was not 
+ defined, the name of the function was not included in the warning 
+ message.
+
+-Speedup of STRING= function (this improves performance in a 
+ variety of functions).
+
+-Kernel and CLOS changes to support capturing the lexical environments 
+ in method definitions (methods can be closures).
+
+-Improvements to array performance.
+
+-Updated boot apps to no longer use the command line for .img file.
+
+-Fixed some definitions in win32.lisp and winbase.lisp.
+
+-Fixed LOAD when using *LOAD-VERBOSE* and *LOAD-WITHOUT-EVAL* switches.
+
+-Fixed a problem in symbol-macro expansion.
+
+-Optimization declarations in LET and LET* forms are now available 
+ in compiler macros.
+
+-Reimplemented kernel function %OUTPUT-CHARS, which 
+ fixes a problem where stream-position was not being updated with 
+ WRITE-LINE and WRITE-STRING.
+
+-Added CHAR= optimization in characters.lisp.
+
+-Added package "SYS".
+
+-Added DEFUN-POINTER for invoking foreign functions using foreign 
+ function pointers.
+
+-Added some compiler macros to speed up character processing.
+
+
+Common Lisp:
+
+-SETF of generic functions works correctly.
+
+-Modified expand.lisp to handle some cases with symbol-macros.
+
+-Modified pretty-printer to handle dotted lists.
+
+-Modified reader character macro reader to handle *READ-SUPPRESS*.
+
+-Modified WRITE to work with Environment structures.
+
+-FBOUNDP will now return NIL for functions which have been bound 
+ to stubs by the compiler (to generate undefined function errors).
+
+-Literal dot symbols are now distinguished from list markers.
+
+-Added support for top-level symbol macros.
+
+-Added DEFINE-SYMBOL-MACRO implementation.
+
+-Modified TRACE to not add a trace function if it is already being traced.
+
+-Fixed a problem with INTERN and strings with fill pointers.
+
+-Fixed a problem with MACROLET and duplicate names.
+
+-Doc strings in DEFMETHOD forms can now precede the declarations.
+
+-Fixed SETF to allow THE forms as places.
+
+
+Enhancements and fixes from JP Massar:
+
+-Added ARRAY-IN-BOUNDS-P function.
+
+-Added implementation of CHARACTER function.
+
+-Added implementation of DIGIT-CHAR function.
+
+-Added implementation of BOTH-CASE-P function.
+
+-Incorporated fixes to LOAD.
+
+-Added (partial) implementation of WITH-COMPILATION-UNIT.
+
+-Incorporated fix for COMPILE-FILE and PROGN top-level forms.
+
+-Defect fix for DEFPACKAGE.
+
+-In DEFPACKAGE macro, :IMPORT-FROM and :SHADOWING-IMPORT-FROM now handle 
+ package designators and symbol designators.
+
+-Modifications to DESCRIBE.
+
+-Incorporated fix to avoid warning in DESTRUCTURING-BIND.
+
+-Added MASK-FIELD and DEPOSIT-FIELD.
+
+-Incorporated fix to %chars-to-float (internal function).
+
+-New definition of MULTIPLE-VALUE-BIND.
+
+-Removed warning from IMPORT.
+
+-Fixed a problem with :IF-DOES-NOT-EXIST in OPEN.
+ Improvements to DEFTYPE.
+
+
+Enhancements and fixes from Karsten Poeck:
+
+-Added WITH-PACKAGE-ITERATOR macro implementation.
+
+-Added WITH-COMPILATION-UNIT.
+
+-Fixes for APROPOS-LIST, DO-SYMBOLS.
+
+-Modification to (internal) PACKAGE-FIND-SYMBOL
+
+
+Modules/Libraries:
+
+-Mods to odbc package to work with Corman Lisp 2.0.
+
+-Added mp-locks.lisp to Modules. (This was accidentally left out of 2.0.)
+
+-Added console.lisp module.
+
+
+Code contributors (thanks!):
+
+-JP Massar
+-Karsten Poeck
+-Chris Double
+-Rene de Visser
+
+and others...
+
+

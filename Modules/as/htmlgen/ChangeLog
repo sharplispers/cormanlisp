@@ -1,0 +1,34 @@
+2000-04-24    <jkf@CROW>
+
+	* add html-print and html-print-list to print the lisp
+	  form of html (lhtml)
+
+2000-04-16    <jkf@DEEDEE>
+
+	* htmlgen/htmlgen.cl - when printing option values inside
+	  a tag, a symbol is now printed as the string
+	  that is its symbol-name
+
+
+2000-03-29  John Foderaro  <jkf@tiger.franz.com>
+
+	*  Undo previous change: html-stream must be passed a stream,
+	   you can't pass in t or nil.  
+
+2000-03-20  John Foderaro  <jkf@tiger.franz.com>
+
+	*  html-stream will now accept t and nil as streams and
+	   then use *terminal-io* and *standard-output* respectively.
+
+2000-02-08  John Foderaro  <jkf@tiger.franz.com>
+
+	*  package htmlgen -> net.html.generator
+
+2000-02-04  John Foderaro  <jkf@tiger.franz.com>
+
+	*  add escaping of characters inside attrib value
+
+1999-12-03  jkf  <jkf@main.verada.com>
+
+	*  htmlgen.cl  - added :if* operator inside a tag
+

@@ -1,0 +1,569 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win95; I) [Netscape]">
+   <meta name="Author" content="Vassili Bykov">
+   <title>C Declaration Parser</title>
+</head>
+<body>
+
+<h1>
+Corman Lisp C Declaration Parser</h1>
+The C declaration parser is written by <a href="mailto:vassili@magma.ca">Vassili
+Bykov</a>, based on the original version by Roger Corman. It automatically
+generates foreign function interface (FFI) declarations from C source code.
+<p>The parser is invoked whenever a character sequence <tt>#!</tt> is encountered
+in Lisp code. This character sequence begins a <i>C declaration block</i>:
+a portion of the source containing declarations and preprocessor directives,
+supposedly pasted from a C header file. The declaration block is terminated
+by a declaration block end marker: <tt>!#</tt>. At the beginning of the
+block the parser expects to find a <i>translation parameter form.</i> The
+full syntax of parameter form is described <a href="#tparams">later in
+this text</a>.&nbsp; The C declarations in the declaration block are parsed,
+analysed, and the <a href="#FFIDefs">corresponding Corman Lisp FFI declaration
+forms</a> are generated.
+<p>As an introductory example, consider this C declaration block and the
+Lisp forms it is translated to.
+<pre>#! (:library "User32" :ignore "WINUSERAPI" :pascal "WINAPI")
+
+/* Just a few styles -- this comment is ignored, BTW */
+// and this is ignored, too
+#define WS_POPUP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x80000000L
+#define WS_BORDER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00800000L
+#define WS_SYSMENU&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00080000L
+#define WS_POPUPWINDOW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (WS_POPUP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WS_BORDER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WS_SYSMENU)
+typedef struct tagMSG {
+&nbsp;&nbsp;&nbsp; HWND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hwnd;
+&nbsp;&nbsp;&nbsp; UINT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; message;
+&nbsp;&nbsp;&nbsp; WPARAM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wParam;
+&nbsp;&nbsp;&nbsp; LPARAM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lParam;
+&nbsp;&nbsp;&nbsp; DWORD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; time;
+&nbsp;&nbsp;&nbsp; POINT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pt;
+} MSG, *PMSG, NEAR *NPMSG, FAR *LPMSG;
+
+WINUSERAPI BOOL WINAPI DrawEdge(HDC hdc, LPRECT qrc, UINT edge, UINT grfFlags);
+!#</pre>
+This block is translated into a Lisp form:
+<pre>(PROGN
+&nbsp;&nbsp;&nbsp; (DEFWINCONSTANT WS_POPUP 2147483648)
+&nbsp;&nbsp;&nbsp; (DEFWINCONSTANT WS_BORDER 8388608)
+&nbsp;&nbsp;&nbsp; (DEFWINCONSTANT WS_SYSMENU 524288)
+&nbsp;&nbsp;&nbsp; (DEFWINCONSTANT WS_POPUPWINDOW
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (LOGIOR (LOGIOR WS_POPUP WS_BORDER) WS_SYSMENU))
+&nbsp;&nbsp;&nbsp; (PROGN
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFWINSTRUCT MSG&nbsp; ((HWND HWND)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (MESSAGE UINT)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (WPARAM WPARAM)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (LPARAM LPARAM)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (TIME DWORD)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (PT POINT)))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFWINTYPE LPMSG (MSG *))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFWINTYPE NPMSG (MSG *))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFWINTYPE PMSG (MSG *)))
+&nbsp;&nbsp;&nbsp; (DEFUN-DLL DRAWEDGE
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ((HDC HDC) (QRC LPRECT) (EDGE UINT) (GRFFLAGS UINT))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :RETURN-TYPE BOOL
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :LIBRARY-NAME "User32.dll"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :ENTRY-NAME "DrawEdge"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :LINKAGE-TYPE :PASCAL))</pre>
+Note how the translation parameters affected the translation: the <tt>:library</tt>
+parameter set the name of the library used to call the API defined in the
+block. The <tt>:ignore</tt> parameter instructed the translator to ignore
+the WINUSERAPI declaration, which would otherwise be considered to be a
+part of the function return type declaration.
+<h2>
+<a NAME="tparams"></a>Translation Parameters</h2>
+The parameter form is a list of the following syntax:
+<pre>&nbsp;&nbsp;&nbsp; (&amp;key library export ignore pascal translate trim-last auto-ansi verbose)</pre>
+The mode parameter is required while the others are optional with the exception
+of library, which is required if the translation block contains function
+prototypes.
+<dl>
+<dt>
+<a NAME="param-library"></a>library</dt>
+
+<dd>
+This parameter value should be a string. It names the DLL where the functions
+defined in this declaration block are to be found. If the name does not
+have an extension, ".dll" is added. This parameter is&nbsp; required when
+the block contains function declarations.&nbsp; In other cases it is optional.</dd>
+
+<dt>
+<a NAME="param-export"></a>export</dt>
+
+<dd>
+This parameter value is a generalized boolean that indicates whether the
+names of all constants, types, and functions defined as the result of translating
+the block should be exported from the defining package.&nbsp; The default
+value is nil.</dd>
+
+<dt>
+<a NAME="param-ignore"></a>ignore</dt>
+
+<dd>
+This parameter should be a string or a list of strings (or symbols, in
+which case their names are used). All tokens in function prototypes in
+the block that match one of the strings are ignored. This is useful for
+such declarations as WINUSERAPI in WINUSER.H or WINCOMMCTRLAPI in COMMCTL.H,
+used in C to specify functions as exported from a DLL. Such declarations
+are of no importance on the Lisp side. Because they are usually attached
+to every function prototype in a .h file, it is easier to specify them
+as ignored than edit the function prototypes manually to remove them. In
+other words, consider <tt>:ignore "WINUSERAPI"</tt> to be the Lisp equivalent
+of <tt>#define WINUSERAPI </tt>in a C header file.</dd>
+
+<dt>
+pascal</dt>
+
+<dd>
+This parameter should be a string or a list of strings (or symbols, in
+which case their names are used). Functions that have one of these tokens
+in their prototype will have <tt>:pascal</tt> linkage, other functions
+will have the default <tt>:c</tt> linkage. Very often, working with Win32
+declarations, this parameter would have "WINAPI" as its value.</dd>
+
+<dt>
+translate</dt>
+
+<dt>
+trim-last</dt>
+
+<dt>
+auto-ansi</dt>
+
+<dd>
+These three parameters control name translation and are described in the
+<a href="#NameTranslation">Name
+Translation</a> section.</dd>
+
+<dt>
+verbose</dt>
+
+<dd>
+When true, the C definitions and their translations are printed on the
+*standard-output* during translation. The default value is <b>nil</b>.</dd>
+</dl>
+
+<h2>
+<a NAME="FFIDefs"></a>FFI Definitions</h2>
+The following table gives an idea of what C declarations are translated
+to.
+<br>&nbsp;
+<table BORDER COLS=2 WIDTH="100%" >
+<tr>
+<td><b>C</b></td>
+
+<td><b>Lisp</b></td>
+</tr>
+
+<tr>
+<td>#define &lt;name> &lt;expr></td>
+
+<td>(defconstant &lt;name> &lt;translated-expr>)</td>
+</tr>
+
+<tr>
+<td>typedef int *pint;</td>
+
+<td>(defctype pint (:long *))</td>
+</tr>
+
+<tr>
+<td>typedef int *pintarr[5];</td>
+
+<td>(defctype pintarr ((:long *) 5))</td>
+</tr>
+
+<tr>
+<td>typedef struct {
+<br>&nbsp; int x;
+<br>&nbsp; pint y;
+<br>} FOO, *LPFOO;</td>
+
+<td>(defcstruct foo ((x :long) (y :pint)))
+<br>(defctype lpfoo (foo *))</td>
+</tr>
+
+<tr>
+<td><a NAME="struct-and-typedef-struct-example"></a>struct IDirectDraw;
+<br>typedef struct IDirectDraw *LPIDirectDraw;</td>
+
+<td>(defcstruct IDirectDraw nil)
+<br>(defctype LPIDirectDraw (IDirectDraw *))</td>
+</tr>
+
+<tr>
+<td>WINUSERAPI BOOL WINAPI
+<br>ShowWindow (HWND hWnd, int nCmdShow);</td>
+
+<td>(defun-dll showwindow
+<br>&nbsp;&nbsp;&nbsp; ((hwnd hwnd) (ncmdshow :long))
+<br>&nbsp; :return-type bool
+<br>&nbsp; :entry-name "ShowWindow"
+<br>&nbsp; :library "User32.dll"
+<br>&nbsp; :linkage-type :pascal)</td>
+</tr>
+
+<tr>
+<td>interface {...};</td>
+
+<td>See <a href="#com-interfaces">COM section</a>.</td>
+</tr>
+</table>
+
+<p>All definitions occur in the package where the C declaration block is.
+The name of the defined entity is obtained from the corresponding C name.
+If case insensitivity is a problem and two names collide, the <tt>:translate</tt>
+parameter can be used to rename one of them.
+<p>By default, the defined symbols are not exported. They may be exported
+individually, but :export translation parameter allows to export all the
+defined names.
+<h2>
+<a NAME="NameTranslation"></a>Name Translation</h2>
+In some cases, control over name translation is required. It is provided
+by three translation parameters.&nbsp; In order of increasing power (and
+decreasing convenience) they are <tt>:auto-ansi</tt>, <tt>:ansi</tt>:,
+and <tt>:translate</tt>.
+<dl>
+<dt>
+<a NAME="param-auto-ansi"></a>auto-ansi</dt>
+
+<dd>
+This parameter is a generalized boolean. When true, the parser translates
+any function name that looks like an ANSI-specific version of the "actual"
+function (that is, the last character is an uppercase "A" while the preceding
+character is lowercase), to a Lisp name with the last character thrown
+away.</dd>
+
+<dd>
+This parameter is true by default, which means that "CreateWindowA", for
+example, produces Lisp function CREATEWINDOW still using "CreateWindowA"
+as the DLL entry point name.</dd>
+
+<dd>
+Note that this translation is only applied to function names. Types and
+constants are typically all uppercase and the rule used to determine if
+the name is an ANSI-specific version would not work for them. To avoid
+global edits to change all CREATESTRUCTA to CREATESTRUCT in a large body
+of text, the following parameter is useful.</dd>
+
+<dt>
+<a NAME="param-trim-last"></a>trim-last</dt>
+
+<dd>
+The value of this parameter should be a string or a list of strings. Whenever
+the parser translates a C name to a Lisp name, it looks up the name in
+this list (the lookup is case-sensitive). If found, the parser trims the
+last character of the name to get the name of the Lisp symbol to use.</dd>
+
+<dd>
+For example, if you specify&nbsp;<tt> :trim-last "LPCREATESTRUCTA"</tt>
+in a C block header, this name will be translated to LPCREATESTRUCT wherever
+it is mentioned in the block, be it a defined type name, or a function
+parameter type.</dd>
+
+<dt>
+<a NAME="param-translate"></a>translate</dt>
+
+<dd>
+If even more control over name translation is required, this parameter
+allows to specify arbitrary translations. The value of it should be a list
+of two-element lists. The first element of each list is a string specifying
+a C name, the second element is a symbol to use as the translation of that
+name.&nbsp; For example, the following could be used to resolve name conflict:</dd>
+
+<dd>
+<tt>:translate (("foo" small-foo) ("FOO" big-foo))</tt></dd>
+</dl>
+
+<h2>
+<a NAME="C Syntax"></a>Supported C Syntax</h2>
+Typically, in order to import C declarations, you would copy a block of
+declarations from an .H file and paste it into a declaration block in a
+.lisp file. However, the parser supports only a subset of C syntax, therefore
+it is essential to understand the differences between the "regular" C and
+the language understood by the parser.&nbsp; Some of the copied declarations
+would have to be removed, others slightly edited.&nbsp; In practice, however,
+the majority of declarations can be used "as is". In any event, tweaking
+C declarations to fit the parser limitations is much easier than writing
+the corresponding Lisp FFI declarations by hand.
+<h3>
+<a NAME="case-sensitivity"></a>Case sensitivity</h3>
+Each declared C name is translated into a definition associated with a
+Lisp symbol. By default, symbol naming in Lisp is case-insensitive.&nbsp;
+This means that declarations for "foo" and "FOO" would clash when translated
+to Lisp. This is unlikely to often be a concern, but if it is, <tt>:translate</tt>
+parameter can be used to specify an alternative translation for a name.
+<h3>
+<a NAME="packages"></a>Packages</h3>
+All symbols for the C definitions are created in the package current at
+the time the parser was invoked. If a declaration refers to other declaration
+names, the symbols for those names should be visible, or an error will
+be signalled by the FFI. For instance, the declaration block at the beginning
+of this document can only be translated somewhere where the symbols from
+the "WIN32" package for names such as "HDC" or "LPARAM" are visible.
+<h3>
+<a NAME="define-semantics"></a>#define semantics</h3>
+In C, <tt>#define</tt> defines token substitution. As far as this parser
+is concerned, <tt>#define</tt> defines a constant. This means that the
+parser expects a valid expression on the right hand side, and the expression
+is evaluated to produce a value which is assigned to the constant. This
+means that some cases, such as
+<pre>#define TIMES2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *2
+#define TWOHUNDRED&nbsp;&nbsp;&nbsp; 100 TIMES2</pre>
+are legal in C but not legal for this parser (it does not perform token
+substitution), other cases, such as
+<pre>#define FOO&nbsp;&nbsp;&nbsp; 3 + 4
+#define BAR&nbsp;&nbsp;&nbsp; (FOO * 6)</pre>
+are interpreted differently. For a C preprocessor, BAR is '3 + 4 * 6',
+and the effective value used in place of B somewhere in C would be 27.
+For this parser, BAR is (* FOO 6), and FOO is (+ 3 4), so the effective
+value of BAR would be 72.
+<p>The expressions are supposed to be arithmetic only; that is, the terms
+may only be identifiers, literal numbers, or literal strings. The following
+operators are supported (in order of decreasing priority):
+<br>&nbsp;
+<br>&nbsp;
+<table BORDER WIDTH="400" >
+<tr>
+<td>
+<center><b>- ~</b></center>
+</td>
+
+<td>(Unary) negation and bitwise complement.</td>
+</tr>
+
+<tr>
+<td>
+<center><b>* / %</b></center>
+</td>
+
+<td>Multiplication, division, and modulus.</td>
+</tr>
+
+<tr>
+<td>
+<center><b>+ -</b></center>
+</td>
+
+<td>Addition and subtraction.</td>
+</tr>
+
+<tr>
+<td>
+<center><b>&amp;</b></center>
+</td>
+
+<td>Bitwise AND.</td>
+</tr>
+
+<tr>
+<td>
+<center><b>^</b></center>
+</td>
+
+<td>Bitwise XOR.</td>
+</tr>
+
+<tr>
+<td>
+<center><b>|</b></center>
+</td>
+
+<td>Bitwise OR.</td>
+</tr>
+</table>
+
+<p>Since <tt>#define</tt> is not token substitution for this parser, <tt>#define</tt>
+with arguments is not allowed.
+<p>Some other preprocessor directives are recognized, namely: <tt>#if,
+#ifdef, #ifndef, #else, #endif</tt>. They are ignored with a warning.&nbsp;
+(A warning is needed because when these declarations are ignored, incorrect
+definitions may be included in the resulting translation).
+<h3>
+#LISP escape</h3>
+In some cases, a Lisp construct should accompany the body of C definitions.
+One of the cases when this may be required is when #define is used to declare
+a macro with parameters, not supported by the C declaration parser. In
+this case, a Lisp function or macro should be defined equivalent to the
+original C macro.&nbsp; While it is possible to add such a definition before
+or after the C declaration block, it is often convenient to place it in
+the C declaration block, next to the commented-out original C declaration.
+The <b><tt>#LISP</tt></b> escape makes this possible. If a keyword <b><tt>#LISP</tt></b>
+is encountered in a C declaration block, the form following it is read
+by the regular Lisp reader and the result is embedded into the sequence
+of FFI statements produced as the result of translating the C declaration
+block. Here is an example taken from the declaration block of ODBC 3.0
+interface:
+<pre>&nbsp;&nbsp;&nbsp; /* test for SQL_SUCCESS or SQL_SUCCESS_WITH_INFO */
+&nbsp;&nbsp;&nbsp; // #define SQL_SUCCEEDED(rc) (((rc)&amp;(~1))==0)
+&nbsp;&nbsp;&nbsp; #LISP (progn
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (export 'SQL_SUCCEEDED)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (defun SQL_SUCCEEDED (rc) (zerop (logandc2 rc 1))))</pre>
+
+<h3>
+<a NAME="type-definitions"></a>Type Definitions</h3>
+Only type declarations matching the following template are supported:
+<pre>&nbsp;&nbsp;&nbsp; <b>typedef</b> &lt;type> &lt;pointers> &lt;name> &lt;dimension>?
+&nbsp;&nbsp;&nbsp; &lt;pointers> ::= <b>'*'</b>*
+&nbsp;&nbsp;&nbsp; &lt;dimension> ::= <b>'['</b> &lt;integer> | &lt;identifier> <b>']'</b></pre>
+In other words, no pointers to functions, parentheses to specify priority,
+etc.&nbsp; More complicated types have to be broken into simple parts that
+fit the above pattern and gradually defined in terms of each other.
+<p>Once again, because #define does not define token substitution, the
+following declaration is not supported:
+<pre>&nbsp;&nbsp;&nbsp; #define ASIZE 10
+&nbsp;&nbsp;&nbsp; typedef int *pintarray[ASIZE];</pre>
+The size of the array must be an integer or an identifier. In this case
+the identifier should be a constant defined either earlier in the same
+C declaration block, or existing in the system by the time the declaration
+block's translation is evaluated.
+<p>These limitations also apply to other type declarations: declarations
+of struct members, struct types (the part of typedef struct following the
+closing brace), function (including COM methods) parameter and return types.
+<h3>
+<a NAME="struct-definitions"></a>Structure definitions</h3>
+Both <tt>struct</tt> and <tt>typedef struct</tt> are acceptable.
+<p>In the former case, the structure tag is used as the type being defined,
+while variable declarations following the structure body are ignored.
+<p>In the latter case, if a field list is supplied, the structure tag is
+ignored. The variable declarations following the struct body are all used
+to define the related types. Any typedef struct should define at least
+one <i>primary type name</i>--the name of the structure type itself. All
+other related types are defined in terms of the primary type. In the above
+example, MSG is the primary type, while LPMSG and others are defined in
+terms of it. An error is signalled if there is no primary type in a <tt>typedef
+struct</tt> statement.
+<p>If there is no field list supplied in a "typedef struct" declaration,
+the structure tag is assumed to be defined earlier using "struct" declaration.
+The types declared in the declaration are then declared based on the structure
+tag, as shown in the <a href="#struct-and-typedef-struct-example">example
+above</a>.
+<p>In the struct body and the variable list, the limitations described
+in the <a href="#type-definitions">Type Definitions</a> section apply.
+<h3>
+<a NAME="function-definitions"></a>Function Definitions</h3>
+Most function prototypes typically found in Windows .H files are acceptable.
+The limitations on argument declaration complexity described in <a href="#type-definitions">Type
+Definitions</a> section apply.
+<p><tt>pascal</tt>, or <tt>_pascal</tt> keywords in the function prototype
+cause the function to use <b>:pascal</b> linkage. The function will also
+use <b>:pascal</b> linkage if its prototype contains one of the tokens
+specified in the <tt>:pascal</tt> keyword parameter in the block's translation
+parameters. Often, with Win32 USER module declarations such a parameter
+would be used to specify "WINAPI" as a pascal linkage selector. If none
+of the above is the case, a function uses <b>:c</b> linkage.
+<p>The DLL entry name is always the one matching the function name as it
+appears in the C declaration. The name of the corresponding Lisp function
+can be different if <b>:auto-translate-ansi</b> or <b>:ansi</b> or <b>:translate</b>
+settings are used (see translation parameters description). As an example,
+<pre>#! (:library "User32"
+&nbsp;&nbsp;&nbsp; :ignore "WINUSERAPI"
+&nbsp;&nbsp;&nbsp; :pascal "WINAPI"
+&nbsp;&nbsp;&nbsp; :trim-last "WNDCLASSA")
+WINUSERAPI ATOM WINAPI RegisterClassA( CONST WNDCLASSA *lpWndClass);
+!#</pre>
+produces Lisp definition
+<pre>(DEFWINAPI REGISTERCLASS ((LPWNDCLASS (WNDCLASS *)))
+&nbsp;&nbsp;&nbsp; :RETURN-TYPE ATOM
+&nbsp;&nbsp;&nbsp; :LIBRARY-NAME "User32.dll"
+&nbsp;&nbsp;&nbsp; :ENTRY-NAME "RegisterClassA"
+&nbsp;&nbsp;&nbsp; :LINKAGE-TYPE :PASCAL)</pre>
+The function name has been auto-translated because this is the default
+setting in the Win32 translation mode, the WNDCLASSA type name is translated
+to WNDCLASS because it is explicitly declared as ANSI-mangled.
+<h3>
+<a NAME="com-interfaces"></a>COM Interfaces</h3>
+The definitions from the Corman Lisp examples:
+<pre>interface IUnknown {
+&nbsp;&nbsp;&nbsp; HRESULT QueryInterface(REFIID riid, LPVOID* ppvObject);
+&nbsp;&nbsp;&nbsp; ULONG AddRef();
+&nbsp;&nbsp;&nbsp; ULONG Release();
+};&nbsp;
+interface IMalloc : IUnknown {
+&nbsp;&nbsp;&nbsp; LPVOID Alloc(ULONG cb);&nbsp;
+&nbsp;&nbsp;&nbsp; LPVOID Realloc(LPVOID pv, ULONG cb);&nbsp;
+&nbsp;&nbsp;&nbsp; VOID Free(LPVOID pv);&nbsp;
+&nbsp;&nbsp;&nbsp; ULONG GetSize(LPVOID pv);&nbsp;
+&nbsp;&nbsp;&nbsp; int DidAlloc(LPVOID pv);&nbsp;
+&nbsp;&nbsp;&nbsp; VOID HeapMinimize();
+};</pre>
+are translated to the following Lisp form. Note that extra care is taken
+to make sure interfaces use method lists of the parent interfaces at the
+evaluation time as opposed to the method list in the time of macro expansion.
+<pre>(PROGN
+&nbsp;&nbsp;&nbsp; (LET ((#:G851 0))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFUN-COM-METHOD QUERYINTERFACE-IUNKNOWN&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ((WIN32:INTERFACE *)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (RIID REFIID)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (PPVOBJECT (LPVOID *)))&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (+ #:G851 0)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :RETURN-TYPE HRESULT)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFUN-COM-METHOD ADDREF-IUNKNOWN ((WIN32:INTERFACE *))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (+ #:G851 1)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :RETURN-TYPE ULONG)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFUN-COM-METHOD RELEASE-IUNKNOWN ((WIN32:INTERFACE *))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (+ #:G851 2)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :RETURN-TYPE ULONG)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (SETF (INTERFACE-METHOD-LIST 'IUNKNOWN)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (APPEND NIL '(QUERYINTERFACE-IUNKNOWN
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADDREF-IUNKNOWN
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RELEASE-IUNKNOWN))))&nbsp;
+&nbsp;&nbsp;&nbsp; (LET ((#:G852 (LENGTH (INTERFACE-METHOD-LIST 'IUNKNOWN))))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFUN-COM-METHOD ALLOC-IMALLOC ((WIN32:INTERFACE *) (CB ULONG))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (+ #:G852 0)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :RETURN-TYPE LPVOID)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFUN-COM-METHOD REALLOC-IMALLOC ((WIN32:INTERFACE *)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (PV LPVOID)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (CB ULONG))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (+ #:G852 1)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :RETURN-TYPE LPVOID)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFUN-COM-METHOD FREE-IMALLOC ((WIN32:INTERFACE *) (PV LPVOID))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (+ #:G852 2)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :RETURN-TYPE VOID)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFUN-COM-METHOD GETSIZE-IMALLOC ((WIN32:INTERFACE *) (PV LPVOID))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (+ #:G852 3)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :RETURN-TYPE ULONG)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFUN-COM-METHOD DIDALLOC-IMALLOC ((WIN32:INTERFACE *) (PV LPVOID))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (+ #:G852 4)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :RETURN-TYPE :LONG)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (DEFUN-COM-METHOD HEAPMINIMIZE-IMALLOC ((WIN32:INTERFACE *))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (+ #:G852 5)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :RETURN-TYPE VOID)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (SETF (INTERFACE-METHOD-LIST 'IMALLOC)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (APPEND (INTERFACE-METHOD-LIST 'IUNKNOWN)&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; '(ALLOC-IMALLOC&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; REALLOC-IMALLOC&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; FREE-IMALLOC
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GETSIZE-IMALLOC&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DIDALLOC-IMALLOC
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HEAPMINIMIZE-IMALLOC)))))</pre>
+
+<h2>
+Transcribing Lisp Files</h2>
+It is possible to convert a file containing Lisp forms and C declaration
+blocks into a file containing only Lisp forms, with all C declarations
+replaced with their Corman Lisp FFI equivalents. This operation is performed
+by the following function.
+<pre><b>transcribe-file</b> in-file out-file &amp;optional (package *package*) (prettyp t)</pre>
+Opens <tt>in-file</tt>, reads all forms in it and writes them into <tt>out-file</tt>.&nbsp;&nbsp;
+(Both parameters are strings).&nbsp; The output file will have Lisp FFI
+declarations expanded in place of C declarations.&nbsp; The original formatting
+and the comments are, of course, lost.&nbsp; The optional <tt>prettyp</tt>
+parameter, a generalized boolean, determines whether the output file forms
+are printed prettily or not.
+<p>Transcribing the file eliminates the need for C parsing when the file
+is loaded into Lisp, while Lisp FFI forms are easier to parse than the
+original C declarations.&nbsp; The speed gain, depending on the file, may
+range from 5 to 50%.&nbsp; Care should be taken, however, to ensure that
+a proper package is used while the file is being transcribed, or the symbols
+printed in the output file may appear to be interned incorrectly when the
+output file is loaded.&nbsp; To control this, optional <tt>package</tt>
+parameter (a package designator) may be used.
+<br>&nbsp;
+</body>
+</html>
+

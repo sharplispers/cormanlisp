@@ -1,0 +1,116 @@
+Corman Lisp 1.4 Release Notes
+February 29, 2000
+
+Corman Lisp Kernel/Compiler:
+
+COMPILE-FILE is fully implemented.
+
+CLOS performance is much improved.
+
+COMPLEX function is ANSI-complient.
+
+EQUALP function is properly implemented.
+
+SAVE-APPLICATION now embeds compiled code into a .lisp segment
+of .EXE files. Also, a new :static option allows the
+lisp kernel to be statically linked into the created application.
+
+Saved images (and applications) as well as .fasl files (created
+with COMPILE-FILE) are much smaller, due to gzip compression.
+.fasl files load faster.
+
+Saved images which were saved when the heap was larger than the
+initial heap size will now load properly (the heap will be
+expanded as necessary to load the image). This applies to saved
+applications (which use a saved image implicitly) as well.
+
+The first step to support for unicode has been implemented. All
+chars are now 16-bits instead of 8-bits. This is pretty-much
+transparent from the lisp side of things. Currently, i/o is still
+going through 8-bit character funnels, so this feature is not
+too useful as of this release. In the next release we plan
+to have the i/o channels handle 16-bit chars correctly.
+
+DEFUN-DLL generates code which will automatically convert passed 
+character strings to any foreign type which resolves to '(:char *) 
+(such as LPTCSTR). In version 1.3, this only worked if the type
+was actually '(:char *).
+
+AUTOLOAD will look for and load a .fasl file if it exists. Otherwise
+it will load a .lisp file.
+
+Better integration with CLOS and TYPEP (and TYPE-OF).
+
+Added RATIO class.
+
+LOAD will not cause files to be left open when an error occurs during
+loading.
+
+CONDITIONS system has been implemented. There are still a couple things 
+missing but it is pretty complete. Conditions have been integrated in
+much of the system, but not everywhere.
+
+A DEBUG loop is implemented now. ERROR, BREAK etc. will cause you to
+go into the DEBUG loop. There is some documentation about this in
+the manual. A command list can be displayed by executing :? whenever
+you are in the debug loop.
+
+Support for the debugger has been added to the compiler. When you execute
+a command from the debug loop, the variables from the current stack
+frame are included in the environment of the compiled expression.
+This allows you to programatically get and set local variables of a stack
+frame while in the debug loop.
+
+Some bugs in DESCRIBE were fixed.
+
+Some bugs in FORMAT have been fixed.
+
+The compiler will recognize INLINE declarations (at the global level,
+using PROCLAIM/DECLAIM) and inline the functions accordingly. Functions
+which have &optional, &key, or &rest parameters will not be inlined.
+
+The compiler issues a warning when a variable is declared but not used.
+You can avoid the warning by (DECLARE (IGNORE x)) where x is the
+variable being warned about.
+
+Declarations are now properly handled in several situations where they
+weren't being, previously. In particular, DEFMETHOD now allows declarations.
+
+A new critical section class (TH:CRITICAL-SECTION) has been added to facilitate 
+synchronizing multi-threaded code. Methods on this class: ENTER and LEAVE.
+Note that you must now use (require "THREADS") before accessing thread
+functions or classes.
+
+Fixed REDUCE bug.
+
+Modified printing of floats to be ANSI-compliant.
+
+SUSPEND-THREAD, RESUME-THREAD, TERMINATE-THREAD are now implemented
+and exported by THREADS package.
+
+WINSOCK package added to expose Windows socket functionality.
+
+XP Pretty Printer is now supported. Use (require 'XP) and (XP::INSTALL).
+
+Floating point printing is now up to the standard.
+
+LOOP is updated, now ANSI compliant.
+
+Other Modifications:
+
+In the IDE edit windows, output now is redirected (by default)
+to the end of the Worksheet window (not the current cursor position).
+This can be changed (to work the old way) in the preferences dialog.
+
+The current line position is displayed in IDE edit windows.
+
+A Goto Line command has been added in IDE edit windows.
+
+In IDE edit windows, you can now execute text more than 64k into
+large files.
+
+The documentation has been revised for 1.4.
+
+A new CLOS-based LIFE sample application is included.
+
+

@@ -1,0 +1,105 @@
+Corman Lisp 1.41 Release Notes
+April 13, 2000
+
+
+Array Modifications:
+    Array access is significantly faster (AREF, ARRAY-RANK, etc.).
+
+    Fixed a bug in array initialization, and improved speed.
+
+    Bit arrays and bit operations are fully implemented, and very fast.
+    (BIT, SBIT, BIT-IOR, BIT-AND, etc.)
+
+    Bits are now stored 8 per byte (rather than one per byte).
+
+Assembler modifications:
+    Fixed a bug in assembler SHL opcode.
+
+    Added support for a number of assembler opcodes, including
+    all the SETcc codes.
+
+Common Lisp Functions:
+    Fixed a bug in DESCRIBE with structures.
+
+    Destructuring now fully supports keyword arguments and SUPPLIED-P
+    parameters.
+
+    MACROEXPAND is now ANSI-compliant, and supports compiler macros.
+
+    FLET and LABELS correctly shadow global macro definitions.
+
+    Implemented MERGE-PATHNAMES.
+
+    String comparison functions are now all implemented (string-equal,
+    string-lessp, etc.)
+
+    DEFSTRUCT now supports :TYPE options (list and different vector types).
+    It also supports :INCLUDE option. A few other bugs were
+    fixed.
+
+    Implemented FILE-WRITE-DATE, READ-SEQUENCE functions. 
+
+    Fixed a bug that involved DEFPACKAGE and COMPILE-FILE.
+
+    Implemented PSETF macro.
+
+    Fixed a bug in PEEK-CHAR.
+
+Compiler modifications:
+    Added more controls for compiler optimizations.
+
+    Added automatic constant folding to the compiler. Constant
+    expressions are more often evaluated at compile time instead 
+    of run time.
+
+    Implemented compiler macros (DEFINE-COMPILER-MACRO).
+
+    Fixed some subtle code generation bugs involving non-local
+    RETURN-FROM and GO expressions. These should now work correctly,
+    even when return block names (or go tags) are nested recursively.
+
+Debugger:
+    Fixed several bugs in the debugger, including one which would
+    often cause a memory protection error while debugging.
+
+    The debugger causes all pending input in the *debug-io* stream
+    to be discarded when it starts. This typically avoids cascading
+    errors when executing blocks of code from the worksheet.
+
+Documentation:
+    Added a section on Runtime Architecture, that explains a lot of the details
+    about how lisp code is expected to behave and cooperate with other
+    code.
+
+FFI:
+    Added WITH-FRESH-FOREIGN-BLOCK macro to FFI package.
+
+Memory Management:
+    CONS cells are now allocated from per-thread mini-heaps. This
+    avoids the performance penalty of synchronizing on cons
+    allocations when multiple threads are executing.
+
+    Modified the memory management code to keep portions of the
+    heap decommitted whenever possible. This reduces the amount
+    of virtual memory needed substantially.
+
+Misc:
+    Default hyperspec path is now Xanalys.
+
+    Changed load order of files when the system is built, to get CLOS
+    and conditions loaded sooner.
+
+    SAVE-APPLICATION can now create a statically linked console application
+    (when both :static and :console are true).
+
+    CLConsole and CLConsoleApp now can take arbitrary command line arguments.
+    To specify a custom image file (.img) to load, use:
+        -image filename
+    somewhere on the command line.
+
+    Makefiles added, making it easy to use nmake and VC++ to rebuild 
+    everything.
+
+    Synchronization option added to MAKE-HASH-TABLE.
+
+	Fixed problem in Lisp menu of IDE (with Windows 98).

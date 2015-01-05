@@ -1,0 +1,90 @@
+Corman Lisp 3.0 Release Notes
+Sept. 14, 2006
+
+This release includes:
+
+-Math and numeric code performance.
+ Completely rewritten math libraries and generated code for nearly all math 
+ operators. Previous versions of Corman Lisp were pretty well optimized for 
+ fixnums, but this version greatly improves floating point
+ performance and other numeric types. All the math code is in Lisp and
+ Corman Lisp assembler.
+
+-Math and numeric code stability.
+ Improvements in stability in all math code, better interaction with GC,
+ better multi-threading.
+
+-Better error reporting and shutdown.
+
+-Improved FFI, with improved stability with multiple threads and GC.
+
+-Numerous bug fixes.
+
+-Numerous ANSI compatibility improvements.
+
+-Integration with .NET (Edi Weitz' RDNZL package is included). 
+ (see Corman Lisp User Guide, chapter 25 for more details and link to RDNZL
+ documentation)
+
+-New CCL:MEMORY-REPORT function. (see Corman Lisp User Guide, chapter 24)
+
+-New CCL:LISP-SHUTDOWN function. (see Corman Lisp User Guide, chapter 23)
+
+-All Corman Lisp kernel code (as well as C++ samples and client apps) compile
+ with Visual Studio 2005.
+
+-Updated Zlib compression package (used by various exported Lisp functions such
+ as COMPRESS-BYTES, as well as compression of Lisp image files and compiled files)
+ from version 1.1.3 to 1.2.3.
+
+-Most Lisp kernel function are now redefined in Lisp (or Corman Lisp assembler).
+ They play by all the threading and GC rules, and stability is improved. 
+
+-EQUAL, EQUALP, HASH-EQUAL, and HASH-EQUAL-P are now all defined for foreign
+ pointers. This means two foreign pointers are EQUAL (and EQUALP) if and only
+ if the pointers are the same (point to the same address). This allows hashing
+ on OS handles and other foreign blocks.
+
+-Garbage collection heap sizes may be set by the COM host when the kernel is 
+ initialized via new InitializeEx() function.
+
+-Garbage collection fix: if call to SuspendThread() fails the collector will keep
+ trying until the thread is suspended. We suspect this was the cause of some
+ heap corruption problems, as Windows will fail the suspend attempt 
+ occasionally.
+
+-Auto-update feature (Corman Lisp User Guide, chapter 23)
+ This allows us to distribute bug fixes and feature upgrades automatically via
+ the Corman Lisp web site.
+
+----------------------------------
+Improvements to Corman Lisp IDE: 
+ (for details see Corman Lisp User Guide, chap. 7)
+----------------------------------
+
+-Text styles and colorization is improved and stability issues are fixed.
+
+-Context (right-click) menu includes Macroexpand and Macroexpand-1 options 
+ which expand and pretty-print the currently selected expression to the
+ worksheet.
+
+-Lisp Variables Display panel (by default, located in toolbar at top right).
+ Lisp variables and expressions can get added here via context menu,
+ and update automatically.
+
+-Added Declarations menu which displays all the declarations (DEFUN, DEFMACRO, etc.)
+ in the current file, and selecting a declaration will jump to that declaration.
+
+-Added Symbols menu which shows you all the packages and all the exported
+ symbols in a hierarchical manner. If you select one, it calls DESCRIBE 
+ operator  with that symbol. Tooltip for each symbol in the menus is displayed
+ in the status bar as you glide over it tooltip shows values of variables and
+ arguments to functions and macros).
+
+-The History menu which shows recently used commands and lets you select them.
+
+
+Examples:
+-New Othello game (in the examples/gui directory).
+
+

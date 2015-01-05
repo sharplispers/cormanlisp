@@ -1,0 +1,3 @@
+EXPORTS	acrxEntryPoint 		PRIVATE
+	_SetacrxPtp		PRIVATE
+        acrxGetApiVersion	PRIVATE

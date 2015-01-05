@@ -1,0 +1,95 @@
+Version 0.9.4
+2006-02-18
+Fixed LW SINGLE-FLOAT issues (detective work by Dan Muller)
+
+Version 0.9.3
+2006-02-17
+Added *COERCE-DOUBLE-FLOATS-TO-SINGLE*
+
+Version 0.9.2
+2006-02-13
+One can now call static methods from specific assemblies (thanks to Jim Sokoloff)
+
+Version 0.9.1
+2006-02-01
+Added missing WIDE-CHAR support for SBCL/Win32
+
+Version 0.9.0
+2006-02-01
+Experimental support for SBCL/Win32
+
+Version 0.8.0
+2006-01-13
+Fix mechanism which releases delegate adapters (thanks to Dominic Robinson)
+Updated to DLL version 0.5.0
+
+Version 0.7.1
+2005-11-21
+Updated to DLL version 0.4.1
+
+Version 0.7.0
+2005-07-08
+In WRAP-CLOSURE, prevent callbacks from being able to throw over .NET stack frames (Charles A. Cox)
+Modify UNMANGLE-NAME to work in case-preserving readtable-case mode (Charles A. Cox)
+Don't redefine in util.lisp what's already there (for LispWorks)
+
+Version 0.6.1
+2005-01-03
+Make sure SETF accessors in direct.lisp return NEW-VALUE (sigh...)
+
+Version 0.6.0
+2005-01-03
+Support for "direct calls"
+Fixed typo (forgot RESOLVE-TYPE-NAME) in FIELD
+Fixed thinko in OR-ENUMS
+Make sure SETF accessors in container.lisp return NEW-VALUE
+
+Version 0.5.1
+2004-12-28
+Make delivery examples for CCL and LW self-contained like Charley's AllegroCL example
+
+Version 0.5.0
+2004-12-28
+Corman Lisp port now works (thanks to Roger Corman)
+Added delivery examples for AllegroCL (by Charles A. Cox) and Corman Lisp
+
+Version 0.4.5
+2004-12-27
+Cosmetic changes in AproposGUI.cs
+
+Version 0.4.4
+2004-12-24
+Added correct external encoding to :EF-WC-STRING type in port-lw.lisp (caught by Francisco Rivera)
+Changed some code examples from LW to AllegroCL
+
+Version 0.4.3
+2004-12-23
+Argh!!! Version 0.4.2 included a defective DLL due to a typo
+
+Version 0.4.2
+2004-12-23
+Added better support for System.Single (thanks to Vasilis Margioulas)
+
+Version 0.4.1
+2004-12-22
+Some cleanup in docs
+All text files now have DOS line endings
+[Re-sync with my CVS tree (laptop was broken while 0.4.0 was released)]
+
+Version 0.4.0
+2004-12-21
+Preliminary CLISP port (provided by Vasilis Margioulas)
+CRLF output for AllegroCL (thanks to Charles A. Cox)
+[Some files have wrong CVS headers - this'll be fixed in the next version]
+
+Version 0.3.0
+2004-12-18
+Port to AllegroCL (provided by Charles A. Cox)
+
+Version 0.2.0
+2004-12-17
+Added proper handling of pass-by-reference calls (thanks again to Pedro Pinto)
+
+Version 0.1.0
+2004-12-16
+Initial public release

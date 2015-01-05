@@ -1,0 +1,385 @@
+2000-08-10  John Foderaro  <jkf@tiger.franz.com>
+1.1.25
+	*  decode.cl: request-query will now convert items in query
+	    strings without values into ("keyname" . "") in the resulting
+	    alist.
+	*  doc/aserve.html - update doc of request-query and 
+	   request-query-value to reflect what happens with null valued
+	   query elements
+
+2000-08-09  jkf  <jkf@main.verada.com>
+
+	*  publish.cl: write the transfer encoding as all lowercase 'chunked'
+	   since a bug in Mozilla M17 means it will only understand this form.
+	*  htmlgen/htmlgen.cl - add the <caption> tag
+
+2000-08-04  jkf  <jkf@main.verada.com>
+1.1.24
+	*  examples/chat.cl - add user logins and private messages 
+	        between users.
+
+2000-07-31  jkf  <jkf@main.verada.com>
+
+	*  main.cl: if a multipart-mixed body was being sent then
+	    note that the request-body has been grabbed.
+
+2000-07-25  jkf  <jkf@main.verada.com>
+
+	*  example/chat.cl - enhanced to support logging into the chat
+
+2000-07-17  John Foderaro  <jkf@tiger.franz.com>
+1.1.22
+	
+	*  main.cl: incf version 
+
+2000-07-15  John Foderaro  <jkf@tiger.franz.com>
+
+	*  examples/chat.cl - sample program that does web based chat
+
+2000-07-14  John Foderaro  <jkf@tiger.franz.com>
+
+	* client.cl - now do-http-request will always return a uri object
+	    (previously it would return its uri arg unless a redirect
+             was done in which case it would return a uri object)
+
+2000-07-01  John Foderaro  <jkf@tiger.franz.com>
+
+	* client.cl - handle the "100 continue" response we seem to 
+	 get from IIS whenever we do a post.
+
+2000-06-25  jkf  <jkf@main.verada.com>
+
+	* keep track all of all ip addresses by which the server
+	  is contacted (this is simpler than trying to figure them
+	  out in advance).
+	* add function to find a response object given the code.
+	* keep track of the raw uri by which a request was made
+	  (as distinguished from the uri in which we've added the
+	  host and port values).  This is necessary to distriguish
+	  when we must proxy.
+	* in html-print assume that attribute values are already html escaped
+
+2000-06-12  John Foderaro  <jkf@tiger.franz.com>
+
+	* main.cl: add utility function request-query-value to
+		combine getting the query info via request query
+		and locating the particular value with assoc
+
+2000-06-08  John Foderaro  <jkf@tiger.franz.com>
+1.1.21
+	* client.cl - do-http-request: 
+	        1. give the redirect arg a numeric
+		   value to prevent infinite redirect loops.
+	        2. handle two other redirect codes
+		3. autoredirect only for get and head
+		4. return the uri accessed as the fourth value
+	* main.cl - add more response codes
+		- handle calls to request-query specifying different
+		 uri and post values.
+	* examples.cl - add redirect test
+	* t-aserve.cl - test redirection
+	* doc/aserve.html  - update for changes above
+	* doc/tutorial.html - don't be so cookie centric
+
+2000-05-30  John Foderaro  <jkf@tiger.franz.com>
+1.1.20
+	* macs.cl - add note about where to find the if* macro
+	* main.cl - cache result of get-request-body so that it can
+		    safely be called more than once inside a response
+	            function.   Also be sure to call get-request-body 
+	            if the connection is keep-alive and there might 
+	            be a body following the headers.
+	* t-aserve.cl - test enhancment to get-request-body
+	* doc/aserve.html - fix do-http-request documentation to
+	            reflect change made in 1.1.18
+	            
+
+	
+Fri May 26 22:42:12 PST 2000  Duane Rettig  <duane@beta>
+1.1.19
+	* makefile: set SHELL variable
+	* main.cl: incf version
+	
+2000-05-16  John Foderaro  <jkf@tiger.franz.com>
+1.1.18	
+	* ! Non upward-compatiable change ! - the function
+	   do-http-request returns arguments in a different
+	   order, it now returns the body value first, then the
+	   response code and then the headers.
+	* fixed bug in publish-directory (sourceforge bug 105426)
+	* added query and content-type arguments to do-http-request
+	  and make-http-client-request.  These make it even easier
+	  to send form data to web servers
+	
+	
+2000-05-16  John Foderaro  <jkf@tiger.franz.com>
+1.1.17
+
+
+	* in order to make portions of the LGPL license meaningful
+	  for a Lisp program we've added a prequel to the license
+	  agreement in the file license-allegroserve.txt.
+
+2000-05-16  jkf  <jkf@main.verada.com>
+
+	* client.cl
+	  - increase header reading buffer size - but we should
+	    make this growable.
+	  - handle cookies with = signs embedded
+	* decode.cl 
+	  - in query-to-form-urlencoded all the values to
+	    be non-strings and in that case use ~a format to stringify them
+        * parse.cl 
+	  - add arg to utility function
+	
+2000-05-04  John Foderaro  <jkf@tiger.franz.com>
+1.1.16
+	* request-query can now read from uri and/or post'ed body
+	  see doc/aserve.html for details
+
+2000-04-26  John Foderaro  <jkf@tiger.franz.com>
+1.1.15
+	* ! Non upward-compatible change ! -- the function
+	    decode-form-urlencoded has been renamed
+	    form-urlencoded-to-query so as to match its new inverse
+	    function: query-to-form-urlencoded
+
+	* added query-to-form-urlencoded to allow one to encode
+	  query to strings for use by client code.
+
+2000-04-24  John Foderaro  <jkf@tiger.franz.com>
+1.1.14
+	* verify that it works in acl501 trial (Linux)
+
+2000-04-24    <jkf@CROW>
+
+	* load.cl: make aServe load in acl5.0.1 Lite (Windows) but
+	   be advised that it doesn't work very well due to socket
+	   problems that can be patched in the Lite version.
+
+	* main.cl: the default timeout for a with-http-response
+		now comes from *http-response-timeout* and it
+		now defaults to 120 seconds rather than 60.
+	
+	* some documention updates
+
+2000-04-23  jkf  <jkf@main.verada.com>
+
+	* client.cl - added proxy argument so that client requests
+	    can go through a proxy
+	* various doc fixes
+
+2000-04-17  John Foderaro  <jkf@tiger.franz.com>
+1.1.13
+	* rename Allegro iServe to AllegroServe.
+	  As a result where iserve was used before we now use aserve.
+	  For example the package is now called net.aserve.
+
+
+2000-04-17  John Foderaro  <jkf@tiger.franz.com>
+1.1.12
+
+	* add test/t-iserve.cl to the list of files in the ftp distribution
+
+2000-04-16    <jkf@DEEDEE>
+
+	* debug-on and debug-off are no longer exported symbols.
+	  They continue to exist but you have to use
+          net.iserve::debug-on and net.iserve::debug-off to reach them.
+
+	* added two new response type symbols to aid in doing redirections:
+	    *response-moved-permanently*
+	    *response-temporary-redirect*
+	  note that netscape 4 doesn't understand *response-temporary-redirect*
+          as that's a http/1.1 thing.
+	
+	* request-query takes a :handle-post keyword arguments.  When true
+	  (and that's the default) it will automatically read,
+	  extract, parse and cache the query string from the entity body
+	  when the request is a post request.
+	  
+2000-03-28  John Foderaro  <jkf@tiger.franz.com>
+
+	* move htmlgen.html from htmlgen/ to doc/ so that it's in
+	  a consistent place regardless of distribution type.
+
+2000-04-08    <jkf@DEEDEE>
+1.1.11
+	* make the debugging output feature based rather than
+	  numeric. see  net.iserve:debug-on
+	* properly do client queries
+	* use setfable reply-header-slot-value to read and set 
+	  headers for the reply that will be sent
+	* always send back HTTP/1.1 as our protocol
+
+	
+2000-03-27  John Foderaro  <jkf@tiger.franz.com>
+1.1.10
+	* add headers argument to do-http-request and make-http-client-request
+	  to allow you to add headers
+	* fix client requests for :head so it doesn't wait for a body
+	  to be returned
+	* fix debugging output when running inside emacs
+	* add client info to documentation.
+	
+2000-03-27  John Foderaro  <jkf@tiger.franz.com>
+1.1.9
+
+	* mainly documentation fixes
+
+2000-03-22  John Foderaro  <jkf@tiger.franz.com>
+1.1.8
+	* fix http/0.9 processing
+	
+	* make errors in http worker threads, if uncaught (see below)
+	  and if the emacs-lisp interface is running, cause a new
+	  emacs window to appear in which you can debug the problem
+	
+	* add net.iserve::*trap-errors* (default t).  If set to
+	  nil then errors in http processing by iserve will result
+	  in error break loops.
+
+	* fixed errors in publish-directory.  Also prevent user from
+	passing ../ in urls to access above the published directory
+	
+2000-03-22  John Foderaro  <jkf@tiger.franz.com>
+1.1.7
+	* make initial lisp listerner of standalone version sleep
+	  so that the process can be put in the background.
+	* add t-iserve.cl and begin to add automated tests
+	* add cookies and authorization to client module
+	* load client module into iserve
+	
+2000-03-20  John Foderaro  <jkf@tiger.franz.com>
+1.1.6
+	* convert references to neo to iserve
+	* minor fixups in tutorial
+	
+2000-03-20  John Foderaro  <jkf@tiger.franz.com>
+1.1.5
+	* include iservelogo.gif in the ftp distribution
+	* fix problem where the response to a file entity request
+	  for a file that doesn't exist would cause browser to hang
+	  until the socket was closed
+
+2000-03-17  John Foderaro  <jkf@tiger.franz.com>
+1.1.4
+	* change source-readme.txt and load.cl so that
+	  it will build on Windows without the unix tools
+
+*******************************************************************************
+join from acl50 branch
+- cvs command: cvs update -d -j acl50
+- next merge tag: acl50_merge2
+*******************************************************************************
+
+2000-03-15  John Foderaro  <jkf@tiger.franz.com>
+1.1.3
+	* switch to lgpl license.  
+	* add source-readme.txt to describe what to do with
+	  the source
+
+2000-03-14  John Foderaro  <jkf@tiger.franz.com>
+1.1.2
+	* add authorizer objects to support checking for valid
+	  access to pages
+
+2000-03-07  John Foderaro  <jkf@tiger.franz.com>
+1.1.1
+	* load.cl - lisp need not be in the directory containing this
+	  file in order to load it (and iserve)
+	* main.cl - get-request-body will not get fooled by :get requests
+	* publish.cl - make virtual hosts work for prefix handlers
+	* doc/iserve.html - update to describe :remove arg to pubilsh
+          functions
+	* doc/tutorial.html - lots more added
+	* examples/tutorial.cl - add sample methods
+
+2000-03-02  jkf  <jkf@main.verada.com>
+
+	*  added setuid, setgid args to start
+	*  changed the names of the worker processes
+	*  changed the names of the slots and accessors holding the
+	   commonly used request header info
+	*  allowed the :host arg to publish to be a list of host names
+	*  for publish-file compute the content-type automatically if
+	   not provided
+
+2000-02-25  John Foderaro  <jkf@tiger.franz.com>
+
+	* added code to the examples so that the pubished url
+	 handlers will find the files they reference (if any)
+	 no matter what the current directory is when the examples
+	 file is loaded.
+
+2000-02-18  John Foderaro  <jkf@tiger.franz.com>
+
+	* moved examples and doc to their own directories
+
+2000-02-08  John Foderaro  <jkf@tiger.franz.com>
+1.1.0
+	renamed neo to Allegro iServe
+	changed neo package to net.iserve
+	changed htmlgen package to net.html.generator
+	
+2000-02-08  John Foderaro  <jkf@tiger.franz.com>
+1.0.9
+
+	* main.cl - added exports
+	* examples.cl - show how to publish a generated jpg file
+	* neo.html - more documentation
+
+2000-01-28  John Foderaro  <jkf@tiger.franz.com>
+1.0.8
+	* renamed accessors 
+
+2000-01-25  John Foderaro  <jkf@tiger.franz.com>
+
+	* partially added logging
+
+2000-01-25  jkf  <jkf@main.verada.com>
+
+	* use uri package 
+
+2000-01-18  John Foderaro  <jkf@tiger.franz.com>
+1.0.7
+	* changed :url to :path in the publish functions
+	* added a locator class to expose the search for a matching
+	  entity
+
+2000-01-11  John Foderaro  <jkf@tiger.franz.com>
+
+	* document accessors.
+	  get timedout-response working
+
+1999-12-15  John Foderaro  <jkf@tiger.franz.com>
+1.0.6
+	* cookie support added and documented
+
+1999-12-14  jkf  <jkf@main.verada.com>
+
+	*  added new file decode.cl to hold all decode/encode functions
+
+1999-12-11  John Foderaro  <jkf@tiger.franz.com>
+1.0.5
+	*  add shutdown command
+
+1999-12-02  John Foderaro  <jkf@tiger.franz.com>
+1.0.4
+	*  do case insensitive comparison of mime separation strings.
+	   It may not be necessary but it seemed to be for IE.
+
+1999-11-02  John Foderaro  <jkf@tiger.franz.com>
+1.0.3
+	*  fixed chunking output calls so it works again
+
+1999-10-15  jkf  <jkf@main.verada.com>
+1.0.2	
+
+	*  added multipart info grabbing and updated the documentatoin
+
+1999-10-13  John Foderaro  <jkf@tiger.franz.com>
+1.0.1
+	*  start changelog
+	
+
