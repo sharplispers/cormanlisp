@@ -103,8 +103,9 @@ the license information and posted the code to github.
 
 ## Support
 
-Corman Lisp is no longer supported, commercially or otherwise. For
-discussion of Corman Lisp, see the unofficial [Corman Lisp mailing
+This source release of Corman Lisp is not officially supported,
+commercially or otherwise. For discussion of Corman Lisp, see the
+unofficial [Corman Lisp mailing
 list](https://groups.google.com/d/forum/cormanlisp).
 
 
