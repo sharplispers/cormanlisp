@@ -7,7 +7,7 @@
 ;;;   -*- Mode: LISP; Syntax: Common-lisp; Base: 10; Lowercase:T -*-
 ;;;>
 ;;;> Portions of LOOP are Copyright (c) 1986 by the Massachusetts Institute of Technology.
-;;;> See LICENSE.txt for license information.
+;;;> All Rights Reserved.
 ;;;> 
 ;;;> Permission to use, copy, modify and distribute this software and its
 ;;;> documentation for any purpose and without fee is hereby granted,
@@ -28,7 +28,7 @@
 ;;;>      +1-617-253-1000
 ;;;>
 ;;;> Portions of LOOP are Copyright (c) 1989, 1990, 1991, 1992 by Symbolics, Inc.
-;;;> See LICENSE.txt for license information.
+;;;> All Rights Reserved.
 ;;;> 
 ;;;> Permission to use, copy, modify and distribute this software and its
 ;;;> documentation for any purpose and without fee is hereby granted,
