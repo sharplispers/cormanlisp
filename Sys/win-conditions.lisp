@@ -83,11 +83,15 @@
         (funcall x))
     (cl::%lisp-shutdown message))
 
+(defun ccl:quit ()
+  (ccl:lisp-shutdown "quit"))
+
 (export '(
         ccl::register-shutdown-function 
         ccl::unregister-shutdown-function 
         ccl::*shutdown-functions*
-        ccl::lisp-shutdown) 
+        ccl::lisp-shutdown
+		ccl::quit) 
     :ccl)
    
 ;;; Redefine top-level to use conditions.
