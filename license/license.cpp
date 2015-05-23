@@ -120,6 +120,8 @@ CheckRegistration(const char* name, const char* organization, const char* regist
 	long n = 0;
 	long code = 0;
 
+	return 30; // bypass license code
+
 	n = atoi(registrationCode);
 	if (n == 0)
 		return 0;

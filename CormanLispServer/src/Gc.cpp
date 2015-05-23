@@ -3313,7 +3313,8 @@ void writeHeap(FILE* writeHeap_os)
     header.pageMapSize = pageTableSize;
     header.foreignBlocksStart = header.pageMapStart + header.pageMapSize;
     header.foreignBlocksSize = CHeapBlocksSize;
-    strcpy_s(header.copyright, sizeof(header.copyright), LispImageCopyright);
+    // without license code, following line crash the clconsole.
+    // strcpy_s(header.copyright, sizeof(header.copyright), LispImageCopyright);
     header.compressionType = 0;
     header.compressedSize = 0;
     header.uncompressedSize = staticSize + sizeof(heapAddress)
