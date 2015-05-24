@@ -40,9 +40,9 @@ private:
 
 	CEdit* m_name;
 	CEdit* m_organization;
-	CEdit* m_registrationCode;
+//	CEdit* m_registrationCode;
 	bool m_registrationApproved;
-	CTime m_expirationDate;
+//	CTime m_expirationDate;
 };
 
 class AboutDialog : public CDialog

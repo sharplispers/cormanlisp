@@ -6,6 +6,7 @@ echo Copying deployment files to Release
 rmdir /s /q %1
 mkdir %1
 copy CormanLisp.exe %1
+copy CormanLisp.exe.manifest %1
 copy CormanLisp.img %1
 copy clboot.exe %1
 copy clbootapp.exe %1
@@ -74,6 +75,6 @@ copy zlib\ChangeLog %1\zlib
 copy zlib\Makefile %1\zlib
 copy zlib\README %1\zlib
 copy zlib\zlib.vcproj %1\zlib
-mkdir %1\zlib\doc
-copy zlib\doc\*.doc %1\zlib\doc
+rem mkdir %1\zlib\doc
+rem copy zlib\doc\*.doc %1\zlib\doc
 rem touch -t 200203151151 -recurse %1/*.*

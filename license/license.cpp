@@ -48,7 +48,8 @@ static bool InstallTimeout(int days);
 
 static EncryptDES des;
 
-static long generateRegistrationCode(const char* name,
+extern "C" long __declspec(dllexport)
+generateRegistrationCode(const char* name,
 									 const char* organization, const char* key)
 {
 	static char buf[4096];
@@ -119,8 +120,6 @@ CheckRegistration(const char* name, const char* organization, const char* regist
 {
 	long n = 0;
 	long code = 0;
-
-	return 30; // bypass license code
 
 	n = atoi(registrationCode);
 	if (n == 0)
