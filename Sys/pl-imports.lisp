@@ -98,7 +98,6 @@
 	cl::uncompress-file
     cl::memory-report
     cl::lisp-shutdown
-	cl::quit
 	)))
 
 	(import syms)
