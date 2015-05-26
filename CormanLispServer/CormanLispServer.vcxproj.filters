@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{e39c1959-4e56-4432-8b89-9ff155c2d005}</UniqueIdentifier>
+      <Extensions>*.h</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{1cf6f487-b5da-4bb2-8ba7-8456720debd0}</UniqueIdentifier>
+      <Extensions>*.cpp</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\CharBuf.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoConnectionPoint.H">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoCormanLisp.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoEnumConnectionPoints.H">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CoEnumConnections.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Compx86.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CormanLispServer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ICormanLisp.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Lisp.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Lispmath.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LispThreadQueue.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="res\resource.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Stdafx.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CormanLispServer.def">
+      <Filter>include</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\CharBuf.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CoConnectionPoint.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CoCormanLisp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CoEnumConnectionPoints.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CoEnumConnections.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Compx86.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CormanLispServer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disasm.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gc.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Lisp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Lispfunc.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LispMath.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LispThreadQueue.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MemoryReport.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Read.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stdafx.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ThreadClasses.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Write.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\CormanLispServer.rc" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Standard|Win32">
+      <Configuration>Standard</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F914CF4D-5904-477F-A388-00C05E749D18}</ProjectGuid>
+    <RootNamespace>CormanLispServer</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
+    <OutDir>.\bin\</OutDir>
+    <IntDir>.\bin\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+    <EmbedManifest>false</EmbedManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
+    <CustomBuildStep>
+      <Command>makestaticlib
+</Command>
+      <Outputs>.\bin\CormanLispStatic.lib;%(Outputs)</Outputs>
+    </CustomBuildStep>
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\./bin/CormanLispServer.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/I./include /I../include  %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CormanLispServer;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\./bin/CormanLispServer.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\./bin/</AssemblerListingLocation>
+      <ObjectFileName>.\./bin/</ObjectFileName>
+      <ProgramDataBaseFileName>.\./bin/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 /safeseh:no %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>../zlib/zlib.lib;odbc32.lib;odbccp32.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../CormanLispServer.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ManifestFile />
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <ModuleDefinitionFile>.\CormanLispServer.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>../CormanLispServer.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <ImportLibrary>.\./bin/CormanLispServer.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\CharBuf.h" />
+    <ClInclude Include="..\include\ICormanLisp.h" />
+    <ClInclude Include="include\CoConnectionPoint.H" />
+    <ClInclude Include="include\CoCormanLisp.h" />
+    <ClInclude Include="include\CoEnumConnectionPoints.H" />
+    <ClInclude Include="include\CoEnumConnections.h" />
+    <ClInclude Include="include\Compx86.h" />
+    <ClInclude Include="include\CormanLispServer.h" />
+    <ClInclude Include="include\Lisp.h" />
+    <ClInclude Include="include\Lispmath.h" />
+    <ClInclude Include="include\LispThreadQueue.h" />
+    <ClInclude Include="include\Stdafx.h" />
+    <ClInclude Include="res\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CormanLispServer.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\CharBuf.cpp" />
+    <ClCompile Include="src\CoConnectionPoint.cpp" />
+    <ClCompile Include="src\CoCormanLisp.cpp" />
+    <ClCompile Include="src\CoEnumConnectionPoints.cpp" />
+    <ClCompile Include="src\CoEnumConnections.cpp" />
+    <ClCompile Include="src\Compx86.cpp" />
+    <ClCompile Include="src\CormanLispServer.cpp" />
+    <ClCompile Include="src\Disasm.cpp" />
+    <ClCompile Include="src\Gc.cpp" />
+    <ClCompile Include="src\Lisp.cpp" />
+    <ClCompile Include="src\Lispfunc.cpp" />
+    <ClCompile Include="src\LispMath.cpp" />
+    <ClCompile Include="src\LispThreadQueue.cpp" />
+    <ClCompile Include="src\MemoryReport.cpp" />
+    <ClCompile Include="src\Read.cpp" />
+    <ClCompile Include="src\Stdafx.cpp" />
+    <ClCompile Include="src\ThreadClasses.cpp" />
+    <ClCompile Include="src\Write.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\CormanLispServer.rc">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">res</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\zlib\zlib.vcxproj">
+      <Project>{99bd3558-deee-4f99-913e-dac97a12926e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
