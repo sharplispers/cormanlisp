@@ -18,7 +18,7 @@ copy license.dll %1
 copy RDNZL.dll %1
 copy init.lisp %1
 copy makeall.bat %1
-copy *.ism %1
+rem copy *.ism %1
 copy HyperSpec-6-0.tar.gz %1
 mkdir %1\clboot
 copy clboot\clboot.cpp %1\clboot
@@ -66,7 +66,7 @@ copy Modules\*.lisp %1\Modules
 copy Modules\*.dll %1\Modules
 copy Modules\*.txt %1\Modules
 mkdir %1\sys
-copy sys\*.lisp %1\sys
+copy Sys\*.lisp %1\Sys
 mkdir %1\test
 copy test\*.lisp %1\test
 mkdir %1\zlib
