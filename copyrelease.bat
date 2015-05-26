@@ -17,7 +17,7 @@ copy dlltemplate.dll %1
 copy license.dll %1
 copy init.lisp %1
 copy makeall.bat %1
-rem copy *.ism %1
+copy *.ism %1
 copy HyperSpec-6-0.tar.gz %1
 mkdir %1\clboot
 copy clboot\clboot.cpp %1\clboot
