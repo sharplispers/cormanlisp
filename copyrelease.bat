@@ -15,6 +15,7 @@ copy clconsoleapp.exe %1
 copy CormanLispServer.dll %1
 copy dlltemplate.dll %1
 copy license.dll %1
+copy RDNZL.dll %1
 copy init.lisp %1
 copy makeall.bat %1
 copy *.ism %1
