@@ -82,7 +82,7 @@
 				OutputFile="..\CormanLisp.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				GenerateManifest="false"
+				GenerateManifest="true"
 				ManifestFile="..\CormanLisp.exe.manifest"
 				IgnoreDefaultLibraryNames="oleacc.lib"
 				GenerateDebugInformation="true"
