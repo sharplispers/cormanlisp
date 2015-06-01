@@ -37,7 +37,7 @@ BOOL RegistrationDialog::OnInitDialog()
 	}
 	m_name = (CEdit*)GetDlgItem(IDC_EDITNAME);
 	m_organization = (CEdit*)GetDlgItem(IDC_EDITORG);
-	m_registrationCode = (CEdit*)GetDlgItem(IDC_EDITREGCODE);
+//	m_registrationCode = (CEdit*)GetDlgItem(IDC_EDITREGCODE);
 
 	char namebuf[256];
 	unsigned long length = 256;
@@ -54,7 +54,7 @@ BOOL RegistrationDialog::OnInitDialog()
 
 	RegistrationInfo info;
 	GetRegistrationInfo(&info);
-
+/*
 	if (!(info.isRegistered))
 	{
 		item = GetDlgItem(IDC_DAYSREMAINING);
@@ -81,7 +81,7 @@ BOOL RegistrationDialog::OnInitDialog()
 			item->SetWindowText(buf);
 		}
 	}
-
+*/
 	return FALSE;
 }
 
@@ -90,6 +90,8 @@ void RegistrationDialog::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	CDialog::OnChar(nChar, nRepCnt, nFlags);
 }
 
+#define EncryptionKey_3_0 "EmitIdy"
+
 void RegistrationDialog::OnOK()
 {
 	CString name;
@@ -97,7 +99,21 @@ void RegistrationDialog::OnOK()
 	CString registrationCode;
 	m_name->GetWindowText(name);
 	m_organization->GetWindowText(organization);
-	m_registrationCode->GetWindowText(registrationCode);
+//	m_registrationCode->GetWindowText(registrationCode);
+
+	HMODULE module = LoadLibrary("license.dll");
+	long code;
+
+	if (module)
+	{
+		FARPROC proc = GetProcAddress(module, "generateRegistrationCode");
+		if (proc)
+		{
+			code = reinterpret_cast<long (*)(const char*, const char*, const char*)>(proc)(name, organization, EncryptionKey_3_0);
+		}
+	}
+
+	registrationCode.Format("%ld", code);
 
 	if (!registrationOK(name, organization, registrationCode))
 	{

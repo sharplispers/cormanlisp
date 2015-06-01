@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{ebb8c28d-1fb1-4dba-8b69-7ac595019c2c}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{f0eacdc0-f9ea-4099-9212-a91b7a214344}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{cbe399e0-4a35-4ded-bacc-93c776d113c9}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\browser.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CharBuf.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CoCormanLispClient.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CommonLispFuncs.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CormanLisp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CSDialog.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DocOptions.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LispObjDisplay.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oleaccproxy.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PageSetupDlg.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PreferencesDialog.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RegistrationDialog.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SMDIChildWnd.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SMDIFrameWnd.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stdafx.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ThreadClasses.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\webbrowser.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CormanLisp.rc">
+      <Filter>src</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\browser.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\CoCormanLispClient.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CommonLispFuncs.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CormanLisp.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CSDialog.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DocOptions.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ErrorMessage.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\helpids.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ICormanLisp.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LispObjDisplay.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\oleaccproxy.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PageSetupDlg.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PreferencesDialog.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RegistrationDialog.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SMDIChildWnd.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SMDIFrameWnd.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\STDAFX.H">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\threadclasses.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UtilFuncs.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\webbrowser.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RES\background1.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\bmp00001.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\Browserfram.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\BrowserToolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\Corman_2_2_splash.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\Corman_2_5_splash.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\Corman_2_splash.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\CormanLisp.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\CormanLisp.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\CormanLisp_2_5_small.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\CormanLisp_3_0_splash_499x312.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\CormanLisp_small.BMP">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\CormanLisp_smaller.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\embossed_logo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\embossed_logo_2_5.BMP">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\feather--CL 3.0_small.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\ico00001.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\icon1.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\idr_html.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\idr_lisp.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\idr_text.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\LispDoc.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\splash_tiny.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\TOOLBAR.BMP">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\toolbar1.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

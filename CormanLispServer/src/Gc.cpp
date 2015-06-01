@@ -3313,7 +3313,7 @@ void writeHeap(FILE* writeHeap_os)
     header.pageMapSize = pageTableSize;
     header.foreignBlocksStart = header.pageMapStart + header.pageMapSize;
     header.foreignBlocksSize = CHeapBlocksSize;
-    strcpy_s(header.copyright, sizeof(header.copyright), LispImageCopyright);
+    strncpy_s(header.copyright, sizeof(header.copyright), LispImageCopyright, _TRUNCATE);
     header.compressionType = 0;
     header.compressedSize = 0;
     header.uncompressedSize = staticSize + sizeof(heapAddress)

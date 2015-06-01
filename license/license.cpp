@@ -48,7 +48,8 @@ static bool InstallTimeout(int days);
 
 static EncryptDES des;
 
-static long generateRegistrationCode(const char* name,
+extern "C" long __declspec(dllexport)
+generateRegistrationCode(const char* name,
 									 const char* organization, const char* key)
 {
 	static char buf[4096];

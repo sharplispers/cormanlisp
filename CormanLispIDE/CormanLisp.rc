@@ -269,15 +269,15 @@ BEGIN
     LTEXT           "Santa Rosa, CA 95404   USA",IDC_STATIC,201,86,100,9
     LTEXT           "Name:",IDC_STATIC,170,99,34,8
     LTEXT           "Organization:",IDC_STATIC,170,112,41,8
-    LTEXT           "Registration Code:",IDC_STATIC,170,125,60,8
+    //LTEXT           "Registration Code:",IDC_STATIC,170,125,60,8
     DEFPUSHBUTTON   "Not Yet",IDCANCEL,308,154,50,14
     EDITTEXT        IDC_EDITNAME,240,96,113,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDITORG,240,109,113,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDITREGCODE,240,122,113,12,ES_AUTOHSCROLL
+    //EDITTEXT        IDC_EDITREGCODE,240,122,113,12,ES_AUTOHSCROLL
     LTEXT           "Version:",IDC_STATIC,7,148,34,9
     LTEXT           "CormanLisp 3.0",IDC_REGVERSION,102,148,56,10
-    LTEXT           "Evaluation days remaining:",IDC_STATIC,7,160,85,8
-    LTEXT           "0",IDC_DAYSREMAINING,101,160,51,8
+    //LTEXT           "Evaluation days remaining:",IDC_STATIC,7,160,85,8
+    //LTEXT           "0",IDC_DAYSREMAINING,101,160,51,8
     PUSHBUTTON      "Legal Information",ID_LEGAL_INFO,161,154,64,14
 END
 
