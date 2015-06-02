@@ -242,7 +242,9 @@ DWORD WINAPI GetEnvironmentVariableA(LPCSTR,LPSTR,DWORD);
                        (stringp homepath)
                        (= (length homedrive) 2)
                        (> (length homepath) 0))
-                  (concatenate 'string homedrive homepath)
+                  ;; Added a tail "\\" to make sure the namestring is parsed
+                  ;; as a pure directory. -- Chun Tian (binghe), May 2015
+                  (concatenate 'string homedrive homepath "\\")
                   "C:\\"))))
           (t
            (error "HOST must be a string, list of strings, NIL or :UNSPECIFIC")))))
