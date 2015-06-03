@@ -23,7 +23,7 @@
 (defparameter *patches-installed* nil)
 (defparameter *patch-server* "www.cormanlisp.com")
 (defparameter *patch-root-directory* "/CormanLisp/patches/3_01f1/")
-(defparameter *auto-update-enabled* t)
+(defparameter *auto-update-enabled* nil) ; disabled by default
 (defparameter *auto-update-level* 1)        ;; version of auto-update
 (defparameter *patch* nil)
 
