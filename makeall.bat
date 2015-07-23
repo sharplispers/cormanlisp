@@ -1,6 +1,9 @@
 cd zlib
 nmake /s /c clean
 nmake /s /c
+cd license
+nmake /s /c clean
+nmake /s /c
 cd ..\CormanLispServer
 nmake /s /c clean
 nmake /s /c
@@ -14,6 +17,9 @@ cd ..\clconsole
 nmake /s /c clean
 nmake /s /c
 cd ..\clconsoleapp
+nmake /s /c clean
+nmake /s /c
+cd ..\CormanLispIDE
 nmake /s /c clean
 nmake /s /c
 cd ..

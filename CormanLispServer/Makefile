@@ -31,6 +31,7 @@ default:	../CormanLispServer.dll
 		/implib:"bin\CormanLispServer.lib"		\
 		/safeseh:no					            \
 		/manifest:no                            \
+		/nxcompat:no							\
 		bin\*.obj								\
 		bin\CormanLispServer.res				\
 		../zlib/zlib.lib						\

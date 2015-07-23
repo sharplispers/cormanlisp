@@ -25,6 +25,7 @@ default:  ../clconsole.exe
 		/machine:I386							\
 		/out:"../clconsole.exe"					\
 		/manifest:no							\
+		/nxcompat:no							\
 		bin\clconsole.obj						\
 		kernel32.lib							\
 		user32.lib								\
