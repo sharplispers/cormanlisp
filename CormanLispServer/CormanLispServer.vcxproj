@@ -78,6 +78,7 @@
       <ProgramDatabaseFile>../CormanLispServer.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <ImportLibrary>.\./bin/CormanLispServer.lib</ImportLibrary>
+      <DataExecutionPrevention>false</DataExecutionPrevention>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

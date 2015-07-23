@@ -25,6 +25,7 @@ default:  ../clbootapp.exe
 		/machine:I386							\
 		/out:"../clbootapp.exe"					\
 		/manifest:no							\
+		/nxcompat:no							\
 		bin\clbootapp.obj						\
 		..\CormanLispServer\bin\CormanLispStatic.lib\
 		../zlib/zlib.lib						\

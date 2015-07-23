@@ -70,6 +70,7 @@
       <ManifestFile>..\clbootapp.exe.manifest</ManifestFile>
       <ProgramDatabaseFile>.\Release/clbootapp.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
+      <DataExecutionPrevention>false</DataExecutionPrevention>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>clbootapp.exe.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>

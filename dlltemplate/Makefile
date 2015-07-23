@@ -28,6 +28,7 @@ default: ../dlltemplate.dll
 		/out:"../dlltemplate.dll"				\
 		/implib:"bin\dlltemplate.lib"			\
 		/manifest:no							\
+		/nxcompat:no							\
 		bin\dlltemplate.obj						\
 		kernel32.lib							\
 		user32.lib								\

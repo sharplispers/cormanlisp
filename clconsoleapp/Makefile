@@ -26,6 +26,7 @@ default: ../clconsoleapp.exe
 		/machine:I386							\
 		/out:"../clconsoleapp.exe"				\
 		/manifest:no							\
+		/nxcompat:no							\
 		bin\clconsoleapp.obj					\
 		..\CormanLispServer\bin\CormanLispStatic.lib\
 		../zlib/zlib.lib						\

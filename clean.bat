@@ -18,6 +18,8 @@ cd ..\dlltemplate
 nmake /s /c clean
 cd ..\license
 nmake /s /c clean
+cd ..\CormanLispIDE
+nmake /s /c clean
 cd ..
 if exist *.pdb del *.pdb
 if exist CormanLisp.exe del CormanLisp.exe

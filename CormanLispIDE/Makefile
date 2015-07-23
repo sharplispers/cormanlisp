@@ -32,6 +32,7 @@ default: ../CormanLisp.exe
 		/machine:I386							\
 		/out:"../CormanLisp.exe"				\
 		/manifest:no							\
+		/nxcompat:no							\
 		bin/*.obj								\
 		bin/CormanLisp.res						\
 		kernel32.lib							\

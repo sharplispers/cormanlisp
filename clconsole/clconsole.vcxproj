@@ -72,6 +72,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>../clconsole.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
+      <DataExecutionPrevention>false</DataExecutionPrevention>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>clconsole.exe.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>

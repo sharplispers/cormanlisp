@@ -26,6 +26,7 @@ default: ../clboot.exe
 		/machine:I386							\
 		/out:"../clboot.exe"					\
 		/manifest:no							\
+		/nxcompat:no							\
 		bin\clboot.obj							\
 		kernel32.lib							\
 		user32.lib								\

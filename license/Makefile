@@ -24,6 +24,7 @@ default:  ../license.dll
 		/IMPLIB:"../license.lib"				\
 		/DEF:"license.def"						\
 		/manifest:no                            \
+		/nxcompat:no							\
 		bin\license.obj							\
 		bin\EncryptDES.obj						\
 		kernel32.lib							\

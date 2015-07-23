@@ -69,6 +69,7 @@
       <ManifestFile>..\clconsoleapp.exe.manifest</ManifestFile>
       <ProgramDatabaseFile>../clconsoleapp.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
+      <DataExecutionPrevention>false</DataExecutionPrevention>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>clconsoleapp.exe.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
