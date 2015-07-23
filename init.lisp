@@ -8,7 +8,7 @@
 
 ;;; Set ccl:*auto-update-enabled* to NIL if you wish to disable
 ;;; automatic checking for updates (patches) by the IDE.
-(setf ccl:*auto-update-enabled* t)
+(setf ccl:*auto-update-enabled* nil)
 
 ;; for testing only
 ;;(defparameter *patch-root-directory* "/CormanLisp/patches/3_01f1/")
