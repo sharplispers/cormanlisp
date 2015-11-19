@@ -583,7 +583,8 @@
 ;;;;
 (defun find-symbol (string &optional (package *package*))
 	(unless (packagep package)
-		(setq package (find-package package)))
+		(setq package (or (find-package package)
+                          (error "The name \"~A\" does not designate any package." package))))
 	(unless (packagep package)
 		(error "Invalid package: ~A" package))
     (with-synchronization (package-sync package)
