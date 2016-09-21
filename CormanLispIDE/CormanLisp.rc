@@ -361,9 +361,9 @@ BEGIN
     CONTROL         "Replace Tabs With Spaces",IDC_REPLACE_TABS_WITH_SPACES,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,28,106,14
     CONTROL         "Remember open documents",IDC_REMEMBER_OPEN_DOCUMENTS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,284,16,106,14
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,284,16,108,14
     CONTROL         "Remember document positions",IDC_REMEMBER_DOCUMENT_POSITIONS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,284,28,106,14
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,284,28,108,14
     CONTROL         "Show full path in window title",IDC_FULL_PATH_IN_TITLE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,284,43,107,10
     CONTROL         "Auto Syntax Coloring",IDC_AUTO_COLORIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,284,55,81,10
