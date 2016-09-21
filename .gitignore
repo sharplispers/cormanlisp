@@ -1,0 +1,13 @@
+*.exe
+*.dll
+*.lib
+*.exp
+*.obj
+*.res
+*.img
+*.pdb
+*.log
+*.tlog
+*.sdf
+*.opensdf
+
