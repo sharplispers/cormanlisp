@@ -10,4 +10,7 @@
 *.tlog
 *.sdf
 *.opensdf
+*.suo
+*.aps
+Lisp Worksheet
 
