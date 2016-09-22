@@ -1727,7 +1727,26 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DockControlBarLeftOf(&m_registrationDialogBar, &m_lispStatusDialogBar);
     DockControlBarLeftOf(&m_lispVarsDialogBar, &m_registrationDialogBar);
 
-	return CSMDIFrameWnd::OnCreate(lpCreateStruct);
+	int res = CSMDIFrameWnd::OnCreate(lpCreateStruct);
+
+	// set proper size for main toolbar
+	{
+		RECT r;
+		int height = 0;
+
+		memset(&r, 0, sizeof(r));
+		m_lispStatusDialogBar.GetClientRect(&r);
+
+		height = r.bottom - r.top;
+
+		if (height > 0)
+		{
+			m_ToolBar.SetHeight(height);
+			m_ToolBar.RedrawWindow();
+		}
+	}
+
+	return res;
 }
 
 IMPLEMENT_DYNCREATE(CLispDoc, CRichEditDoc)
