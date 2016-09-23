@@ -80,6 +80,7 @@
       <SubSystem>Windows</SubSystem>
       <ImportLibrary>$(ProjectDir)\bin\CormanLispServer.lib</ImportLibrary>
       <DataExecutionPrevention>false</DataExecutionPrevention>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -79,6 +79,7 @@
       <ProgramDatabaseFile>..\CormanLisp.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention>false</DataExecutionPrevention>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <Manifest>
       <OutputManifestFile />

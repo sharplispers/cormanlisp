@@ -62,6 +62,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <ProgramDatabaseFile>$(SolutionDir)\license.pdb</ProgramDatabaseFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
