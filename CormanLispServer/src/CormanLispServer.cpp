@@ -418,6 +418,7 @@ static void
 RunLispThread(HANDLE* thread)
 {
 	ThreadRecord* th = new ThreadRecord;
+	auto sz = sizeof(*th);
 	th->QV_rec = createNewQV();
 	NumLispThreads++;
 	ThreadList.insert(th);
