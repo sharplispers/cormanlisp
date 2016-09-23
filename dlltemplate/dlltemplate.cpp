@@ -54,8 +54,7 @@ static DWORD* FunctionsTable = 0;
 static HANDLE Console = 0;
 static char* DllName = 0;
 
-extern "C" int __declspec( dllexport ) __stdcall
-DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID /*lpReserved*/)
+extern "C" int __stdcall DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID /*lpReserved*/)
 {
 	char* result = 0;
 	BOOL ret = 0;

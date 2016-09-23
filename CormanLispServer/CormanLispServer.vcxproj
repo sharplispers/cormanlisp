@@ -28,8 +28,8 @@
     <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
-    <OutDir>.\bin\</OutDir>
-    <IntDir>.\bin\</IntDir>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>$(ProjectDir)\bin\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <EmbedManifest>false</EmbedManifest>
@@ -48,36 +48,37 @@
       <TypeLibraryName>.\./bin/CormanLispServer.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
-      <AdditionalOptions>/I./include /I../include  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CormanLispServer;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <PrecompiledHeader />
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>.\./bin/CormanLispServer.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\./bin/</AssemblerListingLocation>
-      <ObjectFileName>.\./bin/</ObjectFileName>
-      <ProgramDataBaseFileName>.\./bin/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>$(ProjectDir)\bin\CormanLispServer.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(ProjectDir)\bin\</AssemblerListingLocation>
+      <ObjectFileName>$(ProjectDir)\bin\</ObjectFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)\bin\</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include\;$(ProjectDir)\include\</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 /safeseh:no %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>../zlib/zlib.lib;odbc32.lib;odbccp32.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../CormanLispServer.dll</OutputFile>
+      <AdditionalDependencies>$(SolutionDir)\zlib\zlib.lib;odbc32.lib;odbccp32.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(SolutionDir)\CormanLispServer.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ManifestFile />
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <ModuleDefinitionFile>.\CormanLispServer.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>$(ProjectDir)\CormanLispServer.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>../CormanLispServer.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(SolutionDir)\CormanLispServer.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
-      <ImportLibrary>.\./bin/CormanLispServer.lib</ImportLibrary>
+      <ImportLibrary>$(ProjectDir)\bin\CormanLispServer.lib</ImportLibrary>
       <DataExecutionPrevention>false</DataExecutionPrevention>
     </Link>
   </ItemDefinitionGroup>

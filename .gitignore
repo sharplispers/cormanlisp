@@ -6,6 +6,7 @@
 *.res
 *.img
 *.pdb
+*.vcxproj.user
 *.log
 *.tlog
 *.sdf

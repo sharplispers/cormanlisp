@@ -30,10 +30,11 @@
     <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
-    <OutDir>.\bin\</OutDir>
-    <IntDir>.\bin\</IntDir>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>$(ProjectDir)\bin\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
+    <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
     <Midl>
@@ -44,21 +45,22 @@
       <TypeLibraryName>.\bin/CormanLisp.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
-      <AdditionalOptions>/I../include  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include\;$(ProjectDir)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>.\bin/CormanLisp.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\bin/</AssemblerListingLocation>
-      <ObjectFileName>.\bin/</ObjectFileName>
-      <ProgramDataBaseFileName>.\bin/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>$(ProjectDir)\bin\CormanLisp.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(ProjectDir)\bin\</AssemblerListingLocation>
+      <ObjectFileName>$(ProjectDir)\bin\</ObjectFileName>
+      <ProgramDataBaseFileName>$(SolutionDir)\CormanLispServer.pdb</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -67,16 +69,20 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>..\CormanLispServer\bin\CormanLispServer.lib;ole32.lib;..\license.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\CormanLisp.exe</OutputFile>
+      <AdditionalDependencies>$(SolutionDir)\CormanLispServer\bin\CormanLispServer.lib;ole32.lib;$(SolutionDir)\license.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(SolutionDir)\CormanLisp.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ManifestFile>..\CormanLisp.exe.manifest</ManifestFile>
+      <ManifestFile>
+      </ManifestFile>
       <IgnoreSpecificDefaultLibraries>oleacc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>..\CormanLisp.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention>false</DataExecutionPrevention>
     </Link>
+    <Manifest>
+      <OutputManifestFile />
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\browser.cpp" />
