@@ -1617,7 +1617,12 @@ Example:
             (declare (ignore doc))
             (when bad-decls (error "Declarations found in body of callback"))
             (setq lisp-func 
-                `(defun ,internal-name ,syms (let () ,@decls (block ,name ,@body))))
+				  `(defun ,internal-name ,syms
+					 (let ()
+					   (cl::%safecall #'(lambda ()
+										  ,@decls
+										  (block ,name
+											,@body))))))
             (setq docstring doc))
         (let ((param-offset 0))
 			(dolist (x arg-list)
