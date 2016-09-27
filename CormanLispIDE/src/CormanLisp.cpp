@@ -1088,7 +1088,7 @@ void CCormanLispApp::OnLicenseAgreement()
 	path[index] = 0;	// get rid of file name, just leave the path
 	if (chars > 0)
 		strcat_s(path, sizeof(path), "\\");
-	strcat_s(path, sizeof(path), "documentation\\license-agreement.txt");
+	strcat_s(path, sizeof(path), "LICENSE.txt");
 	NavigateURL(path);
 }
 

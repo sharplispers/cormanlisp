@@ -279,7 +279,7 @@ void AboutDialog::OnLegalInfo()
 	CormanLispDirectory[index] = 0;	// get rid of file name, just leave the path
 	if (chars > 0)
 		strcat_s(CormanLispDirectory, sizeof(CormanLispDirectory), "\\");
-	strcat_s(CormanLispDirectory, sizeof(CormanLispDirectory), "documentation\\license-agreement.txt");
+	strcat_s(CormanLispDirectory, sizeof(CormanLispDirectory), "LICENSE.txt");
 	theApp.NavigateURL(CormanLispDirectory);
 }
 
