@@ -1,0 +1,329 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\makeimg.bat" />
+    <None Include="..\Sys\array.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\arrays.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\assembler.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\autoload.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\auto-update.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\backquote.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\bignums.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\bits.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\boole.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\bootstrap.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\characters.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\clmacros.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\clos.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\clos-eql-patch.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\cl-symbols.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\coerce.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\collect-literals.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\com.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\compile-file.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\compiler.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\compile-sys.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\conditions.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\context-menu.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\control-structures.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\debug.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\declarations.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\defpackage.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\describe.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\destructure.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\directory.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\documentation.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\dribble.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\edit-window.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\errors.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\expand.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\fast-class-of.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\ffi.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\filenames.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\format.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\hash-table.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\hyperspec.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\ide-menus.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\imagehlp.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\input-output.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\io.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\jumpmenu.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\kernel-asm.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\kernel-funcs.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\lists.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\load-sys.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\load-sys2.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\logical-pathname.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\loop.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\map-file.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\massage.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\math.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\math2.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\math-ops.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\menus.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\misc.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\misc-features.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\misc-utility.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\open-file.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\package.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\parse-c-decls.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\places.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\pl-imports.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\pl-symbols.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\pretty.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\print-float.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\profiler.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\random.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\read.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\readtable.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\registry.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\require.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\save-application.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\sequence.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\sequences.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\setf.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\setf-expander.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\sockets.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\stepper.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\streams.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\strings.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\structures.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\subtypep.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\symbols.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\synchronized.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\sys-lib.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\tail-calls.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\THREADS.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\time.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\toplevel.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\trace.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\trees.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\types.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\util.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\uvector.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\vm.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\win32.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\win-conditions.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\winsock.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\working.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\write.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\xp.lisp">
+      <Filter>Sys</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Sys">
+      <UniqueIdentifier>{529b484c-5604-4a7d-9e8d-577ebef0dcd9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CormanLisp", "CormanLispIDE
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CormanLispStatic", "CormanLispServer\CormanLispStatic.vcxproj", "{AC999700-A6C5-4BBD-8A01-D29ED089E951}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CormanLispImage", "CormanLispImage\CormanLispImage.vcxproj", "{9C2663C3-E055-42A7-A678-7A3F6472EC8D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -90,6 +92,12 @@ Global
 		{AC999700-A6C5-4BBD-8A01-D29ED089E951}.Release|Win32.Build.0 = Standard|Win32
 		{AC999700-A6C5-4BBD-8A01-D29ED089E951}.Standard|Win32.ActiveCfg = Standard|Win32
 		{AC999700-A6C5-4BBD-8A01-D29ED089E951}.Standard|Win32.Build.0 = Standard|Win32
+		{9C2663C3-E055-42A7-A678-7A3F6472EC8D}.Debug|Win32.ActiveCfg = Standard|Win32
+		{9C2663C3-E055-42A7-A678-7A3F6472EC8D}.Debug|Win32.Build.0 = Standard|Win32
+		{9C2663C3-E055-42A7-A678-7A3F6472EC8D}.Release|Win32.ActiveCfg = Standard|Win32
+		{9C2663C3-E055-42A7-A678-7A3F6472EC8D}.Release|Win32.Build.0 = Standard|Win32
+		{9C2663C3-E055-42A7-A678-7A3F6472EC8D}.Standard|Win32.ActiveCfg = Standard|Win32
+		{9C2663C3-E055-42A7-A678-7A3F6472EC8D}.Standard|Win32.Build.0 = Standard|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
