@@ -36,9 +36,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
     <CustomBuildStep>
-      <Command>makestaticlib
-</Command>
-      <Outputs>.\bin\CormanLispStatic.lib;%(Outputs)</Outputs>
+      <Command>
+      </Command>
     </CustomBuildStep>
     <Midl>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>

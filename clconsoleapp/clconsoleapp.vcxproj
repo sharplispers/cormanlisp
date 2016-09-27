@@ -67,7 +67,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(SolutionDir)\CormanLispServer\bin\cormanlispstatic.lib;$(SolutionDir)\zlib\zlib.lib;odbc32.lib;odbccp32.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\CormanLispServer\bin\CormanLispStatic.lib;$(SolutionDir)\zlib\zlib.lib;odbc32.lib;odbccp32.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)\clconsoleapp.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ManifestFile>
@@ -92,9 +92,13 @@
     <ClCompile Include="clconsoleapp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CormanLispServer\CormanLispServer.vcxproj">
-      <Project>{f914cf4d-5904-477f-a388-00c05e749d18}</Project>
+    <ProjectReference Include="..\CormanLispServer\CormanLispStatic.vcxproj">
+      <Project>{ac999700-a6c5-4bbd-8a01-d29ed089e951}</Project>
+      <Private>false</Private>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\license\license.vcxproj">
       <Project>{e21ce9f1-f1af-487a-8c01-23a4d8a23cc7}</Project>
