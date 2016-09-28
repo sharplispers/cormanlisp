@@ -89,9 +89,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="clbootapp.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\CormanLispServer\CormanLispStatic.vcxproj">
       <Project>{ac999700-a6c5-4bbd-8a01-d29ed089e951}</Project>
       <Private>false</Private>
@@ -108,6 +105,9 @@
       <Project>{99bd3558-deee-4f99-913e-dac97a12926e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="clbootapp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="clbootapp.rc" />
