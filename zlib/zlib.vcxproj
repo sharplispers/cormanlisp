@@ -29,8 +29,8 @@
     <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
-    <OutDir>.\bin\</OutDir>
-    <IntDir>.\bin\</IntDir>
+    <OutDir>$(ProjectDir)</OutDir>
+    <IntDir>$(ProjectDir)\bin\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
     <ClCompile>
@@ -41,18 +41,21 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader />
       <PrecompiledHeaderOutputFile>.\bin/zlib.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\bin/</AssemblerListingLocation>
-      <ObjectFileName>.\bin/</ObjectFileName>
-      <ProgramDataBaseFileName>.\bin/</ProgramDataBaseFileName>
+      <AssemblerListingLocation>$(ProjectDir)\bin\</AssemblerListingLocation>
+      <ObjectFileName>$(ProjectDir)\bin\</ObjectFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)\bin\</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
+      <Optimization>Disabled</Optimization>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Lib>
-      <OutputFile>.\zlib.lib</OutputFile>
+      <OutputFile>$(ProjectDir)\zlib.lib</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Lib>
   </ItemDefinitionGroup>

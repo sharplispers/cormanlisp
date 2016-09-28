@@ -1,0 +1,17 @@
+*.exe
+*.dll
+*.lib
+*.exp
+*.obj
+*.res
+*.img
+*.pdb
+*.vcxproj.user
+*.log
+*.tlog
+*.sdf
+*.opensdf
+*.suo
+*.aps
+Lisp Worksheet
+

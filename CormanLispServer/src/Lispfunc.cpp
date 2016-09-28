@@ -4481,6 +4481,9 @@ FunctEntry functTable[] =
     { "consoleUnderflow",           (LispFunc)consoleUnderflow },
     { "garbageCollect",             (LispFunc)garbageCollect },
 
+	// We need this built-in function to support callback in FFI on 64-bit versions of Windows
+	// It seems one can not throw Access Violation Exceptions through the Windows API functions on 64 bit OSes.
+	{ "%SAFECALL",                  (LispFunc)Safecall      },
     // ----------------------------------------------------------
 };
 long sizeFunctTable = sizeof(functTable)/sizeof(FunctEntry);
@@ -4810,3 +4813,31 @@ LispFunction(Lisp_Shutdown)
 	ret = NIL;
 	LISP_FUNC_RETURN(ret);	
 }
+
+
+// We need this to implement %SAFECALL primitive to support callbacks on 64 bit versions of Windows.
+volatile static LispObj doSafecall(LispObj func)
+{
+	LispObj res = NIL;
+	__try
+	{
+		res = LispCall1(Funcall, func);
+	}
+	__except (handleStructuredException(GetExceptionCode(), GetExceptionInformation()))
+	{
+
+	}
+	return res;
+}
+
+LispFunction(Safecall)
+{
+	LISP_FUNC_BEGIN(1);
+	LispObj obj = LISP_ARG(0);
+	checkFunction(obj);
+
+	ret = doSafecall(obj);
+
+	LISP_FUNC_RETURN(ret);
+}
+

@@ -18,7 +18,7 @@ default: ../clboot.exe
 		/Fd"./bin/"								\
 		/I./include /I../include				\
 		clboot.cpp
- 
+	rc.exe /l 0x409 /fo"bin\clboot.res" /i "res" /d "NDEBUG" /d "_AFXDLL" .\clboot.rc
 	link.exe /nologo /debug /nodefaultlib 		\
 		/subsystem:windows						\
 		/incremental:no							\
@@ -40,8 +40,8 @@ default: ../clboot.exe
 		oleaut32.lib							\
 		uuid.lib
 
-	mt /outputresource:"../clboot.exe;#1" /manifest clboot.exe.manifest
-	
+#	mt /outputresource:"../clboot.exe;#1" /manifest clboot.exe.manifest
+
 clean:
 	if exist bin\*.obj del bin\*.obj
 	if exist bin\*.pdb del bin\*.pdb

@@ -29,8 +29,8 @@
     <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
-    <OutDir>..\</OutDir>
-    <IntDir>.\bin\</IntDir>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>$(ProjectDir)\bin\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <EmbedManifest>false</EmbedManifest>
@@ -47,18 +47,22 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+      <ProgramDataBaseFileName>$(SolutionDir)\license.pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/IMPLIB:"../license.lib" %(AdditionalOptions)</AdditionalOptions>
-      <OutputFile>$(OutDir)license.dll</OutputFile>
+      <AdditionalOptions>/IMPLIB:"$(SolutionDir)\license.lib" %(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(SolutionDir)\license.dll</OutputFile>
       <ManifestFile />
-      <ModuleDefinitionFile>license.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>$(ProjectDir)\license.def</ModuleDefinitionFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
       <DataExecutionPrevention>false</DataExecutionPrevention>
+      <ProgramDatabaseFile>$(SolutionDir)\license.pdb</ProgramDatabaseFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

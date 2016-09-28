@@ -29,10 +29,11 @@
     <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
-    <OutDir>.\bin\</OutDir>
-    <IntDir>.\bin\</IntDir>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>$(ProjectDir)\bin\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
+    <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
     <CustomBuildStep>
@@ -44,18 +45,21 @@
     </Midl>
     <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeaderOutputFile />
-      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
-      <ObjectFileName>.\Release/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <AssemblerListingLocation>$(ProjectDir)\bin\</AssemblerListingLocation>
+      <ObjectFileName>$(ProjectDir)\bin\</ObjectFileName>
+      <ProgramDataBaseFileName>$(SolutionDir)\clconsoleapp.pdb</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>Default</CompileAs>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -63,16 +67,21 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>../CormanLispServer/bin/cormanlispstatic.lib;../zlib/zlib.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../clconsoleapp.exe</OutputFile>
+      <AdditionalDependencies>$(SolutionDir)\CormanLispServer\bin\CormanLispStatic.lib;$(SolutionDir)\zlib\zlib.lib;odbc32.lib;odbccp32.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(SolutionDir)\clconsoleapp.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ManifestFile>..\clconsoleapp.exe.manifest</ManifestFile>
-      <ProgramDatabaseFile>../clconsoleapp.pdb</ProgramDatabaseFile>
+      <ManifestFile>
+      </ManifestFile>
+      <ProgramDatabaseFile>$(SolutionDir)\clconsoleapp.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <DataExecutionPrevention>false</DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>clconsoleapp.exe.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
+      <OutputManifestFile />
     </Manifest>
     <PostBuildEvent>
       <Message>Adding manifest.</Message>
@@ -83,9 +92,13 @@
     <ClCompile Include="clconsoleapp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CormanLispServer\CormanLispServer.vcxproj">
-      <Project>{f914cf4d-5904-477f-a388-00c05e749d18}</Project>
+    <ProjectReference Include="..\CormanLispServer\CormanLispStatic.vcxproj">
+      <Project>{ac999700-a6c5-4bbd-8a01-d29ed089e951}</Project>
+      <Private>false</Private>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\license\license.vcxproj">
       <Project>{e21ce9f1-f1af-487a-8c01-23a4d8a23cc7}</Project>
@@ -95,6 +108,12 @@
       <Project>{99bd3558-deee-4f99-913e-dac97a12926e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="clconsoleapp.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

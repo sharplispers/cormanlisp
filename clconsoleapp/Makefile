@@ -18,7 +18,7 @@ default: ../clconsoleapp.exe
 		/Fd"./bin/"								\
 		/I./include /I../include				\
 		clconsoleapp.cpp
- 
+	rc.exe /l 0x409 /fo"bin\clconsoleapp.res" /i "res" /d "NDEBUG" /d "_AFXDLL" .\clconsoleapp.rc
 	link.exe /nologo /nodefaultlib		\
 		/subsystem:console						\
 		/incremental:no							\

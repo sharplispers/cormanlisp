@@ -883,6 +883,8 @@ LispDeclare(Get_Time_Units_Per_Second);
 LispDeclare(Probe_File);
 LispDeclare(Memory_Report);
 
+LispDeclare(Safecall);
+
 //
 //	QV pointers
 //

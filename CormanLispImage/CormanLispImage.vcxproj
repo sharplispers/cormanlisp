@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Standard|Win32">
+      <Configuration>Standard</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\makeimg.bat" />
+    <None Include="..\Sys\array.lisp" />
+    <None Include="..\Sys\arrays.lisp" />
+    <None Include="..\Sys\assembler.lisp" />
+    <None Include="..\Sys\auto-update.lisp" />
+    <None Include="..\Sys\autoload.lisp" />
+    <None Include="..\Sys\backquote.lisp" />
+    <None Include="..\Sys\bignums.lisp" />
+    <None Include="..\Sys\bits.lisp" />
+    <None Include="..\Sys\boole.lisp" />
+    <None Include="..\Sys\bootstrap.lisp" />
+    <None Include="..\Sys\characters.lisp" />
+    <None Include="..\Sys\cl-symbols.lisp" />
+    <None Include="..\Sys\clmacros.lisp" />
+    <None Include="..\Sys\clos-eql-patch.lisp" />
+    <None Include="..\Sys\clos.lisp" />
+    <None Include="..\Sys\coerce.lisp" />
+    <None Include="..\Sys\collect-literals.lisp" />
+    <None Include="..\Sys\com.lisp" />
+    <None Include="..\Sys\compile-file.lisp" />
+    <None Include="..\Sys\compile-sys.lisp" />
+    <None Include="..\Sys\compiler.lisp" />
+    <None Include="..\Sys\conditions.lisp" />
+    <None Include="..\Sys\context-menu.lisp" />
+    <None Include="..\Sys\control-structures.lisp" />
+    <None Include="..\Sys\debug.lisp" />
+    <None Include="..\Sys\declarations.lisp" />
+    <None Include="..\Sys\defpackage.lisp" />
+    <None Include="..\Sys\describe.lisp" />
+    <None Include="..\Sys\destructure.lisp" />
+    <None Include="..\Sys\directory.lisp" />
+    <None Include="..\Sys\documentation.lisp" />
+    <None Include="..\Sys\dribble.lisp" />
+    <None Include="..\Sys\edit-window.lisp" />
+    <None Include="..\Sys\errors.lisp" />
+    <None Include="..\Sys\expand.lisp" />
+    <None Include="..\Sys\fast-class-of.lisp" />
+    <None Include="..\Sys\ffi.lisp" />
+    <None Include="..\Sys\filenames.lisp" />
+    <None Include="..\Sys\format.lisp" />
+    <None Include="..\Sys\hash-table.lisp" />
+    <None Include="..\Sys\hyperspec.lisp" />
+    <None Include="..\Sys\ide-menus.lisp" />
+    <None Include="..\Sys\imagehlp.lisp" />
+    <None Include="..\Sys\input-output.lisp" />
+    <None Include="..\Sys\io.lisp" />
+    <None Include="..\Sys\jumpmenu.lisp" />
+    <None Include="..\Sys\kernel-asm.lisp" />
+    <None Include="..\Sys\kernel-funcs.lisp" />
+    <None Include="..\Sys\lists.lisp" />
+    <None Include="..\Sys\load-sys.lisp" />
+    <None Include="..\Sys\load-sys2.lisp" />
+    <None Include="..\Sys\logical-pathname.lisp" />
+    <None Include="..\Sys\loop.lisp" />
+    <None Include="..\Sys\map-file.lisp" />
+    <None Include="..\Sys\massage.lisp" />
+    <None Include="..\Sys\math-ops.lisp" />
+    <None Include="..\Sys\math.lisp" />
+    <None Include="..\Sys\math2.lisp" />
+    <None Include="..\Sys\menus.lisp" />
+    <None Include="..\Sys\misc-features.lisp" />
+    <None Include="..\Sys\misc-utility.lisp" />
+    <None Include="..\Sys\misc.lisp" />
+    <None Include="..\Sys\open-file.lisp" />
+    <None Include="..\Sys\package.lisp" />
+    <None Include="..\Sys\parse-c-decls.lisp" />
+    <None Include="..\Sys\pl-imports.lisp" />
+    <None Include="..\Sys\pl-symbols.lisp" />
+    <None Include="..\Sys\places.lisp" />
+    <None Include="..\Sys\pretty.lisp" />
+    <None Include="..\Sys\print-float.lisp" />
+    <None Include="..\Sys\profiler.lisp" />
+    <None Include="..\Sys\random.lisp" />
+    <None Include="..\Sys\read.lisp" />
+    <None Include="..\Sys\readtable.lisp" />
+    <None Include="..\Sys\registry.lisp" />
+    <None Include="..\Sys\require.lisp" />
+    <None Include="..\Sys\save-application.lisp" />
+    <None Include="..\Sys\sequence.lisp" />
+    <None Include="..\Sys\sequences.lisp" />
+    <None Include="..\Sys\setf-expander.lisp" />
+    <None Include="..\Sys\setf.lisp" />
+    <None Include="..\Sys\sockets.lisp" />
+    <None Include="..\Sys\stepper.lisp" />
+    <None Include="..\Sys\streams.lisp" />
+    <None Include="..\Sys\strings.lisp" />
+    <None Include="..\Sys\structures.lisp" />
+    <None Include="..\Sys\subtypep.lisp" />
+    <None Include="..\Sys\symbols.lisp" />
+    <None Include="..\Sys\synchronized.lisp" />
+    <None Include="..\Sys\sys-lib.lisp" />
+    <None Include="..\Sys\tail-calls.lisp" />
+    <None Include="..\Sys\THREADS.lisp" />
+    <None Include="..\Sys\time.lisp" />
+    <None Include="..\Sys\toplevel.lisp" />
+    <None Include="..\Sys\trace.lisp" />
+    <None Include="..\Sys\trees.lisp" />
+    <None Include="..\Sys\types.lisp" />
+    <None Include="..\Sys\util.lisp" />
+    <None Include="..\Sys\uvector.lisp" />
+    <None Include="..\Sys\vm.lisp" />
+    <None Include="..\Sys\win-conditions.lisp" />
+    <None Include="..\Sys\win32.lisp" />
+    <None Include="..\Sys\winsock.lisp" />
+    <None Include="..\Sys\working.lisp" />
+    <None Include="..\Sys\write.lisp" />
+    <None Include="..\Sys\xp.lisp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\clconsole\clconsole.vcxproj">
+      <Project>{ee43a1a5-ed5e-4247-b0cf-fb5f3ec80a03}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9C2663C3-E055-42A7-A678-7A3F6472EC8D}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
+    <NMakeBuildCommandLine>$(SolutionDir)makeimg.bat</NMakeBuildCommandLine>
+    <NMakeOutput>$(SolutionDir)CormanLisp.img</NMakeOutput>
+    <NMakeReBuildCommandLine>$(SolutionDir)makeimg.bat</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
+    <NMakeCleanCommandLine>$(SolutionDir)delimg.bat</NMakeCleanCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeCleanCommandLine>$(SolutionDir)delimg.bat</NMakeCleanCommandLine>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
