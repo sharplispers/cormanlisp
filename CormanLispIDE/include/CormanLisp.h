@@ -37,16 +37,6 @@ public:
 	afx_msg void OnDrawItem( int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
 };
 
-class RegistrationDialogBar : public CDialogBar
-{
-public:
-	DECLARE_MESSAGE_MAP()
-	afx_msg void OnPaint();	
-	afx_msg void OnOK();
-	afx_msg void OnUpdateOK(CCmdUI* pCmdUI);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-};
-
 class LispVarsDialogBar : public CDialogBar
 {
 public:
@@ -194,7 +184,6 @@ class CMainFrame : public CSMDIFrameWnd
 	CStatusBar  m_StatusBar;
 	CToolBar	m_ToolBar;
 	LispDialogBar m_lispStatusDialogBar;
-	RegistrationDialogBar m_registrationDialogBar;
 	LispVarsDialogBar m_lispVarsDialogBar;
 	int			m_currentLineNo;
 	int			m_currentColumnNo;

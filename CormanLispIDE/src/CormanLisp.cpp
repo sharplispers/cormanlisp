@@ -1661,34 +1661,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;      // fail to create
 	}
 
-	if (!m_registrationDialogBar.Create(this, IDD_VIEW_REG_TOOLBAR,
-		CBRS_LEFT | CBRS_TOOLTIPS | CBRS_FLYBY, IDD_VIEW_REG_TOOLBAR))
-	{
-		TRACE0("Failed to create registration dialog bar\n");
-		return -1;      // Fail to create.
-	}
-
-	{
-		char username[256] = { '\0' };
-		DWORD username_size = sizeof(username);
-		CWnd* item = m_registrationDialogBar.GetDlgItem(IDC_REG_NAME);
-		CString msg("User: ");
-		GetUserName(username, &username_size);
-		msg += username;
-		item->SetWindowText(msg);
-  		CDC* cdc = GetDC();
-  		CSize length = cdc->GetTextExtent(msg);
-  		ReleaseDC(cdc);
-  		RECT infoRect;
-  		item->GetClientRect(&infoRect);
-  		RECT dialogRect;
-  		m_registrationDialogBar.GetClientRect(&dialogRect);
-  		if (length.cx > infoRect.right)
-  		{
-  			int diff = length.cx - infoRect.right;
- 		}
-	}
-
 	if (!m_lispVarsDialogBar.Create(this, 
             IDD_VIEW_LISPVARS, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_SIZE_DYNAMIC,
 		ID_VIEW_LISPVARIABLES))
@@ -1700,13 +1672,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//Make the toolbar dockable
 	m_ToolBar.EnableDocking(CBRS_ALIGN_ANY);
 	m_lispStatusDialogBar.EnableDocking(CBRS_ALIGN_ANY);
-	m_registrationDialogBar.EnableDocking(CBRS_ALIGN_ANY);
 	m_lispVarsDialogBar.EnableDocking(CBRS_ALIGN_ANY);
 	EnableDocking(CBRS_ALIGN_ANY);
 	DockControlBar(&m_ToolBar);
 	DockControlBarLeftOf(&m_lispStatusDialogBar, &m_ToolBar);
-	DockControlBarLeftOf(&m_registrationDialogBar, &m_lispStatusDialogBar);
-    DockControlBarLeftOf(&m_lispVarsDialogBar, &m_registrationDialogBar);
+	DockControlBarLeftOf(&m_lispVarsDialogBar, &m_lispStatusDialogBar);
 
 	int res = CSMDIFrameWnd::OnCreate(lpCreateStruct);
 
@@ -4091,28 +4061,6 @@ void LispDialogBar::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct)
 	rect2.left += 1; rect2.top += 1; rect2.right -= 1; rect2.bottom -= 1;
 	dc.FrameRect(&rect2, &brush);
 	dc.FillSolidRect(&rect, RGB(255, 0, 0));
-}
-
-// RegistrationDialogBar
-BEGIN_MESSAGE_MAP(RegistrationDialogBar, CDialogBar)
-	ON_WM_PAINT()
-	ON_COMMAND(IDOK, OnOK)
-	ON_UPDATE_COMMAND_UI(IDOK, OnUpdateOK)
-END_MESSAGE_MAP()
-
-void RegistrationDialogBar::OnPaint()
-{
-	CDialogBar::OnPaint();
-}
-
-void RegistrationDialogBar::OnOK()
-{
-	theApp.NavigateURL("http://www.cormanlisp.com/license_2_0.html");
-}
-
-void RegistrationDialogBar::OnUpdateOK(CCmdUI* pCmdUI)
-{
-	pCmdUI->Enable(TRUE);
 }
 
 void CMainFrame::DockControlBarLeftOf(CControlBar* Bar, CControlBar* LeftOf)
