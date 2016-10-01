@@ -9,8 +9,8 @@
 //					10/01/16  Artem Boldarev
 //					          RegitrationDialog code removed.
 //
-#ifndef REGISTRATIONDIALOG_H
-#define REGISTRATIONDIALOG_H
+#ifndef DIALOGS_H
+#define DIALOGS_H
 
 #include <afxext.h>
 #include "../../license/license.h"
@@ -67,4 +67,4 @@ public:
 };
 
 
-#endif // REGISTRATIONDIALOG_H
+#endif // DIALOGS_H
