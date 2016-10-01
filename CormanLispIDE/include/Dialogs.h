@@ -6,8 +6,9 @@
 //		File:		RegistrationDialog.h
 //		Contents:	Corman Lisp application source file
 //		History:	10/13/98  RGC  Created.
+//					10/01/16  Artem Boldarev
+//					          RegitrationDialog code removed.
 //
-
 #ifndef REGISTRATIONDIALOG_H
 #define REGISTRATIONDIALOG_H
 

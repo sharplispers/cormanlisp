@@ -3,9 +3,11 @@
 //		See LICENSE.txt for license information.
 //		-------------------------------
 //
-//		File:		RegistrationDialog.cpp
+//		File:		Dialogs.cpp
 //		Contents:	Corman Lisp application source file
 //		History:	10/13/98  RGC  Created.
+//					10/01/16  Artem Boldarev
+//					          RegitrationDialog code removed.
 //
 #include "stdafx.h"
 #include "../resource.h"
