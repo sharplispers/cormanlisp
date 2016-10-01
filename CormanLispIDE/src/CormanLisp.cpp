@@ -17,7 +17,7 @@
 #include <math.h>
 #include <winbase.h>
 
-#include "RegistrationDialog.h"
+#include "Dialogs.h"
 #include "CormanLisp.h"
 #include "LispObjDisplay.h"
 #include "ErrorMessage.h"
@@ -569,22 +569,8 @@ void CCormanLispApp::checkRegistration()
 	// avoid recursion
 	if (m_inRegistrationDialog)
 		return;
-	RegistrationInfo info;
-	RegistrationDialog::GetRegistrationInfo(&info);
-	if (!(info.isRegistered))
-	{
-		RegistrationDialog registrationDlg(IDD_REG);
-		m_inRegistrationDialog = TRUE;
-		int result = registrationDlg.DoModal();
-		m_inRegistrationDialog = FALSE;
-		if (result == IDOK)
-		{
-		}
-		else
-		if (result == IDCANCEL)
-		{
-		}
-	}
+
+	return;
 }
 
 void CCormanLispApp::OnTimer(UINT)
@@ -1675,25 +1661,20 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;      // fail to create
 	}
 
-	RegistrationInfo info;
-
-	RegistrationDialog::GetRegistrationInfo(&info);
-//	info.isRegistered = false;
-
-	if (!m_registrationDialogBar.Create(this,
-	   info.isRegistered ? IDD_VIEW_REG_TOOLBAR : IDD_VIEW_UNREG_TOOLBAR,
-      CBRS_LEFT|CBRS_TOOLTIPS|CBRS_FLYBY,
-	  info.isRegistered ? IDD_VIEW_REG_TOOLBAR : IDD_VIEW_UNREG_TOOLBAR))
-   {
-      TRACE0("Failed to create registration dialog bar\n");
-      return -1;      // Fail to create.
-   }
-
-	if (info.isRegistered)
+	if (!m_registrationDialogBar.Create(this, IDD_VIEW_REG_TOOLBAR,
+		CBRS_LEFT | CBRS_TOOLTIPS | CBRS_FLYBY, IDD_VIEW_REG_TOOLBAR))
 	{
+		TRACE0("Failed to create registration dialog bar\n");
+		return -1;      // Fail to create.
+	}
+
+	{
+		char username[256] = { '\0' };
+		DWORD username_size = sizeof(username);
 		CWnd* item = m_registrationDialogBar.GetDlgItem(IDC_REG_NAME);
-		CString msg("Registered to: ");
-		msg += info.name;
+		CString msg("User: ");
+		GetUserName(username, &username_size);
+		msg += username;
 		item->SetWindowText(msg);
   		CDC* cdc = GetDC();
   		CSize length = cdc->GetTextExtent(msg);

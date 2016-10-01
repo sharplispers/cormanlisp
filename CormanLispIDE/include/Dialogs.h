@@ -14,37 +14,6 @@
 #include <afxext.h>
 #include "../../license/license.h"
 
-class RegistrationDialog : public CDialog
-{
-public:
-	RegistrationDialog(UINT nIDTemplate);
-	
-	BOOL OnInitDialog();
-	void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
-	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	void OnOK();
-	void OnCancel();
-	void OnLegalInfo();
-
-	static void GetRegistrationInfo(RegistrationInfo*);
-
-	DECLARE_MESSAGE_MAP()
-
-private:
-
-	bool registrationOK(const CString& name,
-						const CString& organization,
-						const CString& registrationCode);
-	bool Register(const char* name, const char* organization, const char* code);
-	bool Unregister();
-
-	CEdit* m_name;
-	CEdit* m_organization;
-//	CEdit* m_registrationCode;
-	bool m_registrationApproved;
-//	CTime m_expirationDate;
-};
-
 class AboutDialog : public CDialog
 {
 public:
