@@ -6,6 +6,7 @@
 //		File:		CoCormanLisp.cpp
 //		Contents:	COM Class definitions for Corman Lisp	COM server.
 //		History:	8/5/97  RGC  Created.
+//					10/01/16  Artem Boldarev GetCurrentUserName method.
 //
 #include "stdafx.h"
 
@@ -14,6 +15,7 @@
 #include <wchar.h>
 #include <ole2.h>
 #include <olectl.h>
+#include <string.h>
 
 #include "CoCormanLisp.H"
 #include "clsids.h"
@@ -21,7 +23,9 @@
 #include "CoEnumConnectionPoints.h"
 #include "CoConnectionPoint.h"
 
+
 #include "Lisp.h"
+#include "UserInfo.h"
 
 extern void SvcLock();
 extern void SvcUnlock();
@@ -30,7 +34,8 @@ CoCormanLisp* CormanLispServer = 0;
 
 //////////////////////////////////////////////////////////////////////
 // ctor and dtor
-CoCormanLisp::CoCormanLisp()
+CoCormanLisp::CoCormanLisp():
+pUserInfo(NULL)
 {
 	m_cRef = 0;
 	m_pcpPointSink = 0;
@@ -42,7 +47,9 @@ CoCormanLisp::CoCormanLisp()
 
 CoCormanLisp::~CoCormanLisp()
 {
+	UserInfo *info = (UserInfo *)pUserInfo;
 	SvcUnlock();
+	delete info;
 }
 
 
@@ -92,6 +99,12 @@ STDMETHODIMP CoCormanLisp::Initialize(IUnknown* clientInterface,
 	if (lispImage)
 		strncpy_s(LispImageName, sizeof(LispImageName), lispImage, LispImageNameMax);
 	CormanLispClientType = clientType;
+	if (pUserInfo == NULL)
+	{
+		UserInfo *info = new UserInfo;
+		pUserInfo = info;
+		UserInfo::FillUserInfo(*info);
+	}
 	InitializeCormanLisp(clientInterface);
 	return S_OK;
 }
@@ -140,6 +153,13 @@ STDMETHODIMP CoCormanLisp::InitializeEx(IUnknown* clientInterface,
             ephemeralHeap2Size = EphemeralHeap2SizeMax;
         EphemeralHeap2Size = ephemeralHeap2Size;
     }
+
+	if (pUserInfo == NULL)
+	{
+		UserInfo *info = new UserInfo;
+		pUserInfo = info;
+		UserInfo::FillUserInfo(*info);
+	}
 
 	InitializeCormanLisp(clientInterface);
 	return S_OK;
@@ -583,6 +603,29 @@ STDMETHODIMP CoCormanLisp::GetFunctionAddress(wchar_t* functionName, wchar_t* pa
 STDMETHODIMP CoCormanLisp::HandleStructuredException(long exception, LPEXCEPTION_POINTERS info, long* result)
 {
 	*result = handleStructuredException(exception, info);
+	return S_OK;
+}
+
+STDMETHODIMP CoCormanLisp::GetCurrentUserName(char *UserName, size_t *len)
+{
+	UserInfo *info = (UserInfo *)pUserInfo;
+	size_t old_len;
+
+	if (UserName == NULL && len == NULL)
+	{
+		return S_FALSE;
+	}
+
+	old_len = *len;
+	*len = strlen(info->GetName());
+	if (UserName != NULL)
+	{
+		if (old_len < *len)
+			return S_FALSE;
+
+		strcpy_s(UserName, (*len) + 1, info->GetName());
+	}
+
 	return S_OK;
 }
 

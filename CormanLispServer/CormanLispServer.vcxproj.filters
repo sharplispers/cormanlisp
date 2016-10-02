@@ -50,6 +50,9 @@
     <ClInclude Include="include\Stdafx.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\UserInfo.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CormanLispServer.def">
@@ -109,6 +112,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Write.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInfo.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

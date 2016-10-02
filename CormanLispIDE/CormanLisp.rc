@@ -291,14 +291,14 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,231,120,50,14
     CONTROL         106,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE,7,0,273,89
-    LTEXT           "Name:",IDC_STATIC,115,156,34,8
-    LTEXT           "Organization:",IDC_STATIC,115,165,41,8
+    LTEXT           "User:",IDC_STATIC,115,156,34,8
+//    LTEXT           "Organization:",IDC_STATIC,115,165,41,8
     LTEXT           "Version:",IDC_STATIC,21,146,34,9
     LTEXT           "Corman Lisp 3.0",IDC_REGVERSION,116,146,164,10
     LTEXT           "Evaluation days remaining:",IDC_EVALMESSAGE,97,179,85,8
     LTEXT           "0",IDC_DAYSREMAINING,191,179,51,8
-    LTEXT           "Static",IDC_ABOUTORG,163,165,98,8
-    LTEXT           "Registered to:",IDC_STATIC,21,156,68,10
+//    LTEXT           "Static",IDC_ABOUTORG,163,165,98,8
+//    LTEXT           "Registered to:",IDC_STATIC,21,156,68,10
     LTEXT           "Static",IDC_ABOUTNAME,163,156,97,8
     CTEXT           "Corman Common Lisp",IDC_STATIC,45,99,118,9
     CTEXT           "Integrated Development Environment",IDC_STATIC,45,110,119,9

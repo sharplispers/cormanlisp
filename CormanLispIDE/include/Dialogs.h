@@ -3,7 +3,7 @@
 //		See LICENSE.txt for license information.
 //		-------------------------------
 //
-//		File:		RegistrationDialog.h
+//		File:		Dialogs.h
 //		Contents:	Corman Lisp application source file
 //		History:	10/13/98  RGC  Created.
 //					10/01/16  Artem Boldarev
@@ -13,7 +13,6 @@
 #define DIALOGS_H
 
 #include <afxext.h>
-#include "../../license/license.h"
 
 class AboutDialog : public CDialog
 {

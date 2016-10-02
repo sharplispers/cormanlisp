@@ -6,6 +6,7 @@
 //		File:		CoCormanLisp.h
 //		Contents:	COM Class definitions for Corman Lisp COM server.
 //		History:	8/5/97  RGC  Created.
+//					10/01/16  Artem Boldarev GetCurrentUserName method.
 //
 
 #ifndef COLISP_H
@@ -38,6 +39,7 @@ public:
     STDMETHODIMP AbortThread();
     STDMETHODIMP InitializeEx(IUnknown* clientInterface, const char* imageName, int clientType,
          int heapReserve, int heapInitialSize, int ephemeralHeap1Size, int ephemeralHeap2Size);
+	STDMETHODIMP GetCurrentUserName(char *UserName, size_t *len);
 
 // IConnectionPointContainer
 	STDMETHODIMP EnumConnectionPoints(IEnumConnectionPoints** pEnumConnectionPoints);
@@ -68,6 +70,7 @@ private:
 	long m_cRef;
 	CoConnectionPoint* m_pcpPointSink;
 	CoConnectionPoint* m_pcpShutdownPointSink;
+	void *pUserInfo;
 };
 
 #endif // COLISP_H

@@ -110,7 +110,6 @@ public:
 	CFont* getDefaultFont(HDC, long size);
 	CFont* getDefaultUnderlineFont(HDC, long size);
 	CFont* getCourierFont(HDC, long size);
-	void checkRegistration();
 	CDocument* openWorksheet();
 	BOOL OnDDECommand(LPTSTR lpszCommand);
 
@@ -137,7 +136,6 @@ private:
 	char m_urlToOpen[MAX_URL + 1];		// pending document to open
 	bool m_appIsClosing;
 	int m_nUnits;
-	bool m_inRegistrationDialog;
 	CString m_replaceSelection;
 	static const int m_nPrimaryNumUnits;
 	static const int m_nNumUnits;
@@ -154,7 +152,6 @@ public:
 	HANDLE m_event;
 	CString m_userName;
 	CString m_company;
-	bool m_expired;		// true if this program's registration has expired
 	UINT m_timer;
 	HBRUSH m_blackBrush;
 	PreferencesInfo preferences;

@@ -12,6 +12,7 @@
 #define ICORMANLISP_H
 
 #include <Unknwn.h>
+#include <stddef.h> //size_t
 
 // {3A6AC641-0EAF-11d1-ACB9-00A024803258}
 DEFINE_GUID(IID_ICormanLisp, 
@@ -49,6 +50,8 @@ interface ICormanLisp : public IUnknown
     STDMETHOD(InitializeEx)(THIS_ IUnknown* clientInterface, 
 		THIS_ const char* imageName, int clientType, int heapReserve, int heapInitialSize,
         int ephemeralHeap1Size, int ephemeralHeap2Size) PURE;
+	// supply NULL as UserName to get real length int len
+	STDMETHOD(GetCurrentUserName)(THIS_ char *UserName, size_t *len) PURE;
 };
 
 //

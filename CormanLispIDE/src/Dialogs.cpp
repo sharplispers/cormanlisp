@@ -7,10 +7,11 @@
 //		Contents:	Corman Lisp application source file
 //		History:	10/13/98  RGC  Created.
 //					10/01/16  Artem Boldarev
-//					          RegitrationDialog code removed.
+//					           
 //
 #include "stdafx.h"
 #include "../resource.h"
+#include <stddef.h>
 #include <string.h>
 
 #include "Dialogs.h"
@@ -33,41 +34,35 @@ AboutDialog::AboutDialog(UINT nIDTemplate)
 BOOL AboutDialog::OnInitDialog()
 {
 	CStatic* name = (CStatic*)GetDlgItem(IDC_ABOUTNAME);
-	CStatic* org = (CStatic*)GetDlgItem(IDC_ABOUTORG);
 	CStatic* evalMessage = (CStatic*)GetDlgItem(IDC_EVALMESSAGE);
 	CStatic* daysRemaining = (CStatic*)GetDlgItem(IDC_DAYSREMAINING);
     CStatic* version = (CStatic*)GetDlgItem(IDC_REGVERSION);
-	RegistrationInfo info;
-	memset(&info, 0, sizeof(info));
-	info.isRegistered = true;
+
+	
     char* versionCaption = getVersionCaption();
     if (versionCaption)
-        version->SetWindowText(versionCaption);
+		version->SetWindowText(versionCaption);
 
-	if (info.isRegistered)
+	name->SetWindowText("");
+	try
 	{
-		name->SetWindowText(info.name);
-		org->SetWindowText(info.organization);
-		evalMessage->ShowWindow(SW_HIDE);
-		daysRemaining->ShowWindow(SW_HIDE);
-	}
-	else
-	{
-		name->SetWindowText("Evaluation Copy");
-		org->SetWindowText("");
-		int remaining = info.daysRemaining;
-		if (remaining < 0)
+		size_t user_name_len = 0;
+		if (pCormanLisp->GetCurrentUserName(NULL, &user_name_len) == S_OK)
 		{
-			daysRemaining->SetWindowText("Expired");
-			theApp.m_expired = TRUE;
-		}
-		else
-		{
-			char buf[16];
-			sprintf_s(buf, sizeof(buf), "%d", remaining);
-			daysRemaining->SetWindowText(buf);
+			char *username = new char[user_name_len + 1];
+			pCormanLisp->GetCurrentUserName(username, &user_name_len);
+			name->SetWindowText(username);
+			delete[] username;
 		}
 	}
+	catch (...)
+	{
+
+	}
+
+	evalMessage->ShowWindow(SW_HIDE);
+	daysRemaining->ShowWindow(SW_HIDE);
+
 	CWnd* item = GetDlgItem(IDOK);
 	if (item)
 		((CButton*)item)->SetButtonStyle(BS_DEFPUSHBUTTON);

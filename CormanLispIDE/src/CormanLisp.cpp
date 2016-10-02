@@ -150,7 +150,6 @@ BEGIN_MESSAGE_MAP(CCormanLispApp, CWinApp)
 	ON_COMMAND(ID_HELP_LICENSEAGREEMENT, OnLicenseAgreement)
 	ON_COMMAND(ID_HELP_CREDITS, OnCredits)
 	ON_COMMAND(ID_PREFERENCES, OnEditPreferences)
-	ON_COMMAND(ID_REGISTRATION, checkRegistration)
 	ON_COMMAND(ID_WINDOW_CLOSEALLDOCUMENTS, OnCloseAll)
 END_MESSAGE_MAP()
 
@@ -168,7 +167,6 @@ CCormanLispApp::CCormanLispApp()
 	m_defaultExecDirectory = "";
 	m_defaultExecFilterIndex = 1;
 	m_lastExpiredScreenTime = 0;
-	m_inRegistrationDialog = FALSE;
 	m_replaceSelection = "";
 	m_isActive = TRUE;
 
@@ -369,8 +367,6 @@ BOOL CCormanLispApp::InitInstance()
 	((CFrameWnd*)m_pMainWnd)->LoadFrame(IDR_MAINFRAME);
 	m_pMainWnd->ShowWindow(m_nCmdShow);
 
-	checkRegistration();
-
 	theApp.splashScreen = new CDialog();
 	theApp.splashScreen->Create(IDD_SPLASH);
 	theApp.startupTime = GetTickCount();
@@ -564,15 +560,6 @@ void CCormanLispApp::OnFileNew()
 	pTemplate->OpenDocumentFile(NULL);
 }
 
-void CCormanLispApp::checkRegistration()
-{
-	// avoid recursion
-	if (m_inRegistrationDialog)
-		return;
-
-	return;
-}
-
 void CCormanLispApp::OnTimer(UINT)
 {
 	long time = GetTickCount();
@@ -607,19 +594,6 @@ void invalidateHeapDisplay(long generation, CDialogBar* dialogBar, int index)
 VOID CALLBACK TimerProc( HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 {
 	unsigned long time = GetTickCount();
-	if (theApp.m_expired &&
-		(time - theApp.m_lastExpiredScreenTime) > (30 * 60 * 1000))	// thirty minutes
-	{
-		if (theApp.m_lastExpiredScreenTime == 0)	// first time
-		{
-			theApp.m_lastExpiredScreenTime = time;
-		}
-		else
-		{
-			theApp.m_lastExpiredScreenTime = time;
-			theApp.m_pMainWnd->PostMessage(WM_COMMAND, ID_REGISTRATION);
-		}
-	}
 
 	if (!theApp.m_isActive)
 		return;

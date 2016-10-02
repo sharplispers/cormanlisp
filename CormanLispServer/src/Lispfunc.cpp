@@ -19,6 +19,7 @@
 #include "lisp.h"
 #include "lispmath.h"
 #include "CormanLispServer.h"
+#include "UserInfo.h"
 #include "../../zlib/zlib.h"
 
 #pragma warning (disable:4127)				// conditional expression is constant
@@ -4048,42 +4049,21 @@ LispFunction(Containing_Heap)
 	LISP_FUNC_RETURN(ret);
 }
 
-struct RegistrationInfo
-{
-	char name[256];
-	char organization[256];
-	int registrationCode;
-	int timeout;
-	bool isRegistered;
-	int daysRemaining;
-	int version;
-};
-
 LispFunction(Registration_Info)
-{
-	LISP_FUNC_BEGIN(0);
+{	LISP_FUNC_BEGIN(0);
 	HMODULE module = 0;
-	LispObj registered = NIL;
+	LispObj registered = T;
 	LispObj version = NIL;
 	LispObj name = NIL;
 	LispObj organization = NIL;
-	LispObj daysRemaining = NIL;
-	FARPROC proc = 0;
-	RegistrationInfo* info = new RegistrationInfo();
+	LispObj daysRemaining = wrapInteger(0);
+	UserInfo info;
 
-	module = LoadLibrary("license.dll");
-	if (module)
+	// we should fill this values for better compatiblity with older versions
+	if (UserInfo::FillUserInfo(info))
 	{
-		proc = GetProcAddress(module, "GetRegistrationInfo");
-		if (proc)
-		{
-			reinterpret_cast<void (*)(RegistrationInfo*)>(proc)(info);
-			registered 		= info->isRegistered ? T : NIL;
-			version    		= wrapInteger(info->version);
-			name       		= stringNode(info->name);
-			organization	= stringNode(info->organization);			
-			daysRemaining   = wrapInteger(info->daysRemaining);
-		} 			
+		version = wrapInteger(info.GetVersion());
+		name = stringNode(info.GetName());
 	}
 	ThreadQV()[MULTIPLE_RETURN_VALUES_Index] = 
 		list(registered, version, name, organization, daysRemaining, END_LIST);
