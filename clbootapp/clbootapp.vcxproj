@@ -97,10 +97,6 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
-    <ProjectReference Include="..\license\license.vcxproj">
-      <Project>{e21ce9f1-f1af-487a-8c01-23a4d8a23cc7}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\zlib\zlib.vcxproj">
       <Project>{99bd3558-deee-4f99-913e-dac97a12926e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

@@ -31,12 +31,6 @@ copy dlltemplate\dlltemplate.cpp %1\dlltemplate
 copy dlltemplate\dlltemplate.vcproj %1\dlltemplate
 copy dlltemplate\dlltemplate.def %1\dlltemplate
 copy dlltemplate\Makefile %1\dlltemplate
-mkdir %1\license
-copy license\*.cpp %1\license
-copy license\*.h %1\license
-copy license\license.vcproj %1\license
-copy license\license.def %1\license
-copy license\Makefile %1\license
 mkdir %1\CormanLispIDE
 copy CormanLispIDE\CormanLisp.vcproj %1\CormanLispIDE
 copy CormanLispIDE\CormanLisp.rc %1\CormanLispIDE

@@ -1,9 +1,6 @@
 cd zlib
 nmake /s /c clean
 nmake /s /c
-cd license
-nmake /s /c clean
-nmake /s /c
 cd ..\CormanLispServer
 nmake /s /c clean
 nmake /s /c

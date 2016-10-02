@@ -69,7 +69,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(SolutionDir)\CormanLispServer\bin\CormanLispServer.lib;ole32.lib;$(SolutionDir)\license.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\CormanLispServer\bin\CormanLispServer.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)\CormanLisp.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ManifestFile>
@@ -165,10 +165,6 @@
     </ProjectReference>
     <ProjectReference Include="..\dlltemplate\dlltemplate.vcxproj">
       <Project>{de479e27-e406-43a8-bcbd-8506ebc31038}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\license\license.vcxproj">
-      <Project>{e21ce9f1-f1af-487a-8c01-23a4d8a23cc7}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\zlib\zlib.vcxproj">

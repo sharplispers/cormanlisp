@@ -7,8 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib\zlib.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CormanLispServer", "CormanLispServer\CormanLispServer.vcxproj", "{F914CF4D-5904-477F-A388-00C05E749D18}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "license", "license\license.vcxproj", "{E21CE9F1-F1AF-487A-8C01-23A4D8A23CC7}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dlltemplate", "dlltemplate\dlltemplate.vcxproj", "{DE479E27-E406-43A8-BCBD-8506EBC31038}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "clboot", "clboot\clboot.vcxproj", "{95914474-F1BA-4190-8FF3-4F03386FC8D6}"
@@ -44,12 +42,6 @@ Global
 		{F914CF4D-5904-477F-A388-00C05E749D18}.Release|Win32.Build.0 = Standard|Win32
 		{F914CF4D-5904-477F-A388-00C05E749D18}.Standard|Win32.ActiveCfg = Standard|Win32
 		{F914CF4D-5904-477F-A388-00C05E749D18}.Standard|Win32.Build.0 = Standard|Win32
-		{E21CE9F1-F1AF-487A-8C01-23A4D8A23CC7}.Debug|Win32.ActiveCfg = Standard|Win32
-		{E21CE9F1-F1AF-487A-8C01-23A4D8A23CC7}.Debug|Win32.Build.0 = Standard|Win32
-		{E21CE9F1-F1AF-487A-8C01-23A4D8A23CC7}.Release|Win32.ActiveCfg = Standard|Win32
-		{E21CE9F1-F1AF-487A-8C01-23A4D8A23CC7}.Release|Win32.Build.0 = Standard|Win32
-		{E21CE9F1-F1AF-487A-8C01-23A4D8A23CC7}.Standard|Win32.ActiveCfg = Standard|Win32
-		{E21CE9F1-F1AF-487A-8C01-23A4D8A23CC7}.Standard|Win32.Build.0 = Standard|Win32
 		{DE479E27-E406-43A8-BCBD-8506EBC31038}.Debug|Win32.ActiveCfg = Standard|Win32
 		{DE479E27-E406-43A8-BCBD-8506EBC31038}.Debug|Win32.Build.0 = Standard|Win32
 		{DE479E27-E406-43A8-BCBD-8506EBC31038}.Release|Win32.ActiveCfg = Standard|Win32

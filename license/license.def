@@ -1,6 +1,0 @@
-LIBRARY License
-EXPORTS
-    CheckRegistration
-    Register
-    Unregister
-    GetRegistrationInfo
