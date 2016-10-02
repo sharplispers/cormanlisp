@@ -61,25 +61,13 @@
 			(if (= (cl::cormanlisp-client-type) 1) "(c)" (int-char 169))))
 	
 (defun copyright-notice ()
-	(format nil ";; ~A~%~A" 
-		(copyright-notice-short)
-		(multiple-value-bind (registered version name organization days-remaining)
-			(cl::registration-info)
-			(if registered
-				(format nil ";; Licensed to ~A~A~A."
-					name
-					(if (> (length organization) 0)
-						(format nil ", organization ~A" organization) "")
-					(if (= version 25) " [version 2.5]" ""))
-				(if (= (cl::cormanlisp-client-type) 2)
-					(if (minusp days-remaining)
-						(format nil 
-							";; Unlicensed version, evaluation period expired ~D days ago." 
-							(- days-remaining))
-						(format nil ";; Unlicensed version, evaluation period expires in ~D days." 
-							days-remaining))
-					(format nil ";; Unlicensed version: For evaluation and personal use only.~%;; Some limitations apply."))))))
-
+  (format nil ";; ~A~%~A" 
+		  (copyright-notice-short)
+		  (multiple-value-bind (registered version name organization days-remaining)
+			  (cl::registration-info)
+			(declare (ignore registered version organization days-remaining))
+			(format nil ";; User: ~A." name))))
+				
 (defun version-caption ()
     (format nil "Corman Lisp ~A  (Patch level ~D)" 
 			(cl::lisp-implementation-version-string)
