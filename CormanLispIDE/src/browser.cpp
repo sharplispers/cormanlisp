@@ -148,9 +148,9 @@ int CBrowserFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// TODO: Delete these three lines if you don't want the toolbar to
 	//  be dockable
-	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
-	EnableDocking(CBRS_ALIGN_ANY);
-	DockControlBar(&m_wndToolBar);
+	//m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
+	//EnableDocking(CBRS_ALIGN_ANY);
+	//DockControlBar(&m_wndToolBar);
 
 	return 0;
 }
