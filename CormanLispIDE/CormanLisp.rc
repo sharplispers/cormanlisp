@@ -160,9 +160,9 @@ BEGIN
     POPUP "&View"
     BEGIN
         MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM "&Heap Monitor",               ID_VIEW_LISP_HEAP
         MENUITEM "&Lisp Variables",             ID_VIEW_LISPVARIABLES
+		MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
     END
     POPUP "&Lisp"
     BEGIN
