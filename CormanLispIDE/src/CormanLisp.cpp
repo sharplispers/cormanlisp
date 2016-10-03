@@ -2212,7 +2212,7 @@ BOOL CLispView::OnScroll(UINT nScrollCode, UINT nPos, BOOL bDoScroll)
 	return ret;
 }
 
-// we need this hacky code to avoid ANNOYIN rendering issues with mouse cue (tooltip) during scrolling
+// we need this hacky code to avoid ANNOYING rendering issues with mouse cue (tooltip) during scrolling
 LRESULT CLispView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
@@ -2227,10 +2227,10 @@ LRESULT CLispView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		last_scroll_event_timestamp = GetTickCount();
 		if (m_mouseCueDisplayed && !mouseCueDisabled())
 		{
-			RECT rect;
+			//RECT rect;
 			mouseCueOff();
-			GetClientRect(&rect);
-			InvalidateRect(&rect);
+			//GetClientRect(&rect);
+			//InvalidateRect(&rect);
 		}
 	}
 		break;
