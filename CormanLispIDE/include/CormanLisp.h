@@ -288,6 +288,7 @@ class CLispView : public CRichEditView
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnScroll(UINT nScrollCode, UINT nPos, BOOL bDoScroll = TRUE);
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
+	afx_msg LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 
 	void DrawMargins(CDC* pDC);
  	virtual void OnPrint(CDC* pDC, CPrintInfo* pInfo);
@@ -320,6 +321,8 @@ class CLispView : public CRichEditView
 	void activateFont(HDC);
 
 	void highlightChar(CRichEditCtrl& ed, long position);
+public:
+	bool doingScrolling(void);
 
 protected:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
@@ -346,6 +349,7 @@ public:
 	int m_colorizeDisabled; // >0 to disable auto colorize
 	long m_firstModified;  // first char in file to be modified for colorization purposes
 	int m_lineHeight;
+	DWORD last_scroll_event_timestamp;
 };
 
 // The TerminalInputBuf and TerminalOutputBuf arrays (and the indexes)

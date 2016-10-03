@@ -602,7 +602,7 @@ VOID CALLBACK TimerProc( HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 			&& theApp.preferences.autoPrototypeOnMouseMove &&
 		((time - gStartTimeAtLastPoint) > WaitTimeBeforeMouseCue))
 	{
-		if (!gView->usingKeyboard() && !gView->mouseCueDisabled())
+		if (!gView->usingKeyboard() && !gView->mouseCueDisabled() && !gView->doingScrolling())
 		{
 			CPoint p;
 			p.x = max(gLastPoint.x - 5, 0);
@@ -2064,7 +2064,7 @@ const AFX_DATADEF DWORD editStyleDefault =
 
 CLispView::CLispView() : m_bInPrint(FALSE), m_font(0),
 m_lispHighlightStart(-1), m_lispHighlightEnd(-1),
-m_highlightOn(false)
+m_highlightOn(false), last_scroll_event_timestamp(GetTickCount())
 {
 	RECT margins;		// set default margins
 	margins.left = 1440 / 2;		//.5 inch
@@ -2210,6 +2210,41 @@ BOOL CLispView::OnScroll(UINT nScrollCode, UINT nPos, BOOL bDoScroll)
 {
 	BOOL ret = CRichEditView::OnScroll(nScrollCode, nPos, bDoScroll);
 	return ret;
+}
+
+// we need this hacky code to avoid ANNOYIN rendering issues with mouse cue (tooltip) during scrolling
+LRESULT CLispView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_MOUSEWHEEL:
+		m_usingKeyboard = false;
+	case EN_VSCROLL:
+	case EN_HSCROLL:
+	case WM_HSCROLL:
+	case WM_VSCROLL:
+	{
+		last_scroll_event_timestamp = GetTickCount();
+		if (m_mouseCueDisplayed && !mouseCueDisabled())
+		{
+			RECT rect;
+			mouseCueOff();
+			GetClientRect(&rect);
+			InvalidateRect(&rect);
+		}
+	}
+		break;
+	default:
+		break;
+	}
+	LRESULT  res = CWnd::WindowProc(message, wParam, lParam);
+	return res;
+}
+
+// assume scrolling if there was less than 400 milliseconds from a last scrolling event;
+bool CLispView::doingScrolling(void)
+{
+	return GetTickCount() < (last_scroll_event_timestamp + 400);
 }
 
 class CharClassifier
@@ -3535,7 +3570,6 @@ void CLispView::displayMouseCue()
 		rect.top -= 50;
 		rect.bottom -= 50;	// display above instead of below to avoid getting cut off
 	}
-
 	dc->FillSolidRect(rect, theApp.preferences.hintBackgroundColor);
 	FrameRect(dc->m_hDC, rect, theApp.m_blackBrush);
 	dc->TextOut(rect.left + 2, rect.top + 2, lambdaList, strlen(lambdaList));
@@ -3547,6 +3581,11 @@ void CLispView::displayMouseCue()
 void CLispView::undisplayMouseCue()
 {
 	InvalidateRect(m_mouseCueRect, TRUE);
+	{
+		RECT rect;
+		gView->GetClientRect(&rect);
+		gView->InvalidateRect(&rect);
+	}
 }
 
 void CLispView::mouseCueOn(const CPoint& point)
