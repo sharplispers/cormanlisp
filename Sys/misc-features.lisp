@@ -652,4 +652,17 @@
 			(setf (elt package-vector (+ (* index 3) 2)) 1)
 			(setf (elt package-vector (+ (* index 3) 2)) 0))))
 
+;;
+;; Suspend other Lisp threads execution. It is here
+;; mostly for debugging purposes.
+;;
+(defmacro %with-other-threads-suspended (&rest body)
+  `(unwind-protect
+		(progn
+		  (cl::suspend-other-threads)
+		  (progn
+			,@body))
+	 (cl::resume-other-threads)))
+
+(export 'cl::%with-other-threads-suspended)
 
