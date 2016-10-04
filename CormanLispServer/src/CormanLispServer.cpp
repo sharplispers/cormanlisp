@@ -6,6 +6,8 @@
 //		File:		CormanLispServer.cpp
 //		Contents:	Server for Corman Lisp
 //		History:	8/5/97  RGC  Created.
+//					4/10/16 Artem Boldarev
+//							global UserInfo object.
 //
 
 #include "stdafx.h"
@@ -24,6 +26,8 @@ IUnknown*				 ClientUnknown		= 0;
 ICormanLispTextOutput*	 ClientTextOutput	= 0;
 ICormanLispStatusMessage* ClientMessage		= 0;
 ICormanLispShutdown*     ClientShutdown		= 0;
+const UserInfo*          CurrentUserInfo    = 0;
+
 
 TextOutputFuncType TextOutputFuncPtr = 0;
 HINSTANCE gAppInstance = 0;
@@ -277,12 +281,13 @@ extern "C" long Initialize(const wchar_t* imageName, int clientType, HINSTANCE a
 	return 1;		// success
 }
 
-void InitializeCormanLisp(IUnknown* client)
+void InitializeCormanLisp(IUnknown* client, const UserInfo *user_info)
 {
 	HRESULT hr = 0;
 	ClientUnknown = client;
 	BOOL ret = 0;
 	HINSTANCE hInstance = 0;
+	CurrentUserInfo = user_info;
 
 	setWindowsNT();
 

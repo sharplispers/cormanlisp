@@ -19,7 +19,6 @@
 #include "lisp.h"
 #include "lispmath.h"
 #include "CormanLispServer.h"
-#include "UserInfo.h"
 #include "../../zlib/zlib.h"
 
 #pragma warning (disable:4127)				// conditional expression is constant
@@ -4057,13 +4056,12 @@ LispFunction(Registration_Info)
 	LispObj name = NIL;
 	LispObj organization = NIL;
 	LispObj daysRemaining = wrapInteger(0);
-	UserInfo info;
 
 	// we should fill this values for better compatiblity with older versions
-	if (UserInfo::FillUserInfo(info))
+	if (CurrentUserInfo != NULL)
 	{
-		version = wrapInteger(info.GetVersion());
-		name = stringNode(info.GetName());
+		version = wrapInteger(CurrentUserInfo->GetVersion());
+		name = stringNode(CurrentUserInfo->GetName());
 	}
 	ThreadQV()[MULTIPLE_RETURN_VALUES_Index] = 
 		list(registered, version, name, organization, daysRemaining, END_LIST);

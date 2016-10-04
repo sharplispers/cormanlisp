@@ -6,6 +6,9 @@
 //		File:		CormanLispServer.h
 //		Contents:	Server interface for Corman Lisp
 //		History:	8/5/97  RGC  Created.
+//					4/10/16 Artem Boldarev
+//					4/10/16 Artem Boldarev
+//							global UserInfo object.
 //
 
 #ifndef CORMANLISPSERVER_H
@@ -15,10 +18,11 @@
 
 #include "CoCormanLisp.h"
 #include "CharBuf.h"
+#include "UserInfo.h"
 
 class CharBuf;
 
-void InitializeCormanLisp(IUnknown* client);
+void InitializeCormanLisp(IUnknown* client, const UserInfo *user_info);
 void RunCormanLisp(HANDLE* thread);
 void ProcessLispSource(char* text, long numChars);
 long GetNumLispThreads();
@@ -41,6 +45,7 @@ extern CharBuf						TerminalInputBuf;
 extern const int					LispImageNameMax;
 extern char							LispImageName[];
 extern int							CormanLispClientType;
+extern const UserInfo*              CurrentUserInfo;
 
 typedef void (*TextOutputFuncType)(wchar_t* text, long numChars);
 extern TextOutputFuncType			TextOutputFuncPtr;

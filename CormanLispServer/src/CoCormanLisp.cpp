@@ -7,6 +7,7 @@
 //		Contents:	COM Class definitions for Corman Lisp	COM server.
 //		History:	8/5/97  RGC  Created.
 //					10/01/16  Artem Boldarev GetCurrentUserName method.
+//						 	  global UserInfo object.
 //
 #include "stdafx.h"
 
@@ -102,10 +103,15 @@ STDMETHODIMP CoCormanLisp::Initialize(IUnknown* clientInterface,
 	if (pUserInfo == NULL)
 	{
 		UserInfo *info = new UserInfo;
+		if (!UserInfo::FillUserInfo(*info))
+		{
+			delete info;
+			info = NULL;
+			return S_FALSE;
+		}
 		pUserInfo = info;
-		UserInfo::FillUserInfo(*info);
 	}
-	InitializeCormanLisp(clientInterface);
+	InitializeCormanLisp(clientInterface, (UserInfo *)pUserInfo);
 	return S_OK;
 }
 
@@ -157,11 +163,16 @@ STDMETHODIMP CoCormanLisp::InitializeEx(IUnknown* clientInterface,
 	if (pUserInfo == NULL)
 	{
 		UserInfo *info = new UserInfo;
+		if (!UserInfo::FillUserInfo(*info))
+		{
+			delete info;
+			info = NULL;
+			return S_FALSE;
+		}
 		pUserInfo = info;
-		UserInfo::FillUserInfo(*info);
 	}
 
-	InitializeCormanLisp(clientInterface);
+	InitializeCormanLisp(clientInterface, (UserInfo *)pUserInfo);
 	return S_OK;
 }
 
