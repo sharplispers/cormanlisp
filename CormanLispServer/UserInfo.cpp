@@ -3,6 +3,8 @@
 //		History:	10/01/16  Artem Boldarev Created.
 //					10/04/16  Artem Boldarev
 //							  User profile directory retrieval.
+//					10/05/16  Artem Boldarev
+//							  Added length retrieving methods.
 //
 
 #include "UserInfo.h"
@@ -11,7 +13,9 @@
 #include <userenv.h>
 
 UserInfo::UserInfo(void)
-: name(NULL), profile_directory(NULL), version(31)
+: name(NULL), name_len(0),
+profile_directory(NULL), profile_directory_len(0),
+version(31)
 {
 }
 
@@ -29,9 +33,20 @@ const char *UserInfo::GetName(void) const
 	return name == NULL ? "" : name;
 }
 
+size_t UserInfo::GetNameLength(void) const
+{
+	return name_len;
+}
+
+
 const char *UserInfo::GetProfileDirectory(void) const
 {
-	return profile_directory == NULL ? "" : name;
+	return profile_directory == NULL ? "" : profile_directory;
+}
+
+size_t UserInfo::GetProfileDirectoryLength(void) const
+{
+	return profile_directory_len;
 }
 
 int UserInfo::GetVersion(void) const
@@ -43,6 +58,7 @@ bool UserInfo::FillUserInfo(UserInfo &ui)
 {
 	// obraining user name
 	DWORD user_name_size = 0;
+	DWORD user_profile_buffer_size = 0;
 	char *name_buf = NULL;
 	char *profile_buf = NULL;
 	bool user_name_status = true;
@@ -83,7 +99,6 @@ bool UserInfo::FillUserInfo(UserInfo &ui)
 		{
 			// get buffer size
 			char tmp = '\0';
-			DWORD user_profile_buffer_size = 0;
 			// It is strange, but at least on Windows 10 one have to specify some dummy pointer as the path parameter
 			// for GetUserProfileDirectoryA. MSDN says nothing about it.
 			GetUserProfileDirectoryA(user_token, &tmp, &user_profile_buffer_size);
@@ -107,6 +122,7 @@ bool UserInfo::FillUserInfo(UserInfo &ui)
 					if (profile_buf[user_profile_buffer_size - 1] != '\\')
 					{
 						strcat_s(profile_buf, user_profile_buffer_size + 1, "\\");
+						user_profile_buffer_size += 1;
 					}
 				}
 			}
@@ -120,10 +136,16 @@ bool UserInfo::FillUserInfo(UserInfo &ui)
 
 	// fill UserInfo
 	if (user_name_status)
+	{
 		ui.name = name_buf;
+		ui.name_len = user_name_size - 1;
+	}
 
 	if (user_profile_status)
+	{
 		ui.profile_directory = profile_buf;
+		ui.profile_directory_len = user_profile_buffer_size - 1;
+	}
 
 	return user_name_status && user_profile_status;
 }

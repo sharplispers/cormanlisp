@@ -50,8 +50,10 @@ interface ICormanLisp : public IUnknown
     STDMETHOD(InitializeEx)(THIS_ IUnknown* clientInterface, 
 		THIS_ const char* imageName, int clientType, int heapReserve, int heapInitialSize,
         int ephemeralHeap1Size, int ephemeralHeap2Size) PURE;
-	// supply NULL as UserName to get real length int len
+	// supply NULL as UserName to get real length in len
 	STDMETHOD(GetCurrentUserName)(THIS_ char *UserName, size_t *len) PURE;
+	// supply NULL as profileDirectory to get real length in len
+	STDMETHOD(GetCurrentUserProfileDirectory)(THIS_ char *profileDirectory, size_t *len) PURE;
 };
 
 //

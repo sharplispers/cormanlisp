@@ -619,22 +619,41 @@ STDMETHODIMP CoCormanLisp::HandleStructuredException(long exception, LPEXCEPTION
 
 STDMETHODIMP CoCormanLisp::GetCurrentUserName(char *UserName, size_t *len)
 {
-	UserInfo *info = (UserInfo *)pUserInfo;
-	size_t old_len;
-
-	if (UserName == NULL && len == NULL)
+	if (CurrentUserInfo != NULL && UserName == NULL && len == NULL)
 	{
 		return S_FALSE;
 	}
 
-	old_len = *len;
-	*len = strlen(info->GetName());
+	size_t old_len = *len;
+	*len = CurrentUserInfo->GetNameLength();
 	if (UserName != NULL)
 	{
 		if (old_len < *len)
 			return S_FALSE;
 
-		strcpy_s(UserName, (*len) + 1, info->GetName());
+		strcpy_s(UserName, CurrentUserInfo->GetNameLength() + 1, CurrentUserInfo->GetName());
+	}
+
+	return S_OK;
+}
+
+STDMETHODIMP CoCormanLisp::GetCurrentUserProfileDirectory(char *profileDirectory, size_t *len)
+{
+	if (CurrentUserInfo != NULL && profileDirectory == NULL && len == NULL)
+	{
+		return S_FALSE;
+	}
+
+	size_t old_len = *len;
+	*len = CurrentUserInfo->GetNameLength();
+	if (profileDirectory != NULL)
+	{
+		if (old_len < *len)
+			return S_FALSE;
+
+		strcpy_s(profileDirectory,
+			CurrentUserInfo->GetProfileDirectoryLength() + 1,
+			CurrentUserInfo->GetProfileDirectory());
 	}
 
 	return S_OK;

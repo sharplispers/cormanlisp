@@ -1,10 +1,11 @@
 //		File:		UserInfo.h
 //		Contents:	User specific information class description.
 //		History:	10/01/16  Artem Boldarev Created.
-//					10/04/16  Artem Boldare
+//					10/04/16  Artem Boldarev           
 //							  User profile directory retrieval.
+//					10/05/16  Artem Boldarev
+//							  Added length retrieving methods.
 //					           
-
 
 #ifndef USERINFO_H
 #define USERINFO_H
@@ -20,7 +21,10 @@ public:
 	static bool FillUserInfo(UserInfo &ui);
 
 	const char *GetName(void) const ;
+	size_t GetNameLength(void) const;
 	const char *GetProfileDirectory(void) const;
+	size_t GetProfileDirectoryLength(void) const;
+
 	int GetVersion(void) const;
 private:
 	// non copyable
@@ -28,7 +32,9 @@ private:
 	void operator=(const UserInfo &);
 private:
 	char *name;
+	size_t name_len;
 	char *profile_directory;
+	size_t profile_directory_len;
 	int version;
 };
 

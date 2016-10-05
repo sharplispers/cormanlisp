@@ -40,6 +40,7 @@ public:
     STDMETHODIMP InitializeEx(IUnknown* clientInterface, const char* imageName, int clientType,
          int heapReserve, int heapInitialSize, int ephemeralHeap1Size, int ephemeralHeap2Size);
 	STDMETHODIMP GetCurrentUserName(char *UserName, size_t *len);
+	STDMETHODIMP GetCurrentUserProfileDirectory(char *profileDirectory, size_t *len);
 
 // IConnectionPointContainer
 	STDMETHODIMP EnumConnectionPoints(IEnumConnectionPoints** pEnumConnectionPoints);
