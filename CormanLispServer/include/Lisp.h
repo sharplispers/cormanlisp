@@ -10,6 +10,8 @@
 //								to support post-GC finalization.
 //					1/18/00 RGC Added UNDEFINED-FUNCTIONS.
 //                  9/21/03 RGC Increased NumJumpTableEntries from 0x4000 to 0x8000.
+//					10/05/16  Artem Boldarev
+//							  %USER-HOMEDIR-NAMESTRING
 //
 
 #ifndef LISP_H
@@ -884,6 +886,7 @@ LispDeclare(Probe_File);
 LispDeclare(Memory_Report);
 
 LispDeclare(Safecall);
+LispDeclare(User_HomeDir_Namestring);
 
 //
 //	QV pointers

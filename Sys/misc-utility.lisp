@@ -10,6 +10,8 @@
 ;;;;                12/19/02 RGC  Included JP Massar's redefinition of 
 ;;;;                              MULTIPLE-VALUE-BIND.
 ;;;;                06/05/03 RGC  Fixed #. reader macro to respect *READ-EVAL* state.
+;;;;                10/05/16 Artem Boldarev
+;;;;                         USER-HOMEDIR-PATHNAME implemented on top of %USER-HOMEDIR-NAMESTRING
 ;;;;
 (in-package :ccl)
 (export '(
@@ -217,37 +219,15 @@ DWORD WINAPI GetEnvironmentVariableA(LPCSTR,LPSTR,DWORD);
 !#
 (in-package :cl)
 (defun user-homedir-pathname (&optional host)
-  (flet ((getenv (name)
-           (let ((buffer (ct:malloc 1))
-                 (cname (ct:lisp-string-to-c-string name)))
-             (let* ((needed-size (win:getenvironmentvariable
-                                  cname buffer 0))
-                    (buffer1 (ct:malloc (1+ needed-size))))
-               (prog1 (if (zerop (win:getenvironmentvariable
-                                  cname buffer1 needed-size)) 
-                          nil
-                          (ct:c-string-to-lisp-string buffer1))
-                 (ct:free buffer)
-                 (ct:free buffer1))))))
-    (cond ((or (stringp host)
-               (and (consp host)
-                    (every #'stringp host)))
-           nil)
-          ((or (eq host :unspecific)
-               (null host))
-           (let ((homedrive (getenv "HOMEDRIVE"))
-                 (homepath (getenv "HOMEPATH")))
-             (parse-namestring
-              (if (and (stringp homedrive)
-                       (stringp homepath)
-                       (= (length homedrive) 2)
-                       (> (length homepath) 0))
-                  ;; Added a tail "\\" to make sure the namestring is parsed
-                  ;; as a pure directory. -- Chun Tian (binghe), May 2015
-                  (concatenate 'string homedrive homepath "\\")
-                  "C:\\"))))
-          (t
-           (error "HOST must be a string, list of strings, NIL or :UNSPECIFIC")))))
+  (cond ((or (stringp host)
+			 (and (consp host)
+				  (every #'stringp host)))
+		 nil)
+		((or (eq host :unspecific)
+			 (null host))
+		 (parse-namestring (cl::%user-homedir-namestring)))
+		(t
+		 (error "HOST must be a string, list of strings, NIL or :UNSPECIFIC"))))
 
 (defun wild-pathname-p (pathname &optional field-key)
   (let ((obj (ecase field-key

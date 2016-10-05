@@ -4462,6 +4462,8 @@ FunctEntry functTable[] =
 	// We need this built-in function to support callback in FFI on 64-bit versions of Windows
 	// It seems one can not throw Access Violation Exceptions through the Windows API functions on 64 bit OSes.
 	{ "%SAFECALL",                  (LispFunc)Safecall      },
+
+	{ "%USER-HOMEDIR-NAMESTRING", (LispFunc)User_HomeDir_Namestring }, // internal function to supply data for USER-HOMEDIR-PATHNAME
     // ----------------------------------------------------------
 };
 long sizeFunctTable = sizeof(functTable)/sizeof(FunctEntry);
@@ -4816,6 +4818,13 @@ LispFunction(Safecall)
 
 	ret = doSafecall(obj);
 
+	LISP_FUNC_RETURN(ret);
+}
+
+LispFunction(User_HomeDir_Namestring)
+{
+	LISP_FUNC_BEGIN(0);
+	ret = stringNode(CurrentUserInfo->GetProfileDirectory());
 	LISP_FUNC_RETURN(ret);
 }
 
