@@ -157,15 +157,16 @@ bool UserInfo::FillUserInfo(UserInfo &ui)
 			if (SHGetFolderPathA(NULL, CSIDL_PERSONAL, user_token, SHGFP_TYPE_CURRENT, (char *)buf) == S_OK)
 			{
 				bool append_backslash = false;
-				user_personal_size = strnlen((char *)buf, MAX_PATH) + 1;
+				size_t len  = strnlen((char *)buf, MAX_PATH);
+				user_personal_size = len + 1;
 				if (user_personal_size <= 2 || buf[user_personal_size - 2] != '\\')
 				{
 					append_backslash = true;
+					user_personal_size += 1;
 				}
 
-				user_personal_size += (append_backslash ? 1 : 0);
 				personal_buf = new char[user_personal_size];
-				strncpy(personal_buf, (char *)buf, user_personal_size);
+				strncpy_s(personal_buf, user_personal_size, (char *)buf, len);
 
 				if (append_backslash)
 				{

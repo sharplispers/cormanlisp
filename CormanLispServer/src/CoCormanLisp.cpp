@@ -659,7 +659,7 @@ STDMETHODIMP CoCormanLisp::GetCurrentUserProfileDirectory(char *profileDirectory
 	return S_OK;
 }
 
-STDMETHODIMP GetCurrentUserPersonalDirectory(char *personalDirectory, size_t *len)
+STDMETHODIMP CoCormanLisp::GetCurrentUserPersonalDirectory(char *personalDirectory, size_t *len)
 {
 	if (CurrentUserInfo != NULL && personalDirectory == NULL && len == NULL)
 	{

@@ -527,6 +527,20 @@ BOOL CCormanLispApp::InitInstance()
 	HANDLE thread = 0;
 	pCormanLisp->Run(&thread);
 
+	{
+		size_t len = 0;
+		pCormanLisp->GetCurrentUserPersonalDirectory(NULL, &len);
+		auto test = new char[len + 1];
+
+		pCormanLisp->GetCurrentUserPersonalDirectory(test, &len);
+
+		auto test_len = strlen(test);
+
+		puts(test);
+
+		delete[] test;
+	}
+
 /*
 	CString s;
 	s.Format("(progn (setq ccl::*controller-thread-id* %u) (values))\r\n", GetCurrentThreadId());
