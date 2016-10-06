@@ -54,6 +54,8 @@ interface ICormanLisp : public IUnknown
 	STDMETHOD(GetCurrentUserName)(THIS_ char *UserName, size_t *len) PURE;
 	// supply NULL as profileDirectory to get real length in len
 	STDMETHOD(GetCurrentUserProfileDirectory)(THIS_ char *profileDirectory, size_t *len) PURE;
+	// supply NULL as personalDirectory to get real length in len
+	STDMETHOD(GetCurrentUserPersonalDirectory)(THIS_ char *personalDirectory, size_t *len) PURE;
 };
 
 //

@@ -645,7 +645,7 @@ STDMETHODIMP CoCormanLisp::GetCurrentUserProfileDirectory(char *profileDirectory
 	}
 
 	size_t old_len = *len;
-	*len = CurrentUserInfo->GetNameLength();
+	*len = CurrentUserInfo->GetProfileDirectoryLength();
 	if (profileDirectory != NULL)
 	{
 		if (old_len < *len)
@@ -654,6 +654,28 @@ STDMETHODIMP CoCormanLisp::GetCurrentUserProfileDirectory(char *profileDirectory
 		strcpy_s(profileDirectory,
 			CurrentUserInfo->GetProfileDirectoryLength() + 1,
 			CurrentUserInfo->GetProfileDirectory());
+	}
+
+	return S_OK;
+}
+
+STDMETHODIMP GetCurrentUserPersonalDirectory(char *personalDirectory, size_t *len)
+{
+	if (CurrentUserInfo != NULL && personalDirectory == NULL && len == NULL)
+	{
+		return S_FALSE;
+	}
+
+	size_t old_len = *len;
+	*len = CurrentUserInfo->GetPersonalDirectoryLength();
+	if (personalDirectory != NULL)
+	{
+		if (old_len < *len)
+			return S_FALSE;
+
+		strcpy_s(personalDirectory,
+			CurrentUserInfo->GetPersonalDirectoryLength() + 1,
+			CurrentUserInfo->GetPersonalDirectory());
 	}
 
 	return S_OK;

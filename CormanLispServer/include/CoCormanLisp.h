@@ -7,6 +7,8 @@
 //		Contents:	COM Class definitions for Corman Lisp COM server.
 //		History:	8/5/97  RGC  Created.
 //					10/01/16  Artem Boldarev GetCurrentUserName method.
+//					10/06/16  Artem Boldarev
+//							  PGetCurrentUserPersonalDirectory() method.
 //
 
 #ifndef COLISP_H
@@ -41,6 +43,7 @@ public:
          int heapReserve, int heapInitialSize, int ephemeralHeap1Size, int ephemeralHeap2Size);
 	STDMETHODIMP GetCurrentUserName(char *UserName, size_t *len);
 	STDMETHODIMP GetCurrentUserProfileDirectory(char *profileDirectory, size_t *len);
+	STDMETHODIMP GetCurrentUserPersonalDirectory(char *personalDirectory, size_t *len);
 
 // IConnectionPointContainer
 	STDMETHODIMP EnumConnectionPoints(IEnumConnectionPoints** pEnumConnectionPoints);
