@@ -7,6 +7,8 @@
 //		Contents:	Corman Lisp application source file
 //		History:	7/25/96  RGC  Created.
 //					7/01/01  RGC  Force mouse cue off when scrolling.
+//					10/09/16  Artem Boldarev
+//							  Create "%USERPROFILE%\Corman Lisp" directory and save "Lisp Worksheet" there.
 //
 
 #include "stdafx.h"
@@ -44,6 +46,7 @@ static int readingFromConsole = false;
 
 const char WORKSHEET_TITLE[] = "Lisp Worksheet";
 const char SERVER_TITLE[] = "CormanLispServer.dll";
+const char LISP_USER_DIRECTORY_NAME[] = "Corman Lisp";
 const int CCormanLispApp::m_nPrimaryNumUnits = 4;
 const int CCormanLispApp::m_nNumUnits = 7;
 char LispWorksheetPath[_MAX_PATH + 1 + sizeof(WORKSHEET_TITLE)];
@@ -198,13 +201,7 @@ static bool isWindowsNTRunning()
 
 CDocument* CCormanLispApp::openWorksheet()
 {
-	DWORD chars = GetModuleFileName(0, LispWorksheetPath, sizeof(LispWorksheetPath));
-	int index = chars - 1;
-	while (index >= 0 && LispWorksheetPath[index] != '\\')
-		index--;
-	LispWorksheetPath[index] = 0;	// get rid of file name, just leave the path
-	if (chars > 0)
-		strcat_s(LispWorksheetPath, sizeof(LispWorksheetPath), "\\");
+	strcpy_s(LispWorksheetPath, sizeof(LispWorksheetPath), m_CormanLispPersonalDirectory);
 	strcat_s(LispWorksheetPath, sizeof(LispWorksheetPath), WORKSHEET_TITLE);
 	HANDLE file = CreateFile(LispWorksheetPath, GENERIC_READ,
 							0, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
@@ -331,6 +328,30 @@ static IClassFactory* getCormanLispRegisteredClassFactory()
 	return pcf;
 }
 
+BOOL CCormanLispApp::createPersonalDirectory()
+{
+	size_t len = sizeof(m_CormanLispPersonalDirectory);
+	DWORD err = ERROR_SUCCESS;
+	if (pCormanLisp->GetCurrentUserPersonalDirectory(m_CormanLispPersonalDirectory, &len) != S_OK)
+	{
+		return FALSE;
+	}
+
+	strcat_s(m_CormanLispPersonalDirectory, sizeof(m_CormanLispPersonalDirectory), LISP_USER_DIRECTORY_NAME);
+	strcat_s(m_CormanLispPersonalDirectory, sizeof(m_CormanLispPersonalDirectory), "\\");
+
+	// create directory or ensure that it exists
+	CreateDirectoryA(m_CormanLispPersonalDirectory, NULL);
+	err = GetLastError();
+	if (err != ERROR_SUCCESS && err != ERROR_ALREADY_EXISTS)
+	{
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+
 BOOL CCormanLispApp::InitInstance()
 {
 	BOOL ret = FALSE;
@@ -425,9 +446,6 @@ BOOL CCormanLispApp::InitInstance()
 	// Dispatch commands specified on the command line
 	//	if (!ProcessShellCommand(cmdInfo))
 	//		return FALSE;
-
-	m_worksheet = openWorksheet();
-	ASSERT(m_worksheet);
 
 	//  Get the CormanLisp class factory
 	IClassFactory* pcf = getCormanLispClassFactory();
@@ -524,6 +542,16 @@ BOOL CCormanLispApp::InitInstance()
 	m_blackBrush = (HBRUSH)GetStockObject(BLACK_BRUSH);
 
 	pCormanLisp->Initialize(m_CormanLispClient, lispImage, IDE_CLIENT);
+
+	// create Corman Lisp personal user directory
+	if (!createPersonalDirectory())
+	{
+		return FALSE;
+	}
+	// create worksheet
+	m_worksheet = openWorksheet();
+	ASSERT(m_worksheet);
+
 	HANDLE thread = 0;
 	pCormanLisp->Run(&thread);
 

@@ -5,6 +5,8 @@
 //
 //		File:		CormanLisp.h
 //		Contents:	Corman Lisp application main header
+//					10/09/16  Artem Boldarev
+//							  Create "%USERPROFILE%\Corman Lisp" directory and save "Lisp Worksheet" there.
 //
 
 #ifndef CORMANLISP_H
@@ -111,6 +113,7 @@ public:
 	CFont* getDefaultUnderlineFont(HDC, long size);
 	CFont* getCourierFont(HDC, long size);
 	CDocument* openWorksheet();
+	BOOL createPersonalDirectory();
 	BOOL OnDDECommand(LPTSTR lpszCommand);
 
 	//{{AFX_MSG(CMultiPadApp)
@@ -134,6 +137,7 @@ private:
 	CoCormanLispShutdownClient* m_CormanLispShutdownClient;
 	char m_fileToOpen[_MAX_PATH + 1];		// pending document to open
 	char m_urlToOpen[MAX_URL + 1];		// pending document to open
+	char m_CormanLispPersonalDirectory[_MAX_PATH + 1]; // path to "%USERPROFILE%\Documents\Corman Lisp" directory
 	bool m_appIsClosing;
 	int m_nUnits;
 	CString m_replaceSelection;
