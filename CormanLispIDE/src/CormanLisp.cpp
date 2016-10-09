@@ -173,6 +173,8 @@ CCormanLispApp::CCormanLispApp()
 	m_replaceSelection = "";
 	m_isActive = TRUE;
 
+	memset(m_CormanLispPersonalDirectory, 0, sizeof(m_CormanLispPersonalDirectory));
+
 	defaultFont = new CFont*[maxFontSize];
 	defaultUnderlineFont = new CFont*[maxFontSize];
 	courierFont = new CFont*[maxFontSize];
