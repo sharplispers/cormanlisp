@@ -294,6 +294,9 @@ void InitializeCormanLisp(IUnknown* client, const UserInfo *user_info)
 
 	setWindowsNT();
 
+	memset(CormanLispOutputDirectory, 0, sizeof(CormanLispOutputDirectory));
+	CormanLispOutputDirectoryLen = 0;
+
 	if (ClientUnknown)
 	{
 		hr = ClientUnknown->QueryInterface(IID_ICormanLispTextOutput, (void**)&ClientTextOutput);

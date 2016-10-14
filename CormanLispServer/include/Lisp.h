@@ -2052,7 +2052,6 @@ extern BOOL inLispHeap2AddressRange(unsigned long addr);
 extern unsigned long tranlateToOtherPrimaryHeap(unsigned long addr);
 extern unsigned long looksLikeEBP(unsigned long addr);
 extern const char* DumpFileName;
-extern char ApplicationDumpPath[];
 
 extern bool inAnyLispHeap(DWORD addr);
 

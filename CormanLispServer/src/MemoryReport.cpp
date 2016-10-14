@@ -1083,8 +1083,22 @@ void writeMemoryReport(void* address, CONTEXT* context)
             ThreadList.suspendAllOtherThreadsWithoutLocking();
 
             HWND wnd = 0;
-            int err = 0;
-            err = fopen_s(&file, ApplicationDumpPath, "w");	// write
+			int err = 0;
+			{
+				char ApplicationDumpPath[MAX_PATH + 1] = { 0 };
+				if (*CormanLispOutputDirectory) // directory was set
+				{
+					strncpy_s(ApplicationDumpPath, sizeof(ApplicationDumpPath),
+						CormanLispOutputDirectory, CormanLispOutputDirectoryLen);
+					if (CormanLispOutputDirectoryLen <= 2 || CormanLispOutputDirectory[CormanLispOutputDirectoryLen - 2] != '\\')
+					{
+						strcat_s(ApplicationDumpPath, sizeof(ApplicationDumpPath), "\\");
+					}
+				}
+
+				strcat_s(ApplicationDumpPath, sizeof(ApplicationDumpPath), DumpFileName);
+				err = fopen_s(&file, ApplicationDumpPath, "w");	// write
+			}
             if (err != 0)
             {
                 CormanLispServer->GetAppMainWindow(&wnd);

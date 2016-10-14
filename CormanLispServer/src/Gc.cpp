@@ -117,7 +117,6 @@ static void outputReferencedObject(FILE* file, LispObj obj, int indent);
 void* nextHeapObject(void* addr);
 
 const char* DumpFileName = "CormanLisp_Dump.log";
-char ApplicationDumpPath[MAX_PATH + 1 + sizeof(DumpFileName)];
 
 int HeapChecking = false;
 
@@ -1240,16 +1239,6 @@ void initializeGarbageCollector()
     LispHeap1.writeProtectAllPages();
     LispHeap1.decommitTrailingPages();
     LispHeap2.decommitAllPages();
-
-    // prepare for possible dump report
-    DWORD chars = GetModuleFileName(0, ApplicationDumpPath, sizeof(ApplicationDumpPath));
-    int index = chars - 1;
-    while (index >= 0 && ApplicationDumpPath[index] != '\\')
-        index--;
-    ApplicationDumpPath[index] = 0;	// get rid of file name, just leave the path
-    if (chars > 0)
-        strcat_s(ApplicationDumpPath, sizeof(ApplicationDumpPath), "\\");
-    strcat_s(ApplicationDumpPath, sizeof(ApplicationDumpPath), DumpFileName);
 }
 
 // all values starting with index (which should be even!)
