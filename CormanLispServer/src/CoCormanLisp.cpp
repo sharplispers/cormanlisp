@@ -681,6 +681,38 @@ STDMETHODIMP CoCormanLisp::GetCurrentUserPersonalDirectory(char *personalDirecto
 	return S_OK;
 }
 
+STDMETHODIMP CoCormanLisp::SetOutputDirectory(const char *outputDirectory)
+{
+	if (outputDirectory == NULL)
+		return S_FALSE;
+
+	strncpy_s(CormanLispOutputDirectory, CormanLispOutputDirectoryBufferSize, outputDirectory, strlen(outputDirectory));
+	CormanLispOutputDirectoryLen = strlen(CormanLispOutputDirectory);
+
+	return S_OK;
+}
+
+STDMETHODIMP CoCormanLisp::GetOutputDirectory(char *outputDirectory, size_t *len)
+{
+	if (outputDirectory == NULL || len == NULL)
+		return S_FALSE;
+
+	size_t old_len = *len;
+	*len = CormanLispOutputDirectoryLen;
+
+	if (outputDirectory != NULL)
+	{
+		if (old_len < *len)
+			return S_FALSE;
+
+		strncpy_s(outputDirectory, old_len + 1,
+			CormanLispOutputDirectory, CormanLispOutputDirectoryLen);
+	}
+
+	return S_OK;
+}
+
+
 //////////////////////////////////////////////////////////////////////
 // Factory method
 
