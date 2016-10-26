@@ -238,6 +238,11 @@
 (defun pathname-type (pathname &key (case :local))
 	(declare (ignore case))
 	(pathnames::pathname-internal-type (pathname pathname)))
+
+(defun file-namestring (pathname)
+    (let ((name (pathname-name pathname))
+          (type (pathname-type pathname)))
+        (concatenate 'string name "." type)))
 	
 ;;;
 ;;;	Common Lisp LOAD-LOGICAL-PATHNAME-TRANSLATIONS function.

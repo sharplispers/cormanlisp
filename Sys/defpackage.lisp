@@ -103,7 +103,7 @@
                                                 "Symbol ~A was not found in the package named \"~A\" and will not be imported."
                                                 name package) nil))))
                                (cdr spec))))
-			(push `(,(if shadowing 'shadowing-import 'import) ',symbol-names ,into-pkg-name) forms)))
+			(push `(,(if shadowing 'shadowing-import 'import) ',symbol-names ',into-pkg-name) forms)))
       `(progn ,@forms)))
 
 ;;;
@@ -140,7 +140,7 @@
                         (remove-duplicates 
                             (append use 
                                 (mapcar #'(lambda (pkg) (canonicalize-package-designator pkg nil)) value)))))
-				(:import-from (push value import-from))
+               	(:import-from (push value import-from))
 				(:intern (setq intern (append intern (mapcar #'string value))))
 				(:export (setq export (append export (mapcar #'string value))))
 				(:documentation
@@ -156,12 +156,20 @@
                         :nicknames ',(remove-duplicates nicknames :test #'string-equal) 
                         :use nil 
                         ,@(when size `(:size ,size)))) forms))
-        (setq use (mapcar (lambda (package) (package-name package)) use))   ;; list package names, not packages 		
+        (setq use (mapcar (lambda (package) 
+                            (if (packagep package)
+                                (package-name package)
+                                 package)) use))   ;; list package names, not packages 	
 		(when shadow
 		  (push `(shadow ',shadow ',name) forms))
 		(when shadowing-import-from
           (push `,(build-import-forms name shadowing-import-from t) forms))
 		(when use
+          (let ((pkg (gensym)))
+                (push
+                `(loop for ,pkg in (list ,@use)
+                    unless (find-package ,pkg)
+                    do (error "No such package ~a" ,pkg)) forms))
 		  (push `(use-package ',use ',name) forms))
 		(when import-from
           (push `,(build-import-forms name import-from nil) forms))
@@ -174,9 +182,8 @@
 		(when documentation
 		  (push `(setf (documentation ',(intern (string name)) 'package) ,documentation) forms))
 		(push `(find-package ',name) forms)
-
 		`(eval-when (:load-toplevel :compile-toplevel :execute)
-			,@(nreverse forms))))	
+			,@(nreverse forms))))
 
 ;; support function for DO-SYMBOLS, etc.
 (defun iterate-over-package (package func &optional external-only)
