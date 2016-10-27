@@ -56,11 +56,6 @@ interface ICormanLisp : public IUnknown
 	STDMETHOD(GetCurrentUserProfileDirectory)(THIS_ char *profileDirectory, size_t *len) PURE;
 	// supply NULL as personalDirectory to get real length in len
 	STDMETHOD(GetCurrentUserPersonalDirectory)(THIS_ char *personalDirectory, size_t *len) PURE;
-	// set directory for output (of memory dumps, executables, images, etc. Mostly for use in IDE)
-	// If not set - current working directory will be used instead.
-	STDMETHOD(SetOutputDirectory)(THIS_ const char *outputDirectory) PURE;
-	// supply NULL as outputDirectory to get real length in len
-	STDMETHOD(GetOutputDirectory)(THIS_ char *outputDirectory, size_t *len) PURE;
 };
 
 //

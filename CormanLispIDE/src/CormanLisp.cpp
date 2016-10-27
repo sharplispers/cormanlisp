@@ -350,12 +350,6 @@ BOOL CCormanLispApp::createPersonalDirectory()
 		return FALSE;
 	}
 
-	// set output directory
-	if (pCormanLisp->SetOutputDirectory(m_CormanLispPersonalDirectory) != S_OK)
-	{
-		return FALSE;
-	}
-
 	return TRUE;
 }
 

@@ -44,8 +44,6 @@ public:
 	STDMETHODIMP GetCurrentUserName(char *UserName, size_t *len);
 	STDMETHODIMP GetCurrentUserProfileDirectory(char *profileDirectory, size_t *len);
 	STDMETHODIMP GetCurrentUserPersonalDirectory(char *personalDirectory, size_t *len);
-	STDMETHODIMP SetOutputDirectory(const char *outputDirectory);
-	STDMETHODIMP GetOutputDirectory(char *outputDirectory, size_t *len);
 
 // IConnectionPointContainer
 	STDMETHODIMP EnumConnectionPoints(IEnumConnectionPoints** pEnumConnectionPoints);

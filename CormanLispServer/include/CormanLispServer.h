@@ -46,9 +46,6 @@ extern const int					LispImageNameMax;
 extern char							LispImageName[];
 extern int							CormanLispClientType;
 extern const UserInfo*              CurrentUserInfo;
-extern char                         CormanLispOutputDirectory[];
-extern const size_t                       CormanLispOutputDirectoryBufferSize;
-extern size_t                       CormanLispOutputDirectoryLen;
 
 typedef void (*TextOutputFuncType)(wchar_t* text, long numChars);
 extern TextOutputFuncType			TextOutputFuncPtr;

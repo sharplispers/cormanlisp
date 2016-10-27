@@ -37,9 +37,6 @@ int Windows_NT = 0;
 OSVERSIONINFO gOsVersionInfo;
 TCHAR g_szFileName[MAX_PATH];
 char CormanLispServerDirectory[MAX_PATH+1];
-char CormanLispOutputDirectory[MAX_PATH + 1] = {0};
-const size_t CormanLispOutputDirectoryBufferSize = sizeof(CormanLispOutputDirectory);
-size_t CormanLispOutputDirectoryLen = 0;
 
 CharBuf TerminalInputBuf(0x8000);
 
