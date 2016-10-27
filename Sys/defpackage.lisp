@@ -106,6 +106,16 @@
 			(push `(,(if shadowing 'shadowing-import 'import) ',symbol-names ',into-pkg-name) forms)))
       `(progn ,@forms)))
 
+(defun %package-exists-p (name)
+  (when (find-package name)
+	t))
+
+(defun %ensure-packages-exist (names)
+  (dolist (name names)
+	(unless (%package-exists-p name)
+	  (error "No such package: ~a" name)))
+  t)
+
 ;;;
 ;;;		Common Lisp DEFPACKAGE macro
 ;;;
@@ -165,11 +175,7 @@
 		(when shadowing-import-from
           (push `,(build-import-forms name shadowing-import-from t) forms))
 		(when use
-          (let ((pkg (gensym)))
-                (push
-                `(loop for ,pkg in (list ,@use)
-                    unless (find-package ,pkg)
-                    do (error "No such package ~a" ,pkg)) forms))
+		  (push `(cl::%ensure-packages-exist (list ,@use)) forms)
 		  (push `(use-package ',use ',name) forms))
 		(when import-from
           (push `,(build-import-forms name import-from nil) forms))
