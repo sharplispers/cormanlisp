@@ -550,6 +550,13 @@ BOOL CCormanLispApp::InitInstance()
 	{
 		return FALSE;
 	}
+
+	// change current directory
+	if (!SetCurrentDirectoryA(m_CormanLispPersonalDirectory))
+	{
+		return FALSE;
+	}
+
 	// create worksheet
 	m_worksheet = openWorksheet();
 	ASSERT(m_worksheet);

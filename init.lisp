@@ -1,6 +1,6 @@
 (push-module-directory "MODULES")
 (push-module-directory "SYS")
-(setf (current-directory) *cormanlisp-directory*)
+;;(setf (current-directory) *cormanlisp-directory*)
 
 ;;;
 ;;; Various special variables used by the system or the IDE
