@@ -7,6 +7,7 @@
 ;;;;	Contents:	Corman Lisp SAVE-APPLICATION implementation.
 ;;;;	History:	10/2/98  RGC  Created.
 ;;;;			5/13/99  UR   added AutoCAD ARX support
+;;;;                10/28/16 Artem Boldarev Obey current directory
 
 (in-package "CORMANLISP")
 (export 'SAVE-APPLICATION)
@@ -37,11 +38,24 @@
 			(setq imgname (subseq name 0 (- (length name) 2)))
 			(setq appname (concatenate 'string name version)))
   		  (values appname imgname))))
+
+(defun %normalize-directory-name (path-namestring)
+    (when (zerop (length path-namestring))
+        (return-from %normalize-directory-name path-namestring))
+    (if (char= (aref path-namestring
+                        (1- (length path-namestring)))
+                 #\\)
+        path-namestring
+        (concatenate 'string path-namestring "\\")))
+
 ;;;
 ;;;	Corman Lisp SAVE-APPLICATION function.
 ;;;		
 (defun save-application (application-name start-function 
 						&key (console nil) acad2000 acadr14 acadr13 (static nil))
+    ;; accept pathnames as well
+    (when (typep application-name 'pathname)
+        (setf application-name (namestring application-name)))
 	(let ((application-file-name nil)
 		  (image-file-name nil)
 		  (boot-app-name (cond ((and console static) "clconsoleapp.exe")
@@ -69,11 +83,12 @@
 				image-file-name))
 	
 		;; copy the clboot.exe file
-		(set-current-directory *cormanlisp-server-directory*)
 		(if (probe-file application-file-name)
 			(delete-file application-file-name))	;; delete file if it already exists
 		(win32:CopyFile 
-			(ct:create-c-string boot-app-name)
+			(ct:create-c-string (concatenate 'string
+                                              (%normalize-directory-name *cormanlisp-server-directory*)
+                                              boot-app-name))
 			(ct:create-c-string application-file-name)
 			t)
 		(setf cl::*top-level*
