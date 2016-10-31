@@ -23,6 +23,8 @@
 //                                after garbage collector recursion detection.
 //					4/24/06  RGC  Numerous mods to the garbage collector to try to better handle
 //							      and report memory access violations that occur during collections.
+//					10/31/16 Artem Boldarev
+//							      Look for image in the installation directory (as last resort). Useful for loading "CormanLisp.img".
 //
 #include "stdafx.h"
 #include <wtypes.h>
@@ -3672,7 +3674,18 @@ void readImgFile(LispObj path, void (*readFn)(FILE*))
     LispObj np = 0;
     int err = 0;
     np = nullTerminate(path);
-    err = fopen_s(&file, (char*)byteArrayStart(np), "rb");
+	err = fopen_s(&file, (char*)byteArrayStart(np), "rb");
+	// try to look in the installation directory
+	if (err != 0)
+	{
+		char inst_path[MAX_PATH + 1] = { 0 };
+		strcat_s(inst_path, sizeof(inst_path), CormanLispServerDirectory);
+		strcat_s(inst_path, sizeof(inst_path), "\\");
+		strcat_s(inst_path, sizeof(inst_path), (char*)byteArrayStart(np));
+
+		err = fopen_s(&file, inst_path, "rb");
+	}
+
     if (err != 0)
         Error("Could not open file ~A for reading", path);
     readFn(file);
