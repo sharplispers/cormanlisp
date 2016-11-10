@@ -25,6 +25,9 @@
 ;;;;                6/27/08  RGC  Enhanced LOAD to allow the extension to be unspecified. 
 ;;;;                              In this case it assume ".lisp" unless there is a newer 
 ;;;;                              file with the extension ".fasl".
+;;;;                11/11/16  Artem Boldarev
+;;;;                              Both COMPILE-FILE and LOAD support ".lisp", ".lsp" and ".cl" extensions.
+;;;;                              LOAD looks for a file in the installation directory as the last resort (for comatibility with older versions).
 ;;;;
 ;;;;
 ;;;; JPM 9/28/01
@@ -595,6 +598,22 @@
             (mapc (function do-it) (cdr form))
             (do-it form))))
 
+(defun resolve-lisp-file-path (file)
+  "Checks if supplied file exists with well-known Lisp files extensions. If the check fails this functions returns NIL."
+  (let ((res))
+	(if (and (pathname-type file)
+			 (setq res (probe-file file)))
+		res
+		(or (probe-file (make-pathname :name file
+									   :type "lisp"
+									   :version nil))
+			(probe-file (make-pathname :name file
+									   :type "lsp"
+									   :version nil))
+			(probe-file (make-pathname :name file
+									   :type "cl"
+									   :version nil))))))
+
 ;;;
 ;;; Common Lisp COMPILE-FILE-PATHNAME function.
 ;;;
@@ -611,7 +630,11 @@
 			 (verbose *compile-verbose*)
 			 (print *compile-print*)
 			 (external-format :default))
-	(declare (ignore external-format print))
+    (declare (ignore external-format print))
+    (let ((old-input-file input-file))
+	  (setq input-file (resolve-lisp-file-path input-file))
+	  (unless input-file
+	    (error "Can't resolve lisp file path ~S" old-input-file)))
 	(setq output-file (compile-file-pathname input-file :output-file output-file))
 				
 	(let* ((*fasl-output-buffer* (make-array #x2000 :element-type 'byte :fill-pointer 0 :adjustable t))
@@ -789,15 +812,18 @@
 (setf ccl::*save-relative-source-file-names* t)   ;; after the image loads, this is turned off
 
 (defun resolve-load-path (file)
-    (if (pathname-type file)
-        file
-        (let* ((pathname (make-pathname :name file :type "lisp" :version nil))
-               (compiled-pathname (compile-file-pathname pathname)))
-            (if (and (probe-file compiled-pathname)
-                       (< (file-write-date pathname)
-                          (file-write-date compiled-pathname)))
-                compiled-pathname
-                pathname))))
+  (let ((resolved-lisp-file-path (resolve-lisp-file-path file))
+		(compiled-file-path (compile-file-pathname file)))
+	(cond
+	  ((and resolved-lisp-file-path
+			(probe-file compiled-file-path)
+			(< (file-write-date resolved-lisp-file-path)
+			   (file-write-date compiled-file-path)))
+	   compiled-file-path)
+	  ((and (not resolved-lisp-file-path)
+			(probe-file compiled-file-path))
+	   compiled-file-path)
+	  (t resolved-lisp-file-path))))
 
 ;;;;
 ;;;; Common Lisp LOAD function
@@ -809,10 +835,19 @@
 		        (print *load-print*) 
                 (if-does-not-exist t) 
                 (external-format :default))
-    (declare (ignore external-format))
-    (setf path (resolve-load-path path))	
-    (if (path-is-fasl-file-name path)
-		(return-from load (load-fasl-file path :verbose verbose :print print)))
+   (declare (ignore external-format))
+   (let ((old-path path))
+	 (setf path (or (resolve-load-path path)
+					;; try to find file in the Corman Lisp installation directory.
+					(resolve-load-path (concatenate 'string
+													(cl::cormanlisp-directory)
+													(if (stringp path)
+														path
+														(namestring path))))))
+	 (unless path
+	   (error "Can't resolve load path for file ~S" old-path)))
+	 (if (path-is-fasl-file-name path)
+	   (return-from load (load-fasl-file path :verbose verbose :print print)))
 	(let* ((*package* *package*)
 		   (*print-level* *print-level*)
 		   (*read-level* *read-level*)
@@ -1419,4 +1454,5 @@
 (export '(#:compile-dll) 'ccl)
 
 (setq cl::*COMPILER-WARN-ON-UNDEFINED-FUNCTION* t)
-	
+
+
