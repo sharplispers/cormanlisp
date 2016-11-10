@@ -95,7 +95,7 @@
 	(write (copyright-notice) :escape nil)
 	(terpri *standard-output*)
 	(force-output)
-	(let ((init-path (parse-namestring (concatenate 'string ccl::*cormanlisp-directory* "init.lisp")))
+	(let ((init-path (parse-namestring (concatenate 'string (cl::cormanlisp-directory) "init.lisp")))
 		  (user-init-path (merge-pathnames "corman-init.lisp" (user-homedir-pathname))))
 	    (if (and (not *loading-kernel*)
 			   (probe-file init-path))
