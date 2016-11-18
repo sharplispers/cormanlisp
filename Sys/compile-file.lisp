@@ -632,7 +632,13 @@
 			 (external-format :default))
     (declare (ignore external-format print))
     (let ((old-input-file input-file))
-	  (setq input-file (resolve-lisp-file-path input-file))
+	  (setq input-file (or (resolve-load-path input-file)
+					       ;; try to find file in the Corman Lisp installation directory.
+					       (resolve-load-path (concatenate 'string
+													       (cl::cormanlisp-directory)
+													(if (stringp input-file)
+														input-file
+														(namestring input-file))))))
 	  (unless input-file
 	    (error "Can't resolve lisp file path ~S" old-input-file)))
 	(setq output-file (compile-file-pathname input-file :output-file output-file))
