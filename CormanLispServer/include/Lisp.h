@@ -12,6 +12,8 @@
 //                  9/21/03 RGC Increased NumJumpTableEntries from 0x4000 to 0x8000.
 //					10/05/16  Artem Boldarev
 //							  %USER-HOMEDIR-NAMESTRING
+//					11/22/16  Artem Boldarev
+//							  getImageLoadsCount() function.
 //
 
 #ifndef LISP_H
@@ -816,6 +818,7 @@ BOOL handleMemoryAccessException(byte*);
 void registerUntaggedValues(LispObj uvec, LispObj index);	// all values starting with
 															// index (which should be even!)
 															// are to be considered untagged
+LONG getImageLoadsCount(void);
 LispObj* createNewQV();
 void initLisp();
 LispObj RunSecondaryThread(LispObj func);

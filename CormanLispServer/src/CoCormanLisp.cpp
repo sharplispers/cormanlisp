@@ -8,6 +8,8 @@
 //		History:	8/5/97  RGC  Created.
 //					10/01/16  Artem Boldarev GetCurrentUserName method.
 //						 	  global UserInfo object.
+//					11/22/16  Artem Boldarev
+//							  GetImageLoadsCount() method.
 //
 #include "stdafx.h"
 
@@ -677,6 +679,18 @@ STDMETHODIMP CoCormanLisp::GetCurrentUserPersonalDirectory(char *personalDirecto
 			CurrentUserInfo->GetPersonalDirectoryLength() + 1,
 			CurrentUserInfo->GetPersonalDirectory());
 	}
+
+	return S_OK;
+}
+
+STDMETHODIMP CoCormanLisp::GetImageLoadsCount(LONG *count)
+{
+	if (count == NULL)
+	{
+		return S_FALSE;
+	}
+	
+	*count = getImageLoadsCount();
 
 	return S_OK;
 }

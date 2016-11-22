@@ -56,6 +56,8 @@ interface ICormanLisp : public IUnknown
 	STDMETHOD(GetCurrentUserProfileDirectory)(THIS_ char *profileDirectory, size_t *len) PURE;
 	// supply NULL as personalDirectory to get real length in len
 	STDMETHOD(GetCurrentUserPersonalDirectory)(THIS_ char *personalDirectory, size_t *len) PURE;
+	// return number of the Lisp image loads
+	STDMETHOD(GetImageLoadsCount)(THIS_ LONG *count) PURE;
 };
 
 //
