@@ -18,11 +18,11 @@ default:	../CormanLispServer.dll
 		/Fo"./bin/"								\
 		/Fp"./bin/CormanLispServer.pch"			\
 		/I./include /I../include				\
-		src\*.cpp
+		src\*.cpp UserInfo.cpp
  
 	rc.exe /l 0x409 /fo"bin\CormanLispServer.res" /i "res" .\res\CormanLispServer.rc
 
-	link.exe /nologo /dll /nodefaultlib 	\
+	link.exe /nologo /dll /NODEFAULTLIB:"libcmt" 				\
 		/subsystem:windows						\
 		/incremental:no							\
     		/machine:I386							\
@@ -47,7 +47,10 @@ default:	../CormanLispServer.dll
 		oleaut32.lib							\
 		uuid.lib								\
 		odbc32.lib								\
-		odbccp32.lib
+		odbccp32.lib								\
+		vcruntime.lib								\
+		ucrt.lib								\
+		userenv.lib
 	
 	lib /nologo /out:.\bin\CormanLispStatic.lib .\bin\*.obj
 #	mt /outputresource:"../CormanLispServer.dll;#1" /manifest ..\CormanLispServer.dll.manifest

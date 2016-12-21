@@ -757,3 +757,30 @@
                                     ,@(mapcar #'list dummies vals)
                                     (,@newval (cons ,g ,getter)))
                                 ,setter))))))))
+
+;;;
+;;;  Common Lisp SUBSEQ function
+;;;  We need to redefine this here now that the setf expansion functions are fully supported
+;;;
+(defun subseq (sequence start &optional end)
+  (let ((length (length sequence)))
+    (unless end (setq end length))
+    (unless (<= 0 start end length)
+      (error "Invalid START = ~S, END = ~S arguments" start end))
+    (if (vectorp sequence)
+	(let* ((elements (- end start))
+	       (a (make-array elements 
+			      :element-type (array-element-type sequence))))
+	  (dotimes (i elements)
+	    (setf (elt a i) (elt sequence (+ i start))))
+	  a)
+	(if (listp sequence)
+	    (let* ((elements (- end start))
+		   (x (nthcdr start sequence))
+		   (newlist nil))
+	      (dotimes (i elements)
+		(push (car x) newlist)
+		(setq x (cdr x)))
+	      (nreverse newlist))
+	    (error "Invalid sequence: ~S" sequence)))))
+
