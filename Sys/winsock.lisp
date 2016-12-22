@@ -8,7 +8,9 @@
 ;;;;
 ;;;;   WINSOCK.H
 
-(make-package "WINSOCK" :use '("COMMON-LISP" "C-TYPES"))
+(defpackage "WINSOCK"
+  (:use "COMMON-LISP" "C-TYPES")
+  (:shadow "LISTEN"))
 (in-package :winsock)
 
 #! (:export t :library "WS2_32")

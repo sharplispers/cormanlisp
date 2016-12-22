@@ -471,7 +471,7 @@
 		(with-socket-error-check () 
 			(bind (socket-descriptor s) sin-local (sizeof 'sockaddr_in)))
 		(with-socket-error-check ()
-			(listen (socket-descriptor s) SOMAXCONN))))
+			(winsock:listen (socket-descriptor s) SOMAXCONN))))
 
 (defmethod initialize-instance :after ((s proxy-socket-mixin) &key real-host real-port proxy &allow-other-keys)
 	(proxy-server-connect proxy s real-host real-port)
