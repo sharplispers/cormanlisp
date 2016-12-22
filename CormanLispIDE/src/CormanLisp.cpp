@@ -60,6 +60,7 @@ static unsigned long gLastVariableUpdateTime = 0;
 static unsigned long gVariableUpdateInterval = 1000;
 static long gLastKeyPressTime = 0;
 static CLispView* gView = 0;
+static long gLastTickImageLoadsCount = 0;
 
 const int WaitTimeBeforeMouseCue = 300;		// 300 ms wait time
 const int WaitTimeBeforeColorize = 500;		// 500 ms wait time
@@ -634,9 +635,12 @@ void invalidateHeapDisplay(long generation, CDialogBar* dialogBar, int index)
 VOID CALLBACK TimerProc( HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 {
 	unsigned long time = GetTickCount();
+	long image_loads_count = 0;
 
 	if (!theApp.m_isActive)
 		return;
+
+	pCormanLisp->GetImageLoadsCount(&image_loads_count);
 
 	if (CurrentView && (gView == CurrentView)
 			&& theApp.preferences.autoPrototypeOnMouseMove &&
@@ -707,6 +711,14 @@ VOID CALLBACK TimerProc( HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime)
             }
         }
 	}
+
+	// set editor message to not confuse user on image loading
+	if (image_loads_count != gLastTickImageLoadsCount)
+	{
+		theApp.SetDefaultMessage();
+	}
+
+	pCormanLisp->GetImageLoadsCount(&gLastTickImageLoadsCount);
 }
 
 BOOL CCormanLispApp::OnIdle(LONG lCount)
