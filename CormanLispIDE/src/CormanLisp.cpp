@@ -98,7 +98,7 @@ static HINSTANCE getLocalCormanLispServer();
 static IClassFactory* getCormanLispClassFactory();
 static IClassFactory* getCormanLispRegisteredClassFactory();
 static void AppendFilterSuffix(CString&, OPENFILENAME&, CDocTemplate*);
-static void SetupDirectCallPointers();
+static void UpdateDirectCallPointers();
 
 static int maxFontSize = 73;
 
@@ -134,6 +134,9 @@ typedef void (*MenuSelectType)(HMENU hMenu, UINT nItemID, UINT nFlags);
 MenuSelectType MenuSelectPtr = 0;
 typedef void (*VersionCaptionType)(char* buf);
 VersionCaptionType VersionCaptionPtr = 0;
+
+// image loads count
+static long ImageLoadsCount = 0;
 
 static char lispVarsBuf[4096] = {0};
 static char saveLispVarsBuf[4096] = {0};
@@ -654,8 +657,7 @@ VOID CALLBACK TimerProc( HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 		gView->Colorize();
 
 	// repaint lisp status dialog bar
-	if (!OnHeapSizePtr)
-		SetupDirectCallPointers();
+	UpdateDirectCallPointers();
 	if (OnHeapSizePtr)
 	{
 		// don't invalidate unless they have changed
@@ -3568,8 +3570,7 @@ void CLispView::displayMouseCue()
 	if (!lambdaList)
 	{
 		// see if it is a lisp user-defined function
-		if (!LookupLambdaListPtr)
-			SetupDirectCallPointers();
+		UpdateDirectCallPointers();
 		if (LookupLambdaListPtr)
 		{
 			int chars = LookupLambdaListPtr(LineBuf + startChar, lambdaListBuf, lambdaListBufSize);
@@ -3942,41 +3943,73 @@ void DisableLispSystem()
 	pCormanLispDirectCall = 0;
 }
 
-void SetupDirectCallPointers()
+void UpdateDirectCallPointers()
 {
-	if (OnContextMenuFuncPtr == 0 && !LispSystemDisabled)
+	long CurrentImageLoadsCount = ImageLoadsCount;
+
+	if (pCormanLisp != NULL)
 	{
+		pCormanLisp->GetImageLoadsCount(&CurrentImageLoadsCount);
+	}
+
+	if (ImageLoadsCount != CurrentImageLoadsCount && !LispSystemDisabled)
+	{
+		if (pCormanLisp != NULL)
+		{
+			pCormanLisp->GetImageLoadsCount(&ImageLoadsCount);
+		}
+
 		pCormanLispDirectCall->BlessThread();
 		void* funcptr = 0;
+
+		OnContextMenuFuncPtr = NULL;
 		pCormanLispDirectCall->GetFunctionAddress(L"ON-CONTEXT-MENU", L"CCL", &funcptr);
 		if (funcptr)
 			OnContextMenuFuncPtr = (OnContextMenuFuncType)funcptr;
 		else
 			LispSystemDisabled = 1;		// the image is probably not valid or loaded
+		
+		OnHeapSizePtr = NULL;
 		pCormanLispDirectCall->GetFunctionAddress(L"ON-HEAP-SIZE", L"CCL", &funcptr);
 		if (funcptr)
 			OnHeapSizePtr = (OnHeapSizeType)funcptr;
+		
+		LookupLambdaListPtr = NULL;
 		pCormanLispDirectCall->GetFunctionAddress(L"LOOKUP-LAMBDA-LIST", L"CCL", &funcptr);
 		if (funcptr)
 			LookupLambdaListPtr = (LookupLambdaListType)funcptr;
+		
+		OnColorizeFuncPtr = NULL;
 		pCormanLispDirectCall->GetFunctionAddress(L"ON-COLORIZE", L"IDE", &funcptr);
 		if (funcptr)
 			OnColorizeFuncPtr = (OnColorizeType)funcptr;
+		
+		DisplayLispVarsPtr = NULL;
 		pCormanLispDirectCall->GetFunctionAddress(L"DISPLAY-LISP-VARS", L"IDE", &funcptr);
 		if (funcptr)
 			DisplayLispVarsPtr = (DisplayLispVarsType)funcptr;
+		
+		InitMenuPtr = NULL;
 		pCormanLispDirectCall->GetFunctionAddress(L"ON-INIT-MENU", L"IDE", &funcptr);
 		if (funcptr)
 			InitMenuPtr = (InitMenuType)funcptr;
+		
+		InitMenuPopupPtr = NULL;
 		pCormanLispDirectCall->GetFunctionAddress(L"ON-INIT-MENU-POPUP", L"IDE", &funcptr);
 		if (funcptr)
 			InitMenuPopupPtr = (InitMenuPopupType)funcptr;
+		
+		UninitMenuPopupPtr = NULL;
 		pCormanLispDirectCall->GetFunctionAddress(L"ON-UNINIT-MENU-POPUP", L"IDE", &funcptr);
 		if (funcptr)
 			UninitMenuPopupPtr = (UninitMenuPopupType)funcptr;
+		
+		MenuSelectPtr = NULL;
 		pCormanLispDirectCall->GetFunctionAddress(L"ON-MENU-SELECT", L"IDE", &funcptr);
 		if (funcptr)
 			MenuSelectPtr = (MenuSelectType)funcptr;
+		
+		VersionCaptionPtr = NULL;
 		pCormanLispDirectCall->GetFunctionAddress(L"VERSION_CAPTION", L"CCL", &funcptr);
 		if (funcptr)
 			VersionCaptionPtr = (VersionCaptionType)funcptr;
@@ -3986,7 +4019,7 @@ void SetupDirectCallPointers()
 void CLispView::OnContextMenu(CWnd* wnd, CPoint point)
 {
 	CRichEditCtrl& ed = GetRichEditCtrl();
-	SetupDirectCallPointers();
+	UpdateDirectCallPointers();
 	if (OnContextMenuFuncPtr)
 	{
 		long start, end;
@@ -4136,8 +4169,7 @@ void CMainFrame::DockControlBarLeftOf(CControlBar* Bar, CControlBar* LeftOf)
 
 void CMainFrame::OnInitMenu(CMenu* pMenu) {
 	this->CSMDIFrameWnd::OnInitMenu(pMenu);
-	if (!InitMenuPtr)
-		SetupDirectCallPointers();
+	UpdateDirectCallPointers();
 	if (InitMenuPtr)
 		InitMenuPtr(pMenu->m_hMenu);
 }
@@ -4146,16 +4178,14 @@ void CMainFrame::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 {
     gLastMenuHandle = pPopupMenu->m_hMenu;
 	this->CSMDIFrameWnd::OnInitMenuPopup(pPopupMenu, nIndex, bSysMenu);
-	if (!InitMenuPopupPtr)
-		SetupDirectCallPointers();
+	UpdateDirectCallPointers();
 	if (InitMenuPopupPtr)
 		InitMenuPopupPtr(pPopupMenu->m_hMenu, nIndex, bSysMenu);
 }
 
 LRESULT CMainFrame::OnUninitMenuPopup(WPARAM mHandle, LPARAM /*lParam*/)
 {
-	if (!UninitMenuPopupPtr)
-		SetupDirectCallPointers();
+	UpdateDirectCallPointers();
 	if (UninitMenuPopupPtr)
 		UninitMenuPopupPtr((HMENU)mHandle);
     return 0;
@@ -4165,8 +4195,7 @@ void CMainFrame::OnMenuSelect(UINT nItemID, UINT nFlags, HMENU hSysMenu)
 {
     gLastMenuItem = nItemID;
 	this->CSMDIFrameWnd::OnMenuSelect(nItemID, nFlags, hSysMenu);
-	if (!MenuSelectPtr)
-		SetupDirectCallPointers();
+	UpdateDirectCallPointers();
 	if (MenuSelectPtr)
 		MenuSelectPtr(gLastMenuHandle, nItemID, nFlags);
 }
