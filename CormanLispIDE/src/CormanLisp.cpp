@@ -3954,13 +3954,16 @@ void UpdateDirectCallPointers()
 
 	if (ImageLoadsCount != CurrentImageLoadsCount && !LispSystemDisabled)
 	{
+		void* funcptr = 0;
 		if (pCormanLisp != NULL)
 		{
 			pCormanLisp->GetImageLoadsCount(&ImageLoadsCount);
 		}
 
+		// reinitialize editor thread
+		if (ImageLoadsCount > 1)
+			pCormanLispDirectCall->UnblessThread();
 		pCormanLispDirectCall->BlessThread();
-		void* funcptr = 0;
 
 		OnContextMenuFuncPtr = NULL;
 		pCormanLispDirectCall->GetFunctionAddress(L"ON-CONTEXT-MENU", L"CCL", &funcptr);
