@@ -68,8 +68,9 @@
 
 (defun compile-cormanlisp-image ()
     (format *terminal-io* "Building CormanLisp.img file...~%")
-    (win:shell-execute (namestring (merge-pathnames "clconsole.exe" *cormanlisp-directory*))
-        " -image \"\" -execute sys/compile-sys.lisp")
+    ;;(win:shell-execute (namestring (merge-pathnames "clconsole.exe" *cormanlisp-directory*))
+    ;;    " -image \"\" -execute sys/compile-sys.lisp")
+    (win:shell-execute (namestring (merge-pathnames "makeimg.bat" *cormanlisp-directory*)) "")
     (win:message-box-ok "A console process has been launched which is recompiling the CormanLisp.img file." "Information")
     t)
        
