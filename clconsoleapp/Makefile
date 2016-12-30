@@ -45,7 +45,7 @@ default: ../clconsoleapp.exe
 		ucrt.lib							\
 		userenv.lib
 
-	mt /outputresource:"../clconsoleapp.exe;#1" /manifest clconsoleapp.exe.manifest
+#	mt /outputresource:"../clconsoleapp.exe;#1" /manifest clconsoleapp.exe.manifest
 
 clean:
 	if exist bin\*.obj del bin\*.obj
