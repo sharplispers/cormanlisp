@@ -889,7 +889,11 @@ LispDeclare(Probe_File);
 LispDeclare(Memory_Report);
 
 LispDeclare(Safecall);
+
 LispDeclare(User_HomeDir_Namestring);
+
+LispDeclare(CormanLisp_Directory_Namestring);
+LispDeclare(Change_Directory);
 
 //
 //	QV pointers
