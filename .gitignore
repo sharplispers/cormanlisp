@@ -14,4 +14,7 @@
 *.suo
 *.aps
 Lisp Worksheet
-
+# HyperSpec
+HyperSpec/*
+HyperSpec-Legalese.text
+HyperSpec-README.text
