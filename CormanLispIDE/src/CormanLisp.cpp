@@ -1068,7 +1068,7 @@ void CCormanLispApp::OnBrowseCCLDoc()
 	CormanLispDirectory[index] = 0;	// get rid of file name, just leave the path
 	if (chars > 0)
 		strcat_s(CormanLispDirectory, sizeof(CormanLispDirectory), "\\");
-	strcat_s(CormanLispDirectory, sizeof(CormanLispDirectory), "documentation\\CormanLisp.pdf");
+	strcat_s(CormanLispDirectory, sizeof(CormanLispDirectory), "documentation\\CormanLisp.html");
 	NavigateURL(CormanLispDirectory);
 }
 
