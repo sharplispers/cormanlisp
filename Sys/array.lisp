@@ -365,11 +365,10 @@
 ;;;
 (defun upgraded-array-element-type (element-type &optional environment)
     (declare (ignore environment))
-	(if (member element-type '(bit byte character double-float single-float short-integer))
-		element-type
-        (if (or (eq element-type 'base-char)(eq element-type 'standard-char))
-            'character
-            't)))
+	(cond ((member element-type '(bit byte character double-float single-float short-integer)) element-type)
+          ((or (eq element-type 'base-char)(eq element-type 'standard-char)) 'character)
+          ((equal element-type '(unsigned-byte 8)) 'byte)
+          (t 't)))
 
 ;;; 
 ;;; Common Lisp ARRAY-DISPLACEMENT function.
@@ -396,7 +395,7 @@
 	(if (integerp dimensions)
 		(setq dimensions (list dimensions)))
 
-	(setq element-type (upgraded-array-element-type element-type))
+	(setq element-type (upgraded-array-element-type (typeexpand-all element-type)))
 	
 	;; if we are displacing to an already displaced array, add the offsets
 	(when (and displaced-to displaced-index-offset (array-displacement displaced-to))
