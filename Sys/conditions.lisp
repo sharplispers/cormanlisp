@@ -206,7 +206,7 @@
 	(let ((binding-forms nil))
 		(dolist (x bindings)
             (unless (type-specifier-p (first x))
-                (error "Invalid type specifier in HANDLER-BIND clause: ~A" (first x)))
+                (warn "Invalid type specifier in HANDLER-BIND clause: ~A" (first x)))
 			(push `(list ',(first x) ,(second x)) binding-forms))		
 		`(let ((*handler-registry* 
 					(cons ,(cons 'list (nreverse binding-forms)) 
