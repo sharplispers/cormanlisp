@@ -431,7 +431,8 @@
                                 :output t)))
   (:implementation cormanlisp
     (qlqs-cormanlisp:make-socket-stream 
-        (qlqs-cormanlisp:make-client-socket :host host :port port)))     
+        (qlqs-cormanlisp:make-client-socket :host host :port port)
+        :binary t))     
   (:implementation scl
     (let ((fd (qlqs-scl:connect-to-inet-socket host port)))
       (qlqs-scl:make-fd-stream fd
@@ -849,7 +850,7 @@
    (eofp
     :initarg :eofp
     :accessor eofp
-    :initform 0))
+    :initform nil))
   (:default-initargs
    :data (make-octet-vector *cbuf-buffer-size*)
    :connection nil
