@@ -359,7 +359,8 @@ BOOL CCormanLispApp::InitInstance()
 	BOOL ret = FALSE;
 	CString lispImage;
 	defaultMessageText = "Ready  (Use <Shift>-Enter to Execute)";
-	//Enable3dControls();
+	SetRegistryKey("Corman Technologies");
+
 	AfxEnableControlContainer();
 	LoadStdProfileSettings();
 	CoInitialize(0);
@@ -2274,7 +2275,7 @@ LRESULT CLispView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	default:
 		break;
 	}
-	LRESULT  res = CWnd::WindowProc(message, wParam, lParam);
+	LRESULT  res = CRichEditView::WindowProc(message, wParam, lParam);
 	return res;
 }
 
@@ -2545,9 +2546,14 @@ CLispView::OnActivateView( BOOL bActivate, CView* pActivateView, CView* pDeactiv
 {
 	CurrentView = (CLispView*)pActivateView;
 	m_colorizeDisabled = false;
+	CRichEditCtrl& ed = GetRichEditCtrl();
+
 	CRichEditView::OnActivateView(bActivate, pActivateView, pDeactiveView);
 	if (!bActivate)
+	{
+		ed.HideSelection(TRUE, FALSE);
 		return;
+	}
 	CLispDoc* doc = (CLispDoc*)GetDocument();
 	if (doc)
 	{
@@ -3890,7 +3896,7 @@ int CLispView::mouseCueDisabled()
 void CLispView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	mouseCueOff();
-	CWnd::OnHScroll(nSBCode, nPos, pScrollBar);
+	CRichEditView::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CLispView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -3905,7 +3911,7 @@ void CLispView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 //		ScrollWindow(0, -offset, NULL, NULL);
 	}
 */
-	CWnd::OnVScroll(nSBCode, nPos, pScrollBar);
+	CRichEditView::OnVScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CLispView::UpdateScrollPosition(UINT nPos)
