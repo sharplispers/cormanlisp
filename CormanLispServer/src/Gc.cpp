@@ -409,6 +409,7 @@ LispHeap::~LispHeap()
 
 void LispHeap::writeProtectAllPages()
 {
+/*   RGC DEBUG
     unsigned long i = 0;
     DWORD oldProtect = 0;
     BOOL ret = 0;
@@ -418,11 +419,6 @@ void LispHeap::writeProtectAllPages()
     if (!ret)
     {
         err = GetLastError();
-#if (defined(ACRXAPP) && defined(_DEBUG))	// UR: I want to see it
-        _CrtDbgReport(_CRT_WARN,"Gc.cpp",__LINE__,"CormanLispServer.DLL",
-                "writeProtectAll: VirtualProtect(0x%lx,%d) failed with 0x%x\n",
-                page_address(firstPage), PAGE_SIZE * numPages, err);
-#endif
     }
     else
     {
@@ -431,6 +427,7 @@ void LispHeap::writeProtectAllPages()
             SetProtectFlag(i + firstPage);
         }
     }
+*/
 }
 
 void LispHeap::unWriteProtectAllPages()
@@ -543,6 +540,7 @@ int LispHeap::pageCommitted(byte* addr)
 // Returns 1 if successful, 0 otherwise.
 int LispHeap::decommitTrailingPages()
 {
+/*  RGC DEBUG
     unsigned long i = 0;
     BOOL ret = 1;
     DWORD err = 0;
@@ -558,6 +556,7 @@ int LispHeap::decommitTrailingPages()
         err = GetLastError();
         return 0;
     }
+*/
     return 1;
 }
 
