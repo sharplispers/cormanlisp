@@ -485,7 +485,7 @@
 
 (definterface read-octets (buffer connection)
   (:implementation t
-    (read-sequence buffer connection))
+    (setf *connection* connection)(read-sequence buffer connection))
   (:implementation allegro
     (qlqs-allegro:read-vector buffer connection))
   (:implementation clisp
