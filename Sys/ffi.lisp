@@ -1669,15 +1669,17 @@ Example:
 					(declare (ignore ,@syms))					; disable "unused variable" warnings
 					(x86::setup-lisp-registers)
 					(x86::push-lisp-stack-context)
-					,@(if create-heap-handler
-						`((x86::link-heap-handler)))
+					(x86::link-heap-handler)
+					;,@(if create-heap-handler
+					;	`((x86::link-heap-handler)))
 					,@(nreverse arg-conversion-forms)
 					(x86::mov-ecx-num ,num-args)
 					(x86::call-lisp-proc ,internal-name)
 					(x86::pop-lisp-args ,num-args)
 					(x86::return-lisp-val-as-c) 
-					,@(if create-heap-handler
-						`((x86::unlink-heap-handler)))					
+					(x86::unlink-heap-handler)
+					;,@(if create-heap-handler
+					;	`((x86::unlink-heap-handler)))					
 					(x86::pop-lisp-stack-context)
                     (x86::copy-foreign-return-val-to-eax)
 					(x86::restore-c-registers)
