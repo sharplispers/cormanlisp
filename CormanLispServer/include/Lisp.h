@@ -2139,7 +2139,9 @@ extern int LispHeapSizeMax;
 extern int SysGlobalsSize;	     
 extern int LispHeapReserveMin;
 extern int LispHeapReserveDefault;
-extern int LispHeapReserveMax;    
+extern int LispHeapReserveMax;   
+
+extern int HardwareAssist;   // 0 if hardware-assisted GC is off, 1 if it is on
 
 extern char gDisassemblyOutputBuf[];
 

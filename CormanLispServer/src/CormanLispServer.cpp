@@ -33,7 +33,6 @@ TextOutputFuncType TextOutputFuncPtr = 0;
 HINSTANCE gAppInstance = 0;
 HWND      gAppMainWindow = 0;
 
-int Windows_NT = 0;
 OSVERSIONINFO gOsVersionInfo;
 TCHAR g_szFileName[MAX_PATH];
 char CormanLispServerDirectory[MAX_PATH+1];
@@ -65,9 +64,6 @@ void processAttach(HINSTANCE hInstance)
 	TlsSetValue(Thread_Index, 0);
 	TlsGetValue(QV_Index);
 	TlsGetValue(Thread_Index);
-	gOsVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	ret = GetVersionEx(&gOsVersionInfo);
-	Windows_NT = (gOsVersionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT);
 	GetModuleFileName(hInstance, g_szFileName, MAX_PATH);
 
 	// create a named mutex that is used to determine if the
@@ -232,14 +228,6 @@ STDAPI DllUnregisterServer()
     return result;
 }
 
-void setWindowsNT()
-{
-	BOOL ret = 0;
-	gOsVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	ret = GetVersionEx(&gOsVersionInfo);
-	Windows_NT = (gOsVersionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT);
-}
-
 extern "C" long Initialize(const wchar_t* imageName, int clientType, HINSTANCE appInstance,
 			   HANDLE* thread, HWND mainWindow, TextOutputFuncType TextOutputFunc)
 {
@@ -256,7 +244,6 @@ extern "C" long Initialize(const wchar_t* imageName, int clientType, HINSTANCE a
 
 	    if (!DLL_Loaded)	
 		    processAttach(appInstance);
-	    setWindowsNT();
 	    TextOutputFuncPtr = TextOutputFunc;
 	    gAppInstance = appInstance;
 	    gAppMainWindow = mainWindow;
@@ -288,8 +275,6 @@ void InitializeCormanLisp(IUnknown* client, const UserInfo *user_info)
 	BOOL ret = 0;
 	HINSTANCE hInstance = 0;
 	CurrentUserInfo = user_info;
-
-	setWindowsNT();
 
 	if (ClientUnknown)
 	{

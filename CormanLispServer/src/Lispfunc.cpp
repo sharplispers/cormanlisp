@@ -2501,7 +2501,6 @@ LispFunction(Test_Function)
 }
 
 extern long gStackOverflowAddress;
-extern int Windows_NT;
 
 LispFunction(Protect_Stack)
 {
@@ -2510,12 +2509,8 @@ LispFunction(Protect_Stack)
 	long result = 0;
 	if (gStackOverflowAddress != 0)
 	{
-		if (!Windows_NT)
-			result = VirtualProtect((void*)gStackOverflowAddress, 1, 
-					PAGE_NOACCESS, &oldProtect);
-		else
-			result = VirtualProtect((void*)gStackOverflowAddress, 1, 
-					PAGE_GUARD | PAGE_READWRITE, &oldProtect);
+		result = VirtualProtect((void*)gStackOverflowAddress, 1, 
+				PAGE_GUARD | PAGE_READWRITE, &oldProtect);
 		ret = T;
 	}
 	else
@@ -2528,10 +2523,7 @@ LispFunction(Get_OS_Version)
 {
 	LISP_FUNC_BEGIN(0);
 
-	if (Windows_NT)
-		ret = findKeyword("WINDOWS-NT");
-	else
-		ret = findKeyword("WINDOWS-95");
+	ret = findKeyword("WINDOWS-NT");
 
 	LISP_FUNC_RETURN(ret);
 }
@@ -4123,6 +4115,38 @@ LispFunction(UpdateJumpTable)
 	LISP_FUNC_RETURN(NIL);
 }
 
+//
+// Enable or disable hardware-assisted gc.
+// If called with an argument, it sets the value.
+// If called with no arguments, then it just returns the current setting.
+//
+LispFunction(Hardware_GC)
+{
+	LISP_FUNC_BEGIN_VARIABLE(0, 1);
+	LispObj sym = 0;
+	if (ARG_COUNT == 1)
+	{
+		sym = LISP_ARG(0);
+		if (sym == NIL && HardwareAssist == 1)
+		{
+			// turn hardware-assist off
+			garbageCollect(2);		// do full collection
+			HardwareAssist = 0;		// switch off
+			garbageCollect(2);		// another full collection
+		}
+		else if (sym != NIL && HardwareAssist == 0)
+		{
+			// turn hardware-assist on
+			garbageCollect(2);		// do full collection
+			HardwareAssist = 1;		// switch on
+			garbageCollect(2);		// another full collection
+		}
+	}
+	else
+		sym = (HardwareAssist ? T : NIL);
+	LISP_FUNC_RETURN(sym);
+}
+
 FunctEntry functTable[] =
 {
 	{	"SYMBOL-VALUE",				SymbolValue				},	// redefined in lisp
@@ -4443,6 +4467,7 @@ FunctEntry functTable[] =
 	{	"UPDATE-JUMP-TABLE",		UpdateJumpTable			},
     {   "%UNASSEMBLE",              (LispFunc)unassemble    },  // defined in Lisp via FFI
     {   "%LOADLIBRARY",             (LispFunc)LoadLibraryA  },  // defined in Lisp via FFI
+	{	"HARDWARE-GC",				Hardware_GC				},  // turn on or off hardware-assisted gc
 
     // these are just here for Lisp reporting purposes (so the names in stack dumps are known)
     { "LispCall0",                  (LispFunc)LispCall0     },
