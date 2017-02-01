@@ -986,7 +986,7 @@
  
 ;;Example of reading from an HTTP server.
 (start-sockets)
-(let ((s (make-client-socket :host "www.double.co.nz" :port 80)))
+(let ((s (make-client-socket :host "www.cormanlisp.com" :port 80)))
   (write-socket-line s "GET / HTTP/1.0")
   (write-socket-line s "")
   (loop as line = (read-socket-line s nil :eof)
@@ -995,7 +995,7 @@
   (close-socket s))
 
 ;; Same example using stream support
-(let ((s (make-client-socket :host "www.double.co.nz" :port 80)))
+(let ((s (make-client-socket :host "www.cormanlisp.com" :port 80)))
 	(with-socket-stream (stream s)
 		(write-line "GET / HTTP/1.0" stream)
 		(write-line "" stream)
@@ -1007,7 +1007,7 @@
 ;; Same example using a proxy
 (let* ((*default-proxy-server*
 			(make-instance 'generic-proxy-server :host "proxy.myserver.com" :port 8080))
-		(s (make-client-socket :host "www.double.co.nz" :port 80)))
+		(s (make-client-socket :host "www.cormanlisp.com" :port 80)))
 	(with-socket-stream (stream s)
 		(write-line "GET / HTTP/1.0" stream)
 		(write-line "" stream)
@@ -1020,7 +1020,7 @@
 ;; Loops through the headers looking for Content-Length. When all the
 ;; headers are read, read the content data using the length previously
 ;; provided.
-(with-client-socket (s :host "www.double.co.nz" :port 80)
+(with-client-socket (s :host "www.cormanlisp.com" :port 80)
 	(write-socket-line s "GET / HTTP/1.0")
 	(write-socket-line s "")
 	(let ((content-length 0))
@@ -1036,7 +1036,7 @@
 		(read-socket s content-length)))
 				
 ;; Same example using stream support
-(with-client-socket (s :host "www.double.co.nz" :port 80)
+(with-client-socket (s :host "www.cormanlisp.com" :port 80)
 	(with-socket-stream (stream s)
 		(write-line "GET / HTTP/1.0" stream)
 		(write-line "" stream)
@@ -1057,7 +1057,7 @@
 ;; Same example using a proxy
 (let ((*default-proxy-server*
 			(make-instance 'generic-proxy-server :host "proxy.myserver.com" :port 8080)))
-	(with-client-socket (s :host "www.double.co.nz" :port 80)
+	(with-client-socket (s :host "www.cormanlisp.com" :port 80)
 		(with-socket-stream (stream s)
 			(write-line "GET / HTTP/1.0" stream)
 			(write-line "" stream)
