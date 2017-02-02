@@ -144,7 +144,7 @@ int LispHeapReserveMax       = 0x40000000;          // max 1 gig reserve
 // It used to give performance gains but I am not sure the advantage is still significant.
 // By default we will leave this switched off, in favor of better stability.
 //
-int HardwareAssist = 0;   // 0 if hardware-assisted GC is off, 1 if it is on. 
+int HardwareAssist = 1;   // 0 if hardware-assisted GC is off, 1 if it is on. 
 
 //int SysGlobalsAddr = 0x1000000;
 LispObj** GlobalQVPointer;
@@ -511,7 +511,7 @@ int LispHeap::pageCommitted(byte* addr)
 // Returns 1 if successful, 0 otherwise.
 int LispHeap::decommitTrailingPages()
 {
-/*  RGC DEBUG
+/*  RGC DEBUG let's leave this disabled for now--it may improve stability (prevent issues) in some cases
     unsigned long i = 0;
     BOOL ret = 1;
     DWORD err = 0;

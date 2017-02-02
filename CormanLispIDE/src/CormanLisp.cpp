@@ -2551,7 +2551,7 @@ CLispView::OnActivateView( BOOL bActivate, CView* pActivateView, CView* pDeactiv
 	CRichEditView::OnActivateView(bActivate, pActivateView, pDeactiveView);
 	if (!bActivate)
 	{
-		ed.HideSelection(TRUE, FALSE);
+		//ed.HideSelection(TRUE, FALSE);
 		return;
 	}
 	CLispDoc* doc = (CLispDoc*)GetDocument();
@@ -4054,7 +4054,7 @@ BOOL CLispDocumentFrame::PreCreateWindow(CREATESTRUCT& cs)
 void CLispDocumentFrame::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	// set the title to be the full path
-	CDocument* doc = GetActiveDocument();
+ 	CDocument* doc = GetActiveDocument();
 	if (theApp.preferences.fullPathInTitle && _stricmp(doc->GetTitle(), WORKSHEET_TITLE))
 	{
 		CString pathName = doc->GetPathName();
