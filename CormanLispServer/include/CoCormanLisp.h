@@ -9,6 +9,8 @@
 //					10/01/16  Artem Boldarev GetCurrentUserName method.
 //					10/06/16  Artem Boldarev
 //							  PGetCurrentUserPersonalDirectory() method.
+//					11/22/16  Artem Boldarev
+//							  GetImageLoadsCount() method.
 //
 
 #ifndef COLISP_H
@@ -44,6 +46,7 @@ public:
 	STDMETHODIMP GetCurrentUserName(char *UserName, size_t *len);
 	STDMETHODIMP GetCurrentUserProfileDirectory(char *profileDirectory, size_t *len);
 	STDMETHODIMP GetCurrentUserPersonalDirectory(char *personalDirectory, size_t *len);
+	STDMETHODIMP GetImageLoadsCount(LONG *count);
 
 // IConnectionPointContainer
 	STDMETHODIMP EnumConnectionPoints(IEnumConnectionPoints** pEnumConnectionPoints);

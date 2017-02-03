@@ -25,6 +25,8 @@
 //							      and report memory access violations that occur during collections.
 //					10/31/16 Artem Boldarev
 //							      Look for image in the installation directory (as last resort). Useful for loading "CormanLisp.img".
+//					11/22/16  Artem Boldarev
+//							  getImageLoadsCount() function.
 //
 #include "stdafx.h"
 #include <wtypes.h>
@@ -145,6 +147,8 @@ int LispHeapReserveMax       = 0x40000000;          // max 1 gig reserve
 // By default we will leave this switched off, in favor of better stability.
 //
 int HardwareAssist = 1;   // 0 if hardware-assisted GC is off, 1 if it is on. 
+
+static volatile LONG ImageLoadsCount  = 0;          // number of image loads
 
 //int SysGlobalsAddr = 0x1000000;
 LispObj** GlobalQVPointer;
@@ -3590,10 +3594,21 @@ void readHeap(FILE* is)
         FINALIZATION_REGISTRY = 0;
         GCExecRegistry = 0;
 
+		// increment number of image loads
+		InterlockedIncrement(&ImageLoadsCount);
+
         // resume all suspended threads
         ThreadList.resumeAllOtherThreads();
         ThreadList.Unlock();
     }
+}
+
+LONG getImageLoadsCount(void)
+{
+	volatile LONG res = 0;
+
+	InterlockedCompareExchange(&res, ImageLoadsCount, res);
+	return (LONG)res;
 }
 
 void writePESection(LispObj path, char* sectionName, void (*writeFn)(FILE*))

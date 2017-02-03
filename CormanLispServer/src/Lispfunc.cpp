@@ -4488,7 +4488,11 @@ FunctEntry functTable[] =
 	// It seems one can not throw Access Violation Exceptions through the Windows API functions on 64 bit OSes.
 	{ "%SAFECALL",                  (LispFunc)Safecall      },
 
-	{ "%USER-HOMEDIR-NAMESTRING", (LispFunc)User_HomeDir_Namestring }, // internal function to supply data for USER-HOMEDIR-PATHNAME
+	{ "%USER-HOMEDIR-NAMESTRING",   (LispFunc)User_HomeDir_Namestring }, // internal function to supply data for USER-HOMEDIR-PATHNAME
+
+	// One needs the following functions to bootstrap Corman Lisp image
+	{ "%CORMANLISP-DIRECTORY-NAMESTRING", (LispFunc)CormanLisp_Directory_Namestring }, // get Corman Lisp directory namestring
+	{ "%CHANGE-DIRECTORY",          (LispFunc)Change_Directory }         // change working directory - it is needed during image building process.
     // ----------------------------------------------------------
 };
 long sizeFunctTable = sizeof(functTable)/sizeof(FunctEntry);
@@ -4853,3 +4857,23 @@ LispFunction(User_HomeDir_Namestring)
 	LISP_FUNC_RETURN(ret);
 }
 
+LispFunction(CormanLisp_Directory_Namestring)
+{
+	LISP_FUNC_BEGIN(0);
+	ret = stringNode(CormanLispDirectoryBuffer);
+	LISP_FUNC_RETURN(ret);
+}
+
+LispFunction(Change_Directory)
+{
+	LISP_FUNC_BEGIN(1);
+	LispObj obj = LISP_ARG(0);
+	checkString(obj);
+
+	ret = NIL;
+	if (SetCurrentDirectoryA((char*)byteArrayStart(nullTerminate(obj))) == TRUE)
+	{
+		ret = obj;
+	}
+	LISP_FUNC_RETURN(ret);
+}

@@ -3,6 +3,15 @@
 ;;;;	See LICENSE.txt for license information.
 ;;;;	-------------------------------
 (progn (terpri)(write "Creating the file CormanLisp.img")(terpri) (values))
+
+;; change current directory to the Corman Lisp directory
+(progn
+    (terpri)
+    (write "Changing current directory to ")
+    (write (%change-directory (%cormanlisp-directory-namestring)))
+    (terpri)
+    (values))
+
 (progn (load "sys/load-sys.lisp")(values))
 (top-level)
 (progn (load "sys/load-sys2.lisp")(values))

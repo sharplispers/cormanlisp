@@ -81,3 +81,13 @@
 (when (and ccl:*auto-update-enabled*
         (eq (cormanlisp-client-type) :ide-client))
     (ccl:auto-update))
+
+;; utility function to load default image
+;; (handy for reloading default Corman Lisp image after rebuilding)
+(defun cl:load-default-image ()
+    "Load default Corman Lisp image"
+    (load-image (concatenate 'string
+            *cormanlisp-directory*
+            "CormanLisp.img")))
+;; export from CL package
+(export (find-symbol "LOAD-DEFAULT-IMAGE" 'cl) 'cl)

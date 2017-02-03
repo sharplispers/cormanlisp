@@ -10,24 +10,6 @@
                         language="*" />
     </dependentAssembly>
   </dependency>
-  <dependency>
-    <dependentAssembly>
-      <assemblyIdentity type="win32"
-                        name="Microsoft.VC80.CRT"
-                        version="8.0.50727.762"
-                        processorArchitecture="x86"
-                        publicKeyToken="1fc8b3b9a1e18e3b" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly>
-      <assemblyIdentity type="win32"
-                        name="Microsoft.VC80.MFC"
-                        version="8.0.50727.762"
-                        processorArchitecture="x86"
-                        publicKeyToken="1fc8b3b9a1e18e3b" />
-    </dependentAssembly>
-  </dependency>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
     <security>
       <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
