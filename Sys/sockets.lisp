@@ -528,7 +528,8 @@
 (defmethod do-ffi-write-socket ((s base-socket) buffer length)
   (with-c-buffer (c-buffer (+ length 1))
 		(dotimes (n length)
-			(setf (ct:cref (:unsigned-char *) c-buffer n) (char-int (elt buffer n))))
+            (let ((x (elt buffer n)))
+                (setf (ct:cref (:unsigned-char *) c-buffer n) (if (characterp x)(char-int x) x))))
 		(with-socket-error-check ()
 			(send (socket-descriptor s) c-buffer length 0))))
 
@@ -634,6 +635,33 @@
 					(return))
 				(when (and (not block) (zerop (socket-data-available s)))
 					(return))))))
+
+(defun populate-socket-binary-read-buffer (s &key block len)
+	"Fill the socket read buffer with binary data from the socket.
+	Attempt to read at least LEN bytes into the buffer. The
+	function will block waiting for data if BLOCK is T. If
+	LEN is not supplied, read as much data is available from
+	the socket without blocking."
+    (let ((socket-buffer (socket-read-buffer s)))
+    	(when (and (> (length socket-buffer) 0)
+    			(or (null len)
+    				(<= len (length socket-buffer))))
+    		(return-from populate-socket-binary-read-buffer))	
+    	(with-c-buffer (buffer (+ *socket-buffer-length* 1))
+    		(loop
+    			(let ((bytes (do-ffi-read-socket s buffer *socket-buffer-length*)))
+    				(when (<= bytes 0)
+    					(setf (socket-read-complete s) t)
+    					(return))
+                    ;; copy the bytes we received to the read-buffer
+                    (if (null socket-buffer)
+                        (setf socket-buffer (make-array *socket-buffer-length* :fill-pointer 0)))
+                    (dotimes (i bytes)
+                        (vector-push-extend (ct:cref (:unsigned-char *) buffer i) socket-buffer))
+    				(when (and len (<= (decf len bytes) 0))
+    					(return))
+    				(when (and (not block) (zerop (socket-data-available s)))
+    					(return)))))))
 
 (defgeneric read-socket-line (s &optional eof-error-p eof-value)
 	(:documentation
@@ -759,6 +787,25 @@
                 (setf (cl::stream-input-buffer-pos s) 0)
 			    (setf (cl::stream-input-buffer-num s) compressed-length)
 			    (setf (socket-read-buffer socket) (subseq (socket-read-buffer socket) compressed-length))))))
+
+(defun socket-stream-binary-underflow-function (s)
+	"Function that gets called by the Corman Lisp stream functions when
+	the socket stream binary input buffer is exhausted."
+    ;; File streams have 2 buffers too, but their second buffer
+    ;; is only temporary in the overflow function...
+	(let* ((buffer (cl::stream-input-buffer s))
+			(socket (cl::stream-handle s)))
+		(populate-socket-binary-read-buffer socket :block nil)
+		(let* ((socket-buffer (socket-read-buffer socket))
+				(real-length (min (length socket-buffer)
+						(cl::stream-input-buffer-length s))))
+            (let ((compressed-length 0))
+			    (dotimes (i real-length) ;; copy bytes from socket-buffer to stream-buffer
+                    (let ((c (elt socket-buffer i)))
+                        (setf (elt buffer i) c)))
+                (setf (cl::stream-input-buffer-pos s) 0)
+			    (setf (cl::stream-input-buffer-num s) real-length)
+			    (setf (socket-read-buffer socket) (subseq (socket-read-buffer socket) real-length))))))
 			
 (defun socket-stream-overflow-function (s)
 	"Called by the Corman Lisp library when the stream output buffer 
@@ -783,28 +830,58 @@
 		  (write-socket socket new-buffer)))
 	  (setf (cl::stream-output-buffer-pos s) 0)))
 
-(defun make-socket-stream (s)
+(defun socket-stream-binary-overflow-function (s)
+	"Called by the Corman Lisp library when the binary socket stream output buffer 
+	is full."
+	(let* ((buffer (cl::stream-output-buffer s))
+			(buffer-length (cl::stream-output-buffer-pos s))
+			(socket (cl::stream-handle s)))
+	  (if (= buffer-length (cl::stream-output-buffer-length s))
+		  (write-socket socket buffer)
+		(let ((new-buffer (make-array ;; create a buffer and estimate the number of new-lines to expand,
+                                      ;; based on the average line length of 40 (lines ranging from 0
+                                      ;; to 80 characters); include the est. #newline expansions in the
+                                      ;; size of the allocated buffer.
+                                      (+ buffer-length (ceiling (/ buffer-length 40)))
+                                      :element-type 'byte
+                                      :adjustable t :fill-pointer 0)))
+		  (dotimes (i buffer-length)
+            (let ((b (elt buffer i)))
+                (vector-push-extend b new-buffer)))
+		  (write-socket socket new-buffer)))
+	  (setf (cl::stream-output-buffer-pos s) 0)))
+
+;;;
+;;; Socket streams default to text, binary optional via switch
+;;;
+(defun make-socket-stream (s &key (binary nil))
 	"Given a socket return a stream that allows reads and writes
 	to that socket."
 	(let ((stream (cl::alloc-uvector cl::stream-size cl::uvector-stream-tag)))
 		(setf (cl::uref stream cl::stream-name-offset) nil)
 		(setf (cl::uref stream cl::stream-subclass-offset) 'socket-stream)
-		(setf (cl::uref stream cl::stream-underflow-func-offset) #'socket-stream-underflow-function)
-		(setf (cl::uref stream cl::stream-overflow-func-offset) #'socket-stream-overflow-function)
+		(setf (cl::uref stream cl::stream-underflow-func-offset) 
+            (if binary #'socket-stream-binary-underflow-function #'socket-stream-underflow-function))
+		(setf (cl::uref stream cl::stream-overflow-func-offset) 
+            (if binary #'socket-stream-binary-overflow-function #'socket-stream-overflow-function))
 		(setf (cl::uref stream cl::stream-position-offset) 0)
 		(setf (cl::uref stream cl::stream-col-position-offset) 0)
 		(setf (cl::uref stream cl::stream-handle-offset) s)
-		(setf (cl::uref stream cl::stream-binary-offset) nil)
+		(setf (cl::uref stream cl::stream-binary-offset) binary)
 		(setf (cl::uref stream cl::stream-line-number-offset) 0)
 		(setf (cl::uref stream cl::stream-open-offset) t)
 		(setf (cl::uref stream cl::stream-direction-offset) :bidirectional)
 		(setf (cl::uref stream cl::stream-interactive-offset) nil)
-		(setf (cl::uref stream cl::stream-element-type-offset) 'character)
+		(setf (cl::uref stream cl::stream-element-type-offset) (if binary 'byte 'character))
 		(setf (cl::uref stream cl::stream-associated-streams-offset) nil)
-		(setf (cl::uref stream cl::stream-output-buffer-offset) (make-array (+ *socket-buffer-length* 0) :element-type 'character))
+		(setf (cl::uref stream cl::stream-output-buffer-offset) 
+            (make-array (+ *socket-buffer-length* 0) 
+                :element-type (if binary 'byte 'character)))
 		(setf (cl::uref stream cl::stream-output-buffer-length-offset) *socket-buffer-length*)
 		(setf (cl::uref stream cl::stream-output-buffer-pos-offset) 0)
-		(setf (cl::uref stream cl::stream-input-buffer-offset) (make-array *socket-buffer-length* :element-type 'character))
+		(setf (cl::uref stream cl::stream-input-buffer-offset) 
+            (make-array *socket-buffer-length* 
+                :element-type (if binary 'byte 'character)))
 		(setf (cl::uref stream cl::stream-input-buffer-length-offset) *socket-buffer-length*)
 		(setf (cl::uref stream cl::stream-input-buffer-pos-offset) 0)
 		(setf (cl::uref stream cl::stream-input-buffer-num-offset) 0)
@@ -909,7 +986,7 @@
  
 ;;Example of reading from an HTTP server.
 (start-sockets)
-(let ((s (make-client-socket :host "www.double.co.nz" :port 80)))
+(let ((s (make-client-socket :host "www.cormanlisp.com" :port 80)))
   (write-socket-line s "GET / HTTP/1.0")
   (write-socket-line s "")
   (loop as line = (read-socket-line s nil :eof)
@@ -918,7 +995,7 @@
   (close-socket s))
 
 ;; Same example using stream support
-(let ((s (make-client-socket :host "www.double.co.nz" :port 80)))
+(let ((s (make-client-socket :host "www.cormanlisp.com" :port 80)))
 	(with-socket-stream (stream s)
 		(write-line "GET / HTTP/1.0" stream)
 		(write-line "" stream)
@@ -930,7 +1007,7 @@
 ;; Same example using a proxy
 (let* ((*default-proxy-server*
 			(make-instance 'generic-proxy-server :host "proxy.myserver.com" :port 8080))
-		(s (make-client-socket :host "www.double.co.nz" :port 80)))
+		(s (make-client-socket :host "www.cormanlisp.com" :port 80)))
 	(with-socket-stream (stream s)
 		(write-line "GET / HTTP/1.0" stream)
 		(write-line "" stream)
@@ -943,7 +1020,7 @@
 ;; Loops through the headers looking for Content-Length. When all the
 ;; headers are read, read the content data using the length previously
 ;; provided.
-(with-client-socket (s :host "www.double.co.nz" :port 80)
+(with-client-socket (s :host "www.cormanlisp.com" :port 80)
 	(write-socket-line s "GET / HTTP/1.0")
 	(write-socket-line s "")
 	(let ((content-length 0))
@@ -959,7 +1036,7 @@
 		(read-socket s content-length)))
 				
 ;; Same example using stream support
-(with-client-socket (s :host "www.double.co.nz" :port 80)
+(with-client-socket (s :host "www.cormanlisp.com" :port 80)
 	(with-socket-stream (stream s)
 		(write-line "GET / HTTP/1.0" stream)
 		(write-line "" stream)
@@ -980,7 +1057,7 @@
 ;; Same example using a proxy
 (let ((*default-proxy-server*
 			(make-instance 'generic-proxy-server :host "proxy.myserver.com" :port 8080)))
-	(with-client-socket (s :host "www.double.co.nz" :port 80)
+	(with-client-socket (s :host "www.cormanlisp.com" :port 80)
 		(with-socket-stream (stream s)
 			(write-line "GET / HTTP/1.0" stream)
 			(write-line "" stream)

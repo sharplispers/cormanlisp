@@ -40,9 +40,12 @@ default: ../clconsoleapp.exe
 		shell32.lib								\
 		ole32.lib								\
 		oleaut32.lib							\
-		uuid.lib
+		uuid.lib							\
+		vcruntime.lib							\
+		ucrt.lib							\
+		userenv.lib
 
-	mt /outputresource:"../clconsoleapp.exe;#1" /manifest clconsoleapp.exe.manifest
+#	mt /outputresource:"../clconsoleapp.exe;#1" /manifest clconsoleapp.exe.manifest
 
 clean:
 	if exist bin\*.obj del bin\*.obj

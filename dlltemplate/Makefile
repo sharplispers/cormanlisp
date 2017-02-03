@@ -40,7 +40,9 @@ default: ../dlltemplate.dll
 		shell32.lib								\
 		ole32.lib								\
 		oleaut32.lib							\
-		uuid.lib
+		uuid.lib							\
+		vcruntime.lib							\
+		ucrt.lib
 
 #	mt /outputresource:"../dlltemplate.dll;#1" /manifest ..\dlltemplate.dll.manifest
 

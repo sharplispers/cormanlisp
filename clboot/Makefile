@@ -38,7 +38,9 @@ default: ../clboot.exe
 		shell32.lib								\
 		ole32.lib								\
 		oleaut32.lib							\
-		uuid.lib
+		uuid.lib							\
+		vcruntime.lib							\
+		ucrt.lib
 
 #	mt /outputresource:"../clboot.exe;#1" /manifest clboot.exe.manifest
 

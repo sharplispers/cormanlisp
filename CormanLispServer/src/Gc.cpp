@@ -42,13 +42,7 @@
 #include "threadclasses.h"
 #include "CormanLispServer.h"
 
-// UR: for special acad related error messages on debugging
-#if (defined(ACRXAPP) && defined(_DEBUG))
-#include "ErrorMessage.h"
-#include <crtdbg.h>
-#endif
-
-#pragma warning (disable:4505)				// unreferenced local function has been removed
+#pragma warning (disable:4505)				// unreferenced local function has been removed			
 
 //
 //		EphemeralHeap1
@@ -111,7 +105,6 @@ struct PageTableEntry
 //#define PageCommitted(page_id)			(PageTable[page_id].flags & Committed_Bit)
 #define ClrFlags(page_id)				(PageTable[page_id].flags = 0, PageTable[page_id].taggedOffset = 0)
 
-static void WriteProtectPage(ULONG32 page_id);
 static void UnWriteProtectPage(ULONG32 page_id);
 static int growLispHeaps(long numCells);
 static void offsetUvector(LispObj obj, long offset, long length);
@@ -146,6 +139,14 @@ int SysGlobalsSize	         = 0x00004000;          // 16k
 int LispHeapReserveMin       = 0x08000000;          // min 64 megs reserve
 int LispHeapReserveDefault   = 0x20000000;          // default to 512 meg reserve
 int LispHeapReserveMax       = 0x40000000;          // max 1 gig reserve
+
+// if HardwareAssist is true (1) then use hardware virtual memory to keep track of which 
+// areas of the heap need to be searched for roots. This page trapping mechanism occasionally 
+// causes crashes in applications with a lot of Windows OS callbacks and multi-threading.
+// It used to give performance gains but I am not sure the advantage is still significant.
+// By default we will leave this switched off, in favor of better stability.
+//
+int HardwareAssist = 1;   // 0 if hardware-assisted GC is off, 1 if it is on. 
 
 static volatile LONG ImageLoadsCount  = 0;          // number of image loads
 
@@ -292,27 +293,6 @@ void swapLispHeaps()
             (((n) >= (LispObj)(GCFromSpace->start)) && \
             ((n) < (LispObj)(GCFromSpace->end)))
 
-static void WriteProtectPage(ULONG32 page_id)
-{
-    DWORD oldProtect = 0;
-    BOOL ret = 0;
-    DWORD err = 0;
-    if (!(PageTable[page_id].flags & Protected_Bit))
-    {
-        SetProtectFlag(page_id);
-        ret = VirtualProtect(page_address(page_id), PAGE_SIZE,	PAGE_EXECUTE_READ, &oldProtect);
-        if (!ret)
-        {
-            err = GetLastError();
-#ifdef ACRXAPP	// UR: I want to see it
-            _CrtDbgReport(_CRT_WARN,"Gc.cpp",__LINE__,"CormanLispServer.DLL",
-                "WriteProtectPage: VirtualProtect(0x%lx,%d) failed with 0x%x\n",
-                page_address(page_id), PAGE_SIZE, err);
-#endif
-        }
-    }
-}
-
 static void UnWriteProtectPage(ULONG32 page_id)
 {
     DWORD oldProtect = 0;
@@ -325,11 +305,6 @@ static void UnWriteProtectPage(ULONG32 page_id)
         if (!ret)
         {
             err = GetLastError();
-#ifdef ACRXAPP	// UR: I want to see it
-            _CrtDbgReport(_CRT_WARN,"Gc.cpp",__LINE__,"CormanLispServer.DLL",
-                "UnWriteProtectPage: VirtualProtect(0x%lx,%d) failed with 0x%x\n",
-                page_address(page_id), PAGE_SIZE, err);
-#endif
         }
     }
 }
@@ -413,54 +388,47 @@ LispHeap::~LispHeap()
 
 void LispHeap::writeProtectAllPages()
 {
-    unsigned long i = 0;
-    DWORD oldProtect = 0;
-    BOOL ret = 0;
-    DWORD err = 0;
-    ret = VirtualProtect(page_address(firstPage), PAGE_SIZE * numPages,
-            PAGE_EXECUTE_READ, &oldProtect);
-    if (!ret)
-    {
-        err = GetLastError();
-#if (defined(ACRXAPP) && defined(_DEBUG))	// UR: I want to see it
-        _CrtDbgReport(_CRT_WARN,"Gc.cpp",__LINE__,"CormanLispServer.DLL",
-                "writeProtectAll: VirtualProtect(0x%lx,%d) failed with 0x%x\n",
-                page_address(firstPage), PAGE_SIZE * numPages, err);
-#endif
-    }
-    else
-    {
-        for (i = 0; i < numPages; i++)
-        {
-            SetProtectFlag(i + firstPage);
-        }
-    }
+	if (HardwareAssist)
+	{
+		unsigned long i = 0;
+		DWORD oldProtect = 0;
+		BOOL ret = 0;
+		DWORD err = 0;
+		ret = VirtualProtect(page_address(firstPage), PAGE_SIZE * numPages,
+			PAGE_EXECUTE_READ, &oldProtect);
+		if (!ret)
+		{
+			err = GetLastError();
+		}
+		else
+		{
+			for (i = 0; i < numPages; i++)
+			{
+				SetProtectFlag(i + firstPage);
+			}
+		}
+	}
 }
 
 void LispHeap::unWriteProtectAllPages()
 {
-    unsigned long i = 0;
-    DWORD oldProtect = 0;
-    BOOL ret = 0;
-    DWORD err = 0;
-    ret = VirtualProtect(page_address(firstPage), PAGE_SIZE * numPages,
-            PAGE_EXECUTE_READWRITE, &oldProtect);
-    if (!ret)
-    {
-        err = GetLastError();
-#if (defined(ACRXAPP) && defined(_DEBUG))	// UR: I want to see it
-        _CrtDbgReport(_CRT_WARN,"Gc.cpp",__LINE__,"CormanLispServer.DLL",
-                "unWriteProtectAll: VirtualProtect(0x%lx,%d) failed with 0x%x\n",
-                page_address(firstPage), PAGE_SIZE * numPages, err);
-#endif
-    }
-    else
-    {
-        for (i = 0; i < numPages; i++)
-        {
-            ClrProtectFlag(i + firstPage);
-        }
-    }
+	unsigned long i = 0;
+	DWORD oldProtect = 0;
+	BOOL ret = 0;
+	DWORD err = 0;
+	ret = VirtualProtect(page_address(firstPage), PAGE_SIZE * numPages,
+		PAGE_EXECUTE_READWRITE, &oldProtect);
+	if (!ret)
+	{
+		err = GetLastError();
+	}
+	else
+	{
+		for (i = 0; i < numPages; i++)
+		{
+			ClrProtectFlag(i + firstPage);
+		}
+	}
 }
 
 // Returns 1 if successful, 0 otherwise.
@@ -547,6 +515,7 @@ int LispHeap::pageCommitted(byte* addr)
 // Returns 1 if successful, 0 otherwise.
 int LispHeap::decommitTrailingPages()
 {
+/*  RGC DEBUG let's leave this disabled for now--it may improve stability (prevent issues) in some cases
     unsigned long i = 0;
     BOOL ret = 1;
     DWORD err = 0;
@@ -562,6 +531,7 @@ int LispHeap::decommitTrailingPages()
         err = GetLastError();
         return 0;
     }
+*/
     return 1;
 }
 
@@ -1161,26 +1131,25 @@ BOOL handleMemoryAccessException(byte* addr)
         return TRUE;
     }
 
-    if (addr >= (byte*)EphemeralHeap1.start && addr < (byte*)EphemeralHeap1.end)
-    {
-        UnWriteProtectPage(address_to_page((ULONG32)addr));
-    }
-    else
-    if (addr >= (byte*)EphemeralHeap2.start && addr < (byte*)EphemeralHeap2.end)
-    {
-        if (!EphemeralHeap2.pageCommitted(addr))
-            EphemeralHeap2.commitPage(addr, 0);
-        UnWriteProtectPage(address_to_page((ULONG32)addr));
-    }
-    else
-    if (addr >= (byte*)LispHeap1.start && addr < (byte*)LispHeap1.end)
-    {
-        if (!LispHeap1.pageCommitted(addr))
-            LispHeap1.commitPage(addr, 0);
-        UnWriteProtectPage(address_to_page((ULONG32)addr));
-    }
-    else
-        return FALSE;
+	if (addr >= (byte*)EphemeralHeap1.start && addr < (byte*)EphemeralHeap1.end)
+	{
+		UnWriteProtectPage(address_to_page((ULONG32)addr));
+	}
+	else if (addr >= (byte*)EphemeralHeap2.start && addr < (byte*)EphemeralHeap2.end)
+	{
+		if (!EphemeralHeap2.pageCommitted(addr))
+			EphemeralHeap2.commitPage(addr, 0);
+		UnWriteProtectPage(address_to_page((ULONG32)addr));
+	}
+	else if (addr >= (byte*)LispHeap1.start && addr < (byte*)LispHeap1.end)
+	{
+		if (!LispHeap1.pageCommitted(addr))
+			LispHeap1.commitPage(addr, 0);
+		UnWriteProtectPage(address_to_page((ULONG32)addr));
+	}
+	else
+		return FALSE;
+
     return TRUE;
 }
 

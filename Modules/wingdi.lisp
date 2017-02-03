@@ -56,12 +56,47 @@ WINGDIAPI BOOL  WINAPI BitBlt(HDC, int, int, int, int, HDC, int, int, DWORD);
 WINGDIAPI BOOL   WINAPI StretchBlt(HDC, int, int, int, int, HDC, int, int, int, int, DWORD);
 WINGDIAPI HBITMAP WINAPI CreateBitmap(int, int, UINT, UINT, CONST VOID *);
 WINGDIAPI HDC     WINAPI CreateCompatibleDC(HDC);
+WINGDIAPI HBITMAP WINAPI CreateCompatibleBitmap(HDC hdc, int cx, int cy);
 WINGDIAPI BOOL WINAPI DeleteDC(HDC);
 WINGDIAPI HBITMAP WINAPI CreateBitmapIndirect(CONST BITMAP *);
 WINGDIAPI int   WINAPI GetObjectA(HGDIOBJ, int, LPVOID);
 WINGDIAPI int   WINAPI GetObjectW(HGDIOBJ, int, LPVOID);
 WINGDIAPI int   WINAPI SetDIBitsToDevice(HDC, int, int, DWORD, DWORD, int,
         int, UINT, UINT, CONST VOID *, CONST BITMAPINFO *, UINT);
+WINGDIAPI HPEN WINAPI CreatePen(int iStyle, int cWidth, COLORREF color);
+!#
+
+;;; pen styles
+#! (:library "GDI32" :ignore "WINGDIAPI" :export t :pascal "WINAPI")
+/* Pen Styles */
+#define PS_SOLID            0
+#define PS_DASH             1       /* -------  */
+#define PS_DOT              2       /* .......  */
+#define PS_DASHDOT          3       /* _._._._  */
+#define PS_DASHDOTDOT       4       /* _.._.._  */
+#define PS_NULL             5
+#define PS_INSIDEFRAME      6
+#define PS_USERSTYLE        7
+#define PS_ALTERNATE        8
+#define PS_STYLE_MASK       0x0000000F
+
+#define PS_ENDCAP_ROUND     0x00000000
+#define PS_ENDCAP_SQUARE    0x00000100
+#define PS_ENDCAP_FLAT      0x00000200
+#define PS_ENDCAP_MASK      0x00000F00
+
+#define PS_JOIN_ROUND       0x00000000
+#define PS_JOIN_BEVEL       0x00001000
+#define PS_JOIN_MITER       0x00002000
+#define PS_JOIN_MASK        0x0000F000
+
+#define PS_COSMETIC         0x00000000
+#define PS_GEOMETRIC        0x00010000
+#define PS_TYPE_MASK        0x000F0000
+
+WINGDIAPI BOOL  WINAPI MoveToEx(HDC hdc, int x, int y, LPPOINT lppt);
+WINGDIAPI BOOL WINAPI LineTo(HDC hdc, int x, int y);
+
 !#
 
 (provide "GDI")

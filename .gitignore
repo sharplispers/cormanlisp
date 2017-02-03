@@ -13,6 +13,7 @@
 *.opensdf
 *.suo
 *.aps
+*.htm
 Lisp Worksheet
 # HyperSpec
 HyperSpec/*

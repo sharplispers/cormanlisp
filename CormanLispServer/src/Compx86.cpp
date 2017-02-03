@@ -1590,6 +1590,7 @@ static LispObj compileLambdaKeyArgs(LispObj args, LispObj newVars,
 	int numKeys = 0;
 	int i = 0;
 	int checkKeys = 0;
+	long dynamicBind = 0;
 
 	checkKeys = (allowOtherKeys == NIL) && (compilerCheckKeyArgs() != NIL);
 
@@ -1634,11 +1635,27 @@ static LispObj compileLambdaKeyArgs(LispObj args, LispObj newVars,
 		if (!isSymbol(supplied_p))
 			Error("Lambda &key supplied_p argument is not a symbol: ~A", supplied_p);
 
-		// allocate space in the frame for the variable
-		varOffset = CBincDynamicEnvSize(wrapInteger(4));
+		if (isSpecialSymbol(sym) || (Cmember(sym, symbolValue(LAMBDA_SPECIAL_DECS)) != NIL))
+		{
+			dynamicBind = 1;
+			setSymbolValue(LAMBDA_SPECIAL_VARS, cons(sym, symbolValue(LAMBDA_SPECIAL_VARS)));
+		}
+		else
+			dynamicBind = 0;
 
-		t = list(sym, EBP, varOffset, END_LIST);
-		CBaddStackVar(sym, CDR(t));
+		// allocate space in the frame for the variable
+		if (!dynamicBind)
+		{
+			varOffset = CBincDynamicEnvSize(wrapInteger(4));
+			t = list(sym, EBP, varOffset, END_LIST);
+			// CBaddStackVar(sym, CDR(t));      // add this after initialization
+		}
+
+		// allocate space in the frame for the variable
+		//varOffset = CBincDynamicEnvSize(wrapInteger(4));
+
+		//t = list(sym, EBP, varOffset, END_LIST);
+		//CBaddStackVar(sym, CDR(t));
 
 		// if there is a supplied-p variable, allocate space for it
 		if (supplied_p != NIL)
@@ -1696,8 +1713,31 @@ static LispObj compileLambdaKeyArgs(LispObj args, LispObj newVars,
 
 										// continueAddr:
 		CBsetByte(addr2 - wrapInteger(1), CURRENT_IP - addr2);
-		MOV_EAX_EDI_PTR_WITH_OFFSET(0);	// eax = key argument
-		MOV_EBP_PTR_WITH_OFFSET_EAX(integer(varOffset));	// set key var
+
+		if (!dynamicBind)
+		{
+			MOV_EAX_EDI_PTR_WITH_OFFSET(0);	// eax = key argument
+			MOV_EBP_PTR_WITH_OFFSET_EAX(integer(varOffset));	// set key var
+		}
+		else
+		{
+			if (!symbolVarTableIndex(sym))
+				createSymbolTableEntry(sym);
+
+			// add dynamic binding to symbol
+			MOV_EAX_EDI_PTR_WITH_OFFSET(0);	// eax = key argument
+			PUSH_EAX();						// save arg
+			PUSH_ECX();						// save arg count
+			CALL_INDIRECT(ALLOC_CONS);
+			POP_ECX();						// restore arg count
+			MOV_EDI_EAX();					// edi = new cons cell
+			MOV_EAX_SYMBOL_BINDING(sym);
+			MOV_EDI_PTR_WITH_OFFSET_EAX(0);	// CDR points to old value contents
+			POP_EAX();						// initialize new value
+			MOV_EDI_PTR_WITH_OFFSET_EAX(-4);// CAR points to new value
+			MOV_EAX_EDI();					// debug!!
+			MOV_SYMBOL_BINDING_EAX(sym);
+		}
 		if (supplied_p != NIL)
 		{
 			MOV_EAX_T();				// mov eax, [esi + 4]; supplied_p = T
@@ -1708,10 +1748,33 @@ static LispObj compileLambdaKeyArgs(LispObj args, LispObj newVars,
 										// notFoundAddr:
 		CBsetByte(addr1 - wrapInteger(1), CURRENT_IP - addr1);
 
-		PUSH_ECX();						// save arg count
-		compileForm(init, Dest_EAX_Operand, T);
-		POP_ECX();
-		MOV_EBP_PTR_WITH_OFFSET_EAX(integer(varOffset));	// mov [ebp + varOffset], eax
+		if (!dynamicBind)
+		{
+			PUSH_ECX();						// save arg count
+			compileForm(init, Dest_EAX_Operand, T);
+			POP_ECX();
+			MOV_EBP_PTR_WITH_OFFSET_EAX(integer(varOffset));	// mov [ebp + varOffset], eax
+		}
+		else
+		{
+			if (!symbolVarTableIndex(sym))
+				createSymbolTableEntry(sym);
+
+			// add dynamic binding to symbol
+			PUSH_ECX();						// save arg count
+			CALL_INDIRECT(ALLOC_CONS);
+			MOV_EDI_EAX();					// edi = new cons cell
+			MOV_EAX_SYMBOL_BINDING(sym);
+			MOV_EDI_PTR_WITH_OFFSET_EAX(0);	// CDR points to old value contents
+			PUSH_EDI();
+			compileForm(init, Dest_EAX_Operand, T);
+			POP_EDI();
+			POP_ECX();
+			MOV_EDI_PTR_WITH_OFFSET_EAX(-4);// CAR points to new value
+			MOV_EAX_EDI();					// debug!!
+			MOV_SYMBOL_BINDING_EAX(sym);
+		}
+
 		if (supplied_p != NIL)
 		{
 			MOV_EAX_NIL();				// mov eax, [esi + 4]; supplied_p = T
@@ -1720,10 +1783,17 @@ static LispObj compileLambdaKeyArgs(LispObj args, LispObj newVars,
 		CBsetLong(addr3 - wrapInteger(4), CURRENT_IP - addr3);
 		POP_ECX();						// restore ecx
 
+		if (!dynamicBind)
+		{
+			CBaddStackVar(sym, CDR(t));
+		}
+
 		if (isCons(s))
 			newVars = cons(s, newVars);
-		newVars = cons(t, newVars);
-//		argIndex += wrapInteger(1);
+
+		if (!dynamicBind)
+			newVars = cons(t, newVars);
+
 		vars = CDR(vars);
 	}
 
