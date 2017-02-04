@@ -15,6 +15,17 @@
 
 (defvar *window-class-atoms* (make-hash-table :test 'equal))
 
+(defun window-class-registered-p (class-name &optional hinstance)
+    (let ((wndclass (ct:malloc (ct:sizeof 'WNDCLASSEX))))
+        (unwind-protect
+            (progn
+                (GetClassInfoEx (or hinstance
+                                    (cl::get-application-instance))
+                                (ct:create-c-string class-name)
+                                wndclass))
+            (ct:free wndclass))))
+    
+
 ;;;
 ;;; Window class registration
 ;;;
@@ -27,7 +38,9 @@
     
     ;; see if it has already been registered
     (let ((atom (gethash class-name *window-class-atoms*)))
-        (if atom (return-from register-class atom)))
+        (when (and atom
+                   (window-class-registered-p class-name (cl::get-application-instance)))
+            (return-from register-class atom)))
     
 	(let ((wndclass (ct:malloc (ct:sizeof 'WNDCLASSEX))))
 		(with-c-struct (s wndclass WNDCLASSEX)
