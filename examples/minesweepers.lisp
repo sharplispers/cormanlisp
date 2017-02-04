@@ -82,6 +82,8 @@
 (defvar *num-elite* 4)
 (defvar *num-copies-elite* 1)
 
+(defvar *fast-mode-updates* 100)         ; number of updates to do at once, during fast mode
+
 (defun install-refresh-timer ()
 	(win:SetTimer *app-window* *timer-id* *refresh-milliseconds* NULL))
  
@@ -981,11 +983,15 @@
     
 	(when (= iMsg WM_TIMER)
 	;;	(debug-msg "WM_TIMER hwnd=~A, imsg=~A, wParam=~A, lParam=~A" hwnd iMsg wParam lParam)
+        (if (controller-fast-render-mode *controller*)
+            (dotimes (i *fast-mode-updates*)
+                (unless (controller-update *controller*) 
+                    (PostQuitMessage 0))))
         (unless (controller-update *controller*) 
             (PostQuitMessage 0)) ;; we have a problem, end app
 		(win:InvalidateRect hwnd NULL 1)
         (UpdateWindow hwnd))
-    
+        
     (when (= iMsg WM_DESTROY)
 		(debug-msg "WM_DESTROY hwnd=~A, imsg=~A, wParam=~A, lParam=~A" hwnd iMsg wParam lParam)
         (uninstall-refresh-timer)
