@@ -4492,7 +4492,8 @@ FunctEntry functTable[] =
 
 	// One needs the following functions to bootstrap Corman Lisp image
 	{ "%CORMANLISP-DIRECTORY-NAMESTRING", (LispFunc)CormanLisp_Directory_Namestring }, // get Corman Lisp directory namestring
-	{ "%CHANGE-DIRECTORY",          (LispFunc)Change_Directory }         // change working directory - it is needed during image building process.
+	{ "%CHANGE-DIRECTORY",          (LispFunc)Change_Directory },        // change working directory - it is needed during image building process.
+	{ "%IMAGE-LOADS-COUNT",         (LispFunc)Image_Loads_Count }        // returns number of LOAD-IMAGE calls.
     // ----------------------------------------------------------
 };
 long sizeFunctTable = sizeof(functTable)/sizeof(FunctEntry);
@@ -4875,5 +4876,14 @@ LispFunction(Change_Directory)
 	{
 		ret = obj;
 	}
+	LISP_FUNC_RETURN(ret);
+}
+
+LispFunction(Image_Loads_Count)
+{
+	LISP_FUNC_BEGIN(0);
+
+	ret = createLispInteger(getImageLoadsCount());
+
 	LISP_FUNC_RETURN(ret);
 }

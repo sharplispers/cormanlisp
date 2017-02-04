@@ -19,7 +19,8 @@
         ccl::copy-file
         ccl::move-file
         ccl::ensure-writable-file
-        ccl::with-writable-file))
+        ccl::with-writable-file
+        ccl::image-loads-count))
 
 (defun parse-command-line (s)
 	(flet ((is-white (c) (or (char= c #\space)(char= c #\tab)(char= c #\newline))))
@@ -295,3 +296,7 @@ WINAPI BOOL CopyFileExA(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, LPVOI
             (if (eq c #\:)
                 (cl::signal-reader-error "Invalid character #\: found in uninterned symbol"))
             (push (char-upcase c) chars))))
+
+(defun ccl::image-loads-count ()
+    "Returns number of calls to LOAD-IMAGE."
+    (cl::%image-loads-count))

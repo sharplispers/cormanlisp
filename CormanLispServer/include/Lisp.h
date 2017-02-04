@@ -894,6 +894,7 @@ LispDeclare(User_HomeDir_Namestring);
 
 LispDeclare(CormanLisp_Directory_Namestring);
 LispDeclare(Change_Directory);
+LispDeclare(Image_Loads_Count);
 
 //
 //	QV pointers
