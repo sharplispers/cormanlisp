@@ -800,6 +800,7 @@
 				(real-length (min (length socket-buffer)
 						(cl::stream-input-buffer-length s))))
             (let ((compressed-length 0))
+				(declare (ignore compressed-length))
 			    (dotimes (i real-length) ;; copy bytes from socket-buffer to stream-buffer
                     (let ((c (elt socket-buffer i)))
                         (setf (elt buffer i) c)))

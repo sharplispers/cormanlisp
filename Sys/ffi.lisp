@@ -1595,6 +1595,7 @@ Example:
                     ,@forms)))))
 	
 (defmacro define-callback-func (name arg-list body &key (linkage :c) (create-heap-handler nil))
+	(declare (ignore create-heap-handler))
 	(let* ((syms nil)
 		   (lisp-func nil)
 		   (foreign-func nil)
