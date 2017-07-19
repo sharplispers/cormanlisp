@@ -146,7 +146,7 @@ int LispHeapReserveMax       = 0x40000000;          // max 1 gig reserve
 // It used to give performance gains but I am not sure the advantage is still significant.
 // By default we will leave this switched off, in favor of better stability.
 //
-int HardwareAssist = 1;   // 0 if hardware-assisted GC is off, 1 if it is on. 
+int HardwareAssist = 0;   // 0 if hardware-assisted GC is off, 1 if it is on. 
 
 static volatile LONG ImageLoadsCount  = 0;          // number of image loads
 
