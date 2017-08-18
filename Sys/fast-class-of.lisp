@@ -71,6 +71,7 @@
 (defvar %t-class (find-class 't))
 (defvar %null-class (find-class 'null))
 (defvar %symbol-class (find-class 'symbol))
+(defvar %struct-class (find-class 'structure-object))
 
 (ccl:defasm class-of (object)
   {
@@ -139,9 +140,18 @@
 	jmp   short :exit
   :structure
  	mov	  eax, [ebp + ARGS_OFFSET]
-	mov   eax, [eax + (uvector-offset 1)]  ;; eax = structure definition vector
+	mov       eax, [eax + (uvector-offset 1)]  ;; eax = structure definition vector
+	mov   edx, eax
+        mov   edx, [edx - uvector-tag]
+        shr   edx, 3
+        and   edx, #b11111
+        cmp   edx, cl::uvector-symbol-tag
+        jz    short :ss
 	mov	  eax, [eax + (uvector-offset (+ 2 cl::struct-template-class-offset))] ;; (elt template 0)
 	jmp   short :exit
+  :ss 
+        mov   eax, 'cl::%struct-class
+        jmp   short :get-symbol-value-and-exit
   :st1
 	mov   eax, [eax + (- 8 uvector-tag)] ; first STD-INSTANCE slot
 	jmp   short :exit
