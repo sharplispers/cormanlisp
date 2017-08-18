@@ -903,11 +903,11 @@
 			(terpri stream))
 		;; skip whitespace
 		(unless colon-modifier
-			(do ((c (char (car control) (cadr control)) 
-					(char (car control) (cadr control))))
-				((not (or (char= c #\Space) (char= c #\Tab))))
-				(incf (cadr control)))
-			index)))
+			(do ((c (when (< (cadr control) (length (car control))) (char (car control) (cadr control))) 
+				(when (< (cadr control) (length (car control))) (char (car control) (cadr control)))))
+				((not (and c (or (char= c #\Space) (char= c #\Tab)))))
+				(incf (cadr control))))
+		index))
 
 (%set-format-dispatch-func #\T 
 	#'(lambda (stream args index atsign-modifier colon-modifier control 
