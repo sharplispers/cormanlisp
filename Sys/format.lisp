@@ -661,10 +661,10 @@
               (setq string (string-capitalize string))
               (write-string string stream)
               (return index)))
-           ;; need to fix this to only capitalize the first word
+           ;; Done. need to fix this to only capitalize the first word
            (atsign-modifier 					
             (progn
-              (setq string (string-capitalize string))
+              (setq string (string-upcase (string-downcase string) :end 1))
               (write-string string stream)
               (return index)))
            (t 
