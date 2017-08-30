@@ -896,6 +896,7 @@ LispDeclare(CormanLisp_Directory_Namestring);
 LispDeclare(Change_Directory);
 LispDeclare(Image_Loads_Count);
 
+LispDeclare(Is_Bad_Mem_Ptr);
 //
 //	QV pointers
 //
@@ -2071,6 +2072,7 @@ extern void CFree(void*);
 #define SizeOfForeignJumpTableEntry 16
 extern char CormanLispServerDirectory[MAX_PATH+1];
 extern unsigned long garbageCollectionID;
+extern BOOL IsBadMemPtr(BOOL write, void *ptr, size_t size);
 extern void WriteMemoryReportTask(void* address, CONTEXT* context);
 extern void LispLoop();
 extern int lispmain();

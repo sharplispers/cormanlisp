@@ -2695,3 +2695,81 @@ void* CRealloc(void* p, unsigned long size)
 	heap = GetProcessHeap();
 	return HeapReAlloc(heap, HEAP_ZERO_MEMORY, p, size);
 }
+
+/*
+A safer replacement for the obsolete IsBadReadPtr() and IsBadWritePtr() WinAPI functions
+on top of VirtualQuery() which respects Windows guard pages. It does not use SEH
+and is designed to be compatible with the above-mentioned functions.
+The calls to the IsBadReadPtr() and IsBadWritePtr() can be replaced with the calls to
+the IsBadMemPtr() as follows:
+- IsBadReadPtr(...)  => IsBadMemPtr(FALSE, ...)
+- IsBadWritePtr(...) => IsBadMemPtr(TRUE, ...)
+
+https://gist.github.com/arbv/531040b8036050c5648fc55471d50352
+*/
+BOOL IsBadMemPtr(BOOL write, void *ptr, size_t size)
+{
+	MEMORY_BASIC_INFORMATION mbi;
+	BOOL ok;
+	DWORD mask;
+	BYTE *p = (BYTE *)ptr;
+	BYTE *maxp = p + size;
+	BYTE *regend;
+
+	if (size == 0)
+	{
+		return FALSE;
+	}
+
+	if (p == NULL)
+	{
+		return TRUE;
+	}
+
+	if (write == FALSE)
+	{
+		mask = PAGE_READONLY | PAGE_READWRITE | PAGE_WRITECOPY | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY;
+	}
+	else
+	{
+		mask = PAGE_READWRITE | PAGE_WRITECOPY | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY;
+	}
+
+	do
+	{
+		if (p == ptr || p == regend)
+		{
+			if (VirtualQuery((LPCVOID)p, &mbi, sizeof(mbi)) == 0)
+			{
+				return TRUE;
+			}
+			else
+			{
+				regend = ((BYTE *)mbi.BaseAddress + mbi.RegionSize);
+			}
+		}
+
+		ok = (mbi.Protect & mask) != 0;
+
+		if (mbi.Protect & (PAGE_GUARD | PAGE_NOACCESS))
+		{
+			ok = FALSE;
+		}
+
+		if (!ok)
+		{
+			return TRUE;
+		}
+
+		if (maxp <= regend) /* the whole address range is inside the current memory region */
+		{
+			return FALSE;
+		}
+		else if (maxp > regend) /* this region is a part of (or overlaps with) the address range we are checking */
+		{
+			p = regend; /* lets move to the next memory region */
+		}
+	} while (p < maxp);
+
+	return FALSE;
+}

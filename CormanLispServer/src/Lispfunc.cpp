@@ -4468,6 +4468,7 @@ FunctEntry functTable[] =
     {   "%UNASSEMBLE",              (LispFunc)unassemble    },  // defined in Lisp via FFI
     {   "%LOADLIBRARY",             (LispFunc)LoadLibraryA  },  // defined in Lisp via FFI
 	{	"HARDWARE-GC",				Hardware_GC				},  // turn on or off hardware-assisted gc
+	{	"%IS-BAD-MEM-PTR",			Is_Bad_Mem_Ptr			},
 
     // these are just here for Lisp reporting purposes (so the names in stack dumps are known)
     { "LispCall0",                  (LispFunc)LispCall0     },
@@ -4884,6 +4885,29 @@ LispFunction(Image_Loads_Count)
 	LISP_FUNC_BEGIN(0);
 
 	ret = createLispInteger(getImageLoadsCount());
+
+	LISP_FUNC_RETURN(ret);
+}
+
+
+LispFunction(Is_Bad_Mem_Ptr)
+{
+	LISP_FUNC_BEGIN(3);
+	ret = NIL;
+	BOOL write = FALSE;
+	LispObj is_write = LISP_ARG(0);
+	LispObj address = LISP_ARG(1);
+	LispObj size = LISP_ARG(2);
+
+	if (is_write != NIL)
+	{
+		write = TRUE;
+	}
+
+	if (isInteger(address) && isInteger(size))
+	{
+		ret = IsBadMemPtr(write, (void *)integer(address), integer(size)) == TRUE ? T : NIL;
+	}
 
 	LISP_FUNC_RETURN(ret);
 }
