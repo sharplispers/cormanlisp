@@ -661,10 +661,10 @@
               (setq string (string-capitalize string))
               (write-string string stream)
               (return index)))
-           ;; need to fix this to only capitalize the first word
+           ;; Done. need to fix this to only capitalize the first word
            (atsign-modifier 					
             (progn
-              (setq string (string-capitalize string))
+              (setq string (string-upcase (string-downcase string) :end 1))
               (write-string string stream)
               (return index)))
            (t 
@@ -903,11 +903,11 @@
 			(terpri stream))
 		;; skip whitespace
 		(unless colon-modifier
-			(do ((c (char (car control) (cadr control)) 
-					(char (car control) (cadr control))))
-				((not (or (char= c #\Space) (char= c #\Tab))))
-				(incf (cadr control)))
-			index)))
+			(do ((c (when (< (cadr control) (length (car control))) (char (car control) (cadr control))) 
+				(when (< (cadr control) (length (car control))) (char (car control) (cadr control)))))
+				((not (and c (or (char= c #\Space) (char= c #\Tab)))))
+				(incf (cadr control))))
+		index))
 
 (%set-format-dispatch-func #\T 
 	#'(lambda (stream args index atsign-modifier colon-modifier control 

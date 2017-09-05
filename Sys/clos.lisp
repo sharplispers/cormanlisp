@@ -1012,11 +1012,11 @@
 ;;; Slot inheritance
 
 (defun std-compute-slots (class)
-  (let* ((all-slots (mapappend #'class-direct-slots
-                               (class-precedence-list class)))
+  (let* ((all-slots (nreverse (mapappend #'class-direct-slots
+                               (reverse (class-precedence-list class)))))
          (all-names (remove-duplicates 
                       (mapcar #'slot-definition-name all-slots))))
-    (mapcar #'(lambda (name)
+    (nreverse (mapcar #'(lambda (name)
                 (funcall
                   (if (eq (class-of class) the-class-standard-class)
                       #'std-compute-effective-slot-definition 
@@ -1025,7 +1025,7 @@
                   (remove name all-slots
                           :key #'slot-definition-name
                           :test-not #'eq)))
-            all-names)))
+            all-names))))
 
 (defun std-compute-effective-slot-definition (class direct-slots)
   (declare (ignore class))

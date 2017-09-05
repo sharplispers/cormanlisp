@@ -240,9 +240,8 @@
 	(pathnames::pathname-internal-type (pathname pathname)))
 
 (defun file-namestring (pathname)
-    (let ((name (pathname-name pathname))
-          (type (pathname-type pathname)))
-        (concatenate 'string name "." type)))
+    (concatenate 'string (pathname-name pathname)
+		 (when (pathname-type pathname) ".") (pathname-type pathname)))
 	
 ;;;
 ;;;	Common Lisp LOAD-LOGICAL-PATHNAME-TRANSLATIONS function.

@@ -781,12 +781,12 @@
             (let ((compressed-length 0))
 			    (dotimes (i real-length) ;; same as file stream's compress-line-feeds
                     (let ((c (elt socket-buffer i)))
-                        (when (eq c #\Return)
+                        (unless (eq c #\Return)
                             (setf (elt buffer compressed-length) c)
                             (incf compressed-length))))
                 (setf (cl::stream-input-buffer-pos s) 0)
 			    (setf (cl::stream-input-buffer-num s) compressed-length)
-			    (setf (socket-read-buffer socket) (subseq (socket-read-buffer socket) compressed-length))))))
+			    (setf (socket-read-buffer socket) (subseq (socket-read-buffer socket) real-length))))))
 
 (defun socket-stream-binary-underflow-function (s)
 	"Function that gets called by the Corman Lisp stream functions when

@@ -149,7 +149,7 @@ BOOL WINAPI QueryPerformanceFrequency(PLARGE_INTEGER);
 (defun encode-universal-time (second minute hour date month year
 			&optional time-zone)
 	(unless time-zone (setf time-zone (local-time-zone)))
-	(if (and (>= 0 year) (<= year 99))
+	(if (<= 0 year 99)
 		(if (>= year 50) 
 			(setq year (+ 1900 year))
 			(setq year (+ 2000 year))))		
