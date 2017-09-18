@@ -62,7 +62,7 @@
           print-object
 
           standard-object
-          standard-class standard-generic-function standard-method
+          standard-class standard-generic-function standard-method eql-specializer
           class-name
 
           class-direct-superclasses class-direct-slots
@@ -177,39 +177,19 @@
 		(setf (method-table-cached-method-types table) types))
 	table)
 
-(defun equal-class-list (list1 list2)
-	(do* ((x list1 (cdr x))
-		  (y list2 (cdr y)))
-		((and (null x)(null y)) t)
-		(unless (and x y (eq (car x)(car y)))
-			(return nil))))
-
-(defun class-list-matches-args (class-list args)
-	(do* ((x class-list (cdr x))
-		  (y args (cdr y)))
+(defun class-list-matches (class-list eqls-classes)
+	(do ((x class-list (cdr x))
+		  (y eqls-classes (cdr y)))
 		((null x) t)
-		(unless (and x y (eq (car x)(class-of (car y))))
+		(unless (if (consp (car x)) (and (consp (car y)) (eql (caar x) (caar y))) (eq (car x) (car y)))
 			(return nil))))
 
-(defun class-list-matches-args-with-eql (class-list args)
-	(do* ((x class-list (cdr x))
-		  (y args (cdr y)))
-		((null x) t)
-		(unless (and x y (eq (car x)(class-of-with-eql (car y))))
-			(return nil))))
-
-(defun find-method-table-method (table args)
-	(if (method-table-eql-specializers table)
-		(with-synchronization (method-table-sync table)
-			(do* ((p (method-table-method-list table) (cddr p)))
+(defun find-method-table-method (table eqls-classes)
+	(with-synchronization (method-table-sync table)
+		(do ((p (method-table-method-list table) (cddr p)))
 				((null p)(return nil))
-				(if (class-list-matches-args-with-eql (car p) args)
-					(return (cadr p)))))
-		(with-synchronization (method-table-sync table)
-			(do* ((p (method-table-method-list table) (cddr p)))
-				((null p)(return nil))
-				(if (class-list-matches-args (car p) args)
-					(return (cadr p)))))))
+				(when (class-list-matches (car p) eqls-classes)
+					(return (cadr p))))))
 					 
 ;;;
 ;;; Standard instances
@@ -519,11 +499,6 @@
       (std-instance-class x)
       (built-in-class-of x)))
 
-(defun class-of-with-eql (object)
-	(or
-		(gethash object *clos-singleton-specializers*)
-		(class-of object)))
-
 ;;; N.B. This version of built-in-class-of is straightforward but very slow.
 ;;; This is only for booting, a faster method is used later -RGC
 ;;;
@@ -738,9 +713,6 @@
     (clrhash class-table)
     (values))
  ) ;end let class-table
-
-(defun find-class-with-eql (symbol)
-	(find-class symbol))		;; redefined below
 
 ;;; Ensure class
 
@@ -1382,7 +1354,9 @@
   `(list ,@(mapcar #'canonicalize-specializer specializers)))
 
 (defun canonicalize-specializer (specializer)
-  `(find-class-with-eql ',specializer))
+  (if (and (listp specializer) (eq (car specializer) 'eql))
+      `(intern-eql-specializer ,(cadr specializer) ',(cadr specializer))
+      `(find-class ',specializer)))
 
 (defun specalization-vars (specialized-lambda-list)
     (let ((vars '()))
@@ -1685,35 +1659,38 @@
 (defun apply-generic-function (gf args)
   (apply (generic-function-discriminating-function gf) args))
 
-(defun compute-class-list (args gf required-num)
-	(let ((classes nil))
-		(dotimes (i required-num)
-			(if (null args)
-				 (error "Too few arguments to generic function ~S." gf)
-				(push (class-of-with-eql (car args)) classes))
-			(setf args (cdr args)))
-		(nreverse classes)))
-	
 (defun std-compute-discriminating-function (gf)
-	(let ((method-table (classes-to-emf-table gf))
-		  (num-required-args (num-required-args gf)))
-		#'(lambda (&rest args)
-		;	(declare (dynamic-extent args))	;; this doesn't work for some reason -RGC
-			(let* ((emfun (find-method-table-method method-table args)))
-				(if emfun
-					(funcall emfun args)
-					(slow-method-lookup gf args 
-						(compute-class-list args gf num-required-args)))))))
+    (let ((table (classes-to-emf-table gf)))
+        #'(lambda (&rest args)
+               (let* ((eqls (if (listp (method-table-eql-specializers table)) (method-table-eql-specializers table) 
+                               (let ((eqls (make-list (num-required-args gf))))
+                                   (mapc #'(lambda (meth) (do ((specs (method-specializers meth) (cdr specs))
+				                               (eqls eqls (cdr eqls))) ((not specs))
+                                                              (when (eql-specializer-p (car specs))
+                                                                    (pushnew (list (slot-value (car specs) 'object))
+									     (car eqls)
+									 :test #'(lambda (x y) (eql (car x) (car y)))))))
+                                            (generic-function-methods gf))
+                                   (setf (method-table-eql-specializers table) eqls))))
+                       (req-args (required-portion gf args))
+                       (eqls-classes (if eqls (mapcar #'(lambda (arg eqls)
+							  (or (car (member arg eqls :key #'car)) (class-of arg))) req-args eqls)
+                                               (mapcar #'class-of req-args))))
+                   (funcall (or (find-method-table-method table eqls-classes)
+                                (let ((classes (if eqls (mapcar #'(lambda (arg eql-class)
+								     (if (consp eql-class)
+									 (gethash arg *clos-singleton-specializers*) eql-class))
+                                                                req-args eqls-classes) eqls-classes)))
+                                   (slow-method-lookup gf table req-args classes eqls-classes))) args)))))
 
-(defun slow-method-lookup (gf args classes)
-	(let* ((applicable-methods
-				(compute-applicable-methods-using-classes gf classes))
-		   (emfun
-				(if (eq (class-of gf) the-class-standard-gf)
-					(std-compute-effective-method-function gf applicable-methods)
-					(compute-effective-method-function gf applicable-methods))))
-	(add-method-table-method (classes-to-emf-table gf) classes emfun)
-	(funcall emfun args)))
+(defun slow-method-lookup (gf table args classes eqls-classes)
+    (let* ((applicable-methods (compute-applicable-methods-using-classes gf classes))
+             (emfun (if (member-if #'primary-method-p applicable-methods)
+                             (if (eq (class-of gf) the-class-standard-gf)
+                                 (std-compute-effective-method-function gf applicable-methods)
+                                 (compute-effective-method-function gf applicable-methods))
+                             (error "No primary methods for ~S in the ~S." args gf))))
+        (add-method-table-method table eqls-classes emfun) emfun))
 
 ;;; compute-applicable-methods-using-classes
 
@@ -2326,7 +2303,7 @@
 (defclass number (t) ())
 (defclass character (t) ())
 (defclass function (t) ())
-(defclass hash-table (t) ())
+;; (defclass hash-table (t) ()) defined below as a structure
 (defclass package (t) ())
 (defclass pathname (t) ())
 (defclass readtable (t) ())
@@ -2374,6 +2351,10 @@
 ;;; N.B. To avoid making a forward reference to a (setf xxx) generic function:
 (defun setf-slot-value-using-class (new-value class object slot-name)
   (setf (slot-value-using-class class object slot-name) new-value))
+
+(defclass eql-specializer (standard-class) (object))
+
+(defun eql-specializer-p (x) (eq (class-of x) #.(find-class 'eql-specializer)))
 
 (progn
 
@@ -2536,7 +2517,7 @@
                     (generic-function-name
                       (method-generic-function method))
                     (method-qualifiers method)
-                    (mapcar #'class-name 
+                    (mapcar #'(lambda (x) (if (eql-specializer-p x) `(eql ,(class-name x)) (class-name x))) 
                             (method-specializers method))))
   method)
 
@@ -2672,25 +2653,14 @@
 ;;; Returns a CLOS class representing a type that is specific
 ;;;	for the object. Used in method dispatch to implement EQL 
 ;;;	specialisers.
-(defun get-singleton (object)
-	(or 
-		(gethash object *clos-singleton-specializers*)
-		(setf (gethash object *clos-singleton-specializers*)			
-			(ensure-class (gensym)
-				:direct-superclasses (list (class-of object))
-				:direct-slots (list)))))
-
-(defun find-class-with-eql (symbol)
-	(if (and (listp symbol) (eq (car symbol) 'eql))
-		(let ((specialiser (car (cdr symbol))))
-			(get-singleton
-				(if (and (consp specialiser)
-						(eq (car specialiser) 'quote))
-					(car (cdr specialiser))
-					(if (symbolp specialiser)
-						(symbol-value specialiser)
-						specialiser))))
-		(find-class symbol)))
+(defun intern-eql-specializer (object &optional (intern-form object))
+    (let* ((singleton (gethash object *clos-singleton-specializers*))
+             (real (and singleton
+                         (car (member intern-form (class-precedence-list singleton)
+				      :test #'(lambda (x y) (and (eql-specializer-p y) (equal x (class-name y)))))))))
+        (or real (let ((newsingle (make-instance #.(find-class 'eql-specializer) :name intern-form
+						 :direct-superclasses (list (or singleton (class-of object))))))
+                    (setf (slot-value newsingle 'object) object (gethash object *clos-singleton-specializers*) newsingle)))))
 
 ;; need to restore warning here
 (setq *COMPILER-WARN-ON-UNDEFINED-FUNCTION* t)	;; restore warnings
