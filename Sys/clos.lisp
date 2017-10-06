@@ -2621,23 +2621,24 @@
 (defclass structure-class (cl::standard-class) ())
 (defclass structure-object (t) () (:metaclass structure-class))
 
-;;; initialize this variable to ensure structs which have already
-;;; been defined have a class
-(setf *default-struct-class* (find-class 'structure-object))
-
-(defun create-named-class (name superclasses)
-	(ensure-class name
-			     :direct-superclasses (append superclasses (list (find-class 'structure-object)))
-                 :metaclass 'structure-class
-				 :direct-slots nil
-				 :shared-slots nil))
+(defun intern-structure-class (name superclasses) ; patch
+    (setq superclasses (append superclasses (list #.(find-class 'structure-object))))
+    (let ((class (find-class name nil)) structp)
+        (if (and class (setq structp (eq (class-of class) #.(find-class 'structure-class)))
+		 (equal superclasses (class-direct-superclasses class))) class
+            (progn (and class (not structp) (cerror "Continue anyway." "The Symbol ~a already names the ~a" name class))
+                   (ensure-class name
+                           :direct-superclasses superclasses
+                           :metaclass 'structure-class
+                           :direct-slots nil
+                           :shared-slots nil)))))
 
 (defun struct-template (struct-name)
 	(get struct-name :struct-template))
 
 (defun patch-clos (struct-name)
 	(setf (elt (struct-template struct-name) 1) 
-		(create-named-class struct-name nil)))
+		(intern-structure-class struct-name nil)))
 	
 ;; make sure the following common lisp structures (which are defined before
 ;; this module is loaded) have CLOS definitions
