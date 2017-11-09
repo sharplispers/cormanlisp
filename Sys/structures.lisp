@@ -6,19 +6,15 @@
 ;;;;	File:		structures.lisp
 ;;;;	Contents:	Corman Lisp Structure facility.
 ;;;;
-;;;;    History:    09/07/07 RGC  Integrated Matthias Hölzl's fixes for SUBTYPEP, OPEN, 
+;;;;    History:    09/07/07 RGC  Integrated Matthias HÃ¶lzl's fixes for SUBTYPEP, OPEN, 
 ;;;;                              and BOA constructors. 
 ;;;;
 
 (provide :structures)
 (in-package :common-lisp)
 
-(defvar *default-struct-class* nil) ;; used as default class for classes loaded before CLOS is loaded
-									;; this variable will be initialized by CLOS
-
-(defun create-named-class (name superclasses) 
-	(declare (ignore name superclasses))
-	*default-struct-class*) ;; redefined by CLOS
+(defun intern-structure-class (name superclasses) 
+	(declare (ignore name superclasses))) ;; redefined by CLOS
 
 (defun define-struct-template (name class type base initial-offset num-slots &rest fields)
 	(apply 'vector name class type base initial-offset num-slots fields))
@@ -508,7 +504,7 @@
 				(t (error "Invalid slot option: ~A~%" opt))))
 
 		(setq struct-template 
-			(apply #'define-struct-template name (create-named-class name (mapcar 'find-class base-list)) struct-type 
+			(apply #'define-struct-template name (intern-structure-class name (mapcar 'find-class base-list)) struct-type 
 					base-list initial-offset slot-count (reverse struct-template-info)))
 
 		;; install template		
@@ -617,15 +613,7 @@
 
 		(push `',name expressions)	
 		`(progn
-			(let* ((,struct-template-sym
-					(apply 'define-struct-template ',name 
-                            (create-named-class ',name 
-                                (list ,@(mapcar 
-                                        #'(lambda (class-name) 
-                                            `(find-class ',class-name))
-                                        base-list))) 
-                            ',struct-type 
-						',base-list ,initial-offset ,slot-count ',(reverse struct-template-info)))) 
+			(let* ((,struct-template-sym ,struct-template)) 
 				,@(reverse struct-template-expressions))
 			,@(nreverse expressions))))
 

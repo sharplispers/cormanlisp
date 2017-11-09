@@ -336,7 +336,14 @@
      (t (format t "Sorry, no description available for ~A" object))
      )))
 
-
+(defun get-template (struct)
+	(let ((template (uref struct 1)))
+		(if (symbolp template) ; construct a template
+		    (let ((num-slots (1- (uvector-num-slots struct))))
+                       (setq template (list template nil nil nil 0 num-slots))
+                       (dotimes (i num-slots template)
+			    (nconc template (list (intern (format nil "SLOT~A" (+ i 1)) keyword-package) nil t nil nil))))
+                    template)))
 
 (defun describe-structure (x s) 
   
@@ -346,8 +353,9 @@
   ;; Some kind of anonymous structure.
   ;; Second, no sense constructing a template when all the old code
   ;; cared about was consing up the names "SLOT1", "SLOT2", etc.
+  ;; Back to old code.
 
-  (let* ((template (uref x 1))
+  (let* ((template (get-template x))
 	 (*print-escape* nil)
 	 (num-slots)) 
 				
@@ -359,16 +367,10 @@
 	    *dfs-a* (list "template" 	(uref x 1))
 	    *dfs-hex* (list "heap address" (%uvector-address x)))
 
-    (if (symbolp template)
-	(dotimes (i num-slots)
-	  (format s *dfs-s*
-		  (format nil "SLOT~A" (+ i 1) (find-package "KEYWORD"))
-		  (uref x (+ 2 i))))
-      (dotimes (i num-slots)
+    (dotimes (i num-slots)
 	(format s *dfs-s*
 		(elt template (+ 6 (* i 5)))
-		(uref x (+ 2 i)))))))
-
+		(uref x (+ 2 i))))))
 
 (defun describe-foreign (x s) 
 	(format s "FOREIGN POINTER:~%~?~?"

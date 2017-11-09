@@ -10,7 +10,7 @@
 ;;;;							  fix to return CLOS instance name and
 ;;;;							  structure names.
 ;;;;				2/15/01  RGC  Minor cleanup to TYPE-OF function.
-;;;;                09/07/07 RGC  Integrated Matthias Hölzl's fixes for SUBTYPEP, OPEN, 
+;;;;                09/07/07 RGC  Integrated Matthias HÃ¶lzl's fixes for SUBTYPEP, OPEN, 
 ;;;;                              and BOA constructors. 
 ;;;;
 (in-package :common-lisp)
@@ -206,8 +206,17 @@
 		jne     :not-structure
 		;; A structure -- return the structure name
 		mov     eax, [edx + (uvector-offset 1)] ; structure def. vector
+		mov     edx, eax
+		mov     edx, [edx - uvector-tag]
+		shr     edx, 3
+                and     edx, #b11111
+                cmp     edx, cl::uvector-symbol-tag ; structure def. vector is a symbol
+                je      short :ss
 		mov     eax, [eax + (uvector-offset 2)] ; structure name (ELT DEF 0)
 		jmp     short :done
+        :ss
+                mov     eax, 'cl::structure-object
+                jmp     short :done
 	:not-structure
 	    ;; One of uvector-types -- lookup in the table
 		mov		edx, cl::uvector-type-table
