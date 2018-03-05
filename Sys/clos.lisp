@@ -2657,20 +2657,20 @@
     (declare (ignore name))
     (unless (eq (class-of class) (or (and (symbolp metaclass) (find-class metaclass)) metaclass))
                  (error "~a is not a ~a" class metaclass))
-    (let* ((subs (collect-subclasses class))
-             (forward (find-if #'forward-referenced-class-p direct-superclasses))
-             (sub (when forward (find-if #'class-finalized-p subs))))
-        (when sub (if *lazy-finalize*
-                              (if (eq class sub)
-                                  (error "Cannot redefine instantiated ~a~%;;; with an undefined ~a" class forward)
-                                  (error "Cannot redefine ~a~%;;; in terms of an undefined ~a~%;;; with an instantiated subclass ~a." class forward sub))
-                              (if (eq class sub)
-                                  (cerror "Continue anyway." "Continuable attempt to redefine instantiated ~a~%;;; with an undefined ~a" class forward)
-                                  (cerror "Continue anyway." "Continuable attempt to redefine ~a~%;;; in terms of an undefined ~a~%;;; with an instantiated subclass ~a." class forward sub))))
-        (remove-read-write-methods class) (remove-from-deleted-classes class direct-superclasses)
+    (let ((subs (if *lazy-finalize*
+                         (remove-if-not #'class-finalized-p (cons class (collect-subclasses class)))
+                         (cons class (collect-subclasses class)))))
+        (when *lazy-finalize*
+            (let ((forward (find-if #'forward-referenced-class-p direct-superclasses)))
+                (when (and forward (eq class (car subs))) 
+                    (error "Cannot redefine finalized ~a~%;;; with an undefined ~a" class forward))))
+        (remove-read-write-methods class)
+        (unless (lists-match (class-direct-superclasses class) direct-superclasses)
+            (remove-from-deleted-classes class direct-superclasses)
+            (mapc #'(lambda (x) (clear-method-table (classes-to-emf-table x)))
+                       (remove-duplicates (mapcar #'method-generic-function (mapappend #'class-direct-methods subs)))))
         (apply #'reinitialize-instance class all-keys)
-        (if *lazy-finalize* (mapc #'(lambda (x) (when (class-finalized-p x) (finalize-inheritance x))) (cons class subs))
-                                    (mapc #'(lambda (x) (unless (forward-referenced-class-p x) (finalize-inheritance x))) subs)))
+        (mapc #'finalize-inheritance (if *lazy-finalize* subs (cdr subs))))
     class)
 
 (defmethod ensure-class-using-class ((class null) name &rest all-keys &key (metaclass the-class-standard-class) &allow-other-keys)
@@ -2696,14 +2696,14 @@
 
 (defmethod finalize-inheritance ((class forward-referenced-class)) (error "Cannot finalize ~a." class))
 
-(defmethod finalize-inheritance :before ((class standard-class))
+(defmethod finalize-inheritance :before ((class standard-class)) ; we should actually only finalize classes with shared slots
     (when *lazy-finalize* (mapc #'(lambda (x) (unless (class-finalized-p x) (finalize-inheritance x))) (class-direct-superclasses class))))
 
 (defmethod allocate-instance :before ((class standard-class))
     (if *lazy-finalize*
         (unless (class-finalized-p class) (finalize-inheritance class))
         (let ((forward (not-instantiable-p class)))
-            (when forward (cerror "Continue anyway." "Continuable attempt to instantiate ~a with an undefined ~a" class forward)))))
+            (when forward (cerror "Continue anyway." "Continuable attempt to instantiate ~a~%;;; with an undefined ~a superclass." class forward)))))
 
 ; redefine
 (defun canonicalize-direct-superclasses (direct-superclasses) `',direct-superclasses)
