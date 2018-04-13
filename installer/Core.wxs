@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include Config.wxi?>
+  <Fragment>
+    <DirectoryRef Id="INSTALLDIR">
+      <!-- Write Installation Path to registry -->
+      <Component Id="RegValueProductInstallPath" Guid="{CE589DBA-5C00-419F-AF9E-4E9365260957}">
+        <RegistryValue Id="RegValueInstallPath"
+                       Root="HKLM"
+                       Key="Software\$(var.ManufacturerName)\$(var.ProductName)"
+                       Name="Path"
+                       Value="[INSTALLDIR]"
+                       Type="string"
+                       KeyPath="yes"/>
+      </Component>
+      <!-- Core product files -->
+      <Component Id="CormanLispCore" Guid="{EAED0349-C9F0-454F-91CB-73B80DBBB517}">
+        <File Id="CormanLisp_IDE_Executable"
+              Name="CormanLisp.exe"
+              DiskId="1"
+              Source=".\CormanLisp.exe" />
+        <File Id="CormanLisp_Console_Executable"
+              Name="clconsole.exe"
+              DiskId="1"
+              Source=".\clconsole.exe" />
+        <File Id="CormanLisp_Image"
+              Name="CormanLisp.img"
+              DiskId="1"
+              Source=".\CormanLisp.img" />
+        <File Id="CormanLispServer"
+              Name="CormanLispServer.dll"
+              DiskId="1"
+              Source=".\CormanLispServer.dll" />
+        <File Id="CormanLispConsoleTemplate"
+              Name="clconsoleapp.exe"
+              DiskId="1"
+              Source=".\clconsoleapp.exe" />
+        <File Id="CormanLispGUITemplate"
+              Name="clboot.exe"
+              DiskId="1"
+              Source=".\clboot.exe" />
+        <File Id="CormanLispGUITemplateStatic"
+              Name="clbootapp.exe"
+              DiskId="1"
+              Source=".\clbootapp.exe" />
+        <File Id="CormanLispDLLTemplateStatic"
+              Name="dlltemplate.dll"
+              DiskId="1"
+              Source=".\dlltemplate.dll" />
+        <File Id="CormanLispCoreInit"
+              Name="init.lisp"
+              DiskId="1"
+              Source=".\init.lisp" />
+        <File Id="MakeImgBat"
+              Name="makeimg.bat"
+              DiskId="1"
+              Source=".\makeimg.bat" />
+        <File Id="CormanLispLicense"
+              Name="LICENSE.txt"
+              DiskId="1"
+              Source=".\LICENSE.txt" />
+      </Component>
+      <!-- RDNZL Dynamic Library -->
+      <Component Id="RDNZL_DLL"
+                 Guid="{6D17A89E-C877-4DEC-970C-CAC6D41C9261}">
+        <File Id="RDNZL.dll"
+              Name="RDNZL.dll"
+              DiskId="1"
+              Source=".\RDNZL.dll" />
+      </Component>
+      <!-- set environmental variable -->
+      <Component Id="SetEnv_CORMANLISP_HOME"
+                 Guid="{307EA98D-C472-4D90-9FD7-A27018E87263}"
+                 KeyPath="yes">
+        <Environment Id="Env_CORMANLISP_HOME"
+                     Name="CORMANLISP_HOME"
+                     Value="[INSTALLDIR]" Action="set" System="yes" />
+      </Component>
+    </DirectoryRef>
+    <!-- Product Base description -->
+    <ComponentGroup Id="ProductBase">
+      <ComponentRef Id="RegValueProductInstallPath" />
+      <ComponentRef Id="CormanLispCore" />
+      <ComponentRef Id="RDNZL_DLL" />
+    </ComponentGroup>
+  </Fragment>
+</Wix>
+

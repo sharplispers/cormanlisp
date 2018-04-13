@@ -22,4 +22,19 @@ HyperSpec/*
 HyperSpec-Legalese.text
 HyperSpec-README.text
 .vs/*
+# installer staff
+*.msi
+*.wixobj
+*.wixpdb
+*.tar
+installer/Standard/
+# automatically generated installer components
+installer/Libraries.wxs
+installer/Modules.wxs
+installer/Sys.wxs
+installer/Documentation.wxs
+installer/Examples.wxs
+installer/Headers.wxs
+installer/HyperSpec.wxs
+installer/LICENSE.rtf
 

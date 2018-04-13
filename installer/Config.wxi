@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <!--
+      Manufacturer and  product name
+  -->
+  <?define ProductName="Corman Lisp" ?>
+  <?define ManufacturerName="Sharp Lispers" ?>
+  <!--
+      Versioning. These have to be changed for upgrades.
+      It's not enough to just include newer files.
+  -->
+  <?define MajorVersion="3" ?>
+  <?define MinorVersion="1" ?>
+  <?define BuildVersion="0" ?>
+  <!-- Revision is NOT used by WiX in the upgrade procedure -->
+  <?define Revision="0" ?>
+  <!-- Full version number to display -->
+  <?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.BuildVersion)" ?>
+  <?define VersionNumberWithRevision="$(var.MajorVersion).$(var.MinorVersion).$(var.BuildVersion).$(var.Revision)" ?>
+  <!--
+      Visual C++ Runtime Version.
+      Comment it out to not include VC++ redistributable.
+  -->
+  <?define VCRedist="140" ?>
+  <!--
+      Set the following variables to to "yes" to include
+      corresponding parts of Visual C++ Runtime.
+  -->
+  <?define VCRedist_MFC="yes" ?>
+  <?define VCRedist_OpenMP="no" ?>
+  <?define VCRedist_CXXAMP="no" ?>
+  <!--
+      Supported architecture
+  -->
+  <?define Platform="x86" ?>
+  <!--
+      Upgrade code HAS to be the same for all updates.
+      Once you've chosen it don't change it.
+  -->
+  <?define UpgradeCode="{E0D4586E-BDA4-49EF-8325-A971EFC40405}" ?>
+  <!--
+      The name of your application *.exe files. These will be used to kill the process when updating
+      and creating the desktop shortcut
+  -->
+  <?define GuiProcessName="CormanLisp.exe" ?>
+  <?define ConsoleProcessName="clconsole.exe" ?>
+
+  <!-- Paths to directories -->
+  <?define SysDirectoryPath=".\Sys" ?>
+  <?define LibrariesDirectoryPath=".\Libraries" ?>
+  <?define ModulesDirectoryPath=".\Modules" ?>
+  <?define DocumentationDirectoryPath=".\documentation" ?>
+
+  <?define HeadersDirectoryPath=".\include" ?>
+  <?define ExamplesDirectoryPath=".\examples" ?>
+  <?define HyperSpecDirectoryPath=".\HyperSpec" ?>
+
+</Include>
+

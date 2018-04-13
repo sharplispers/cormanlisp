@@ -72,29 +72,20 @@ typedef struct _header
 			(ccl:unmap-file address)))
 
 (defun install-hyperspec ()
-    (if (eq (win:message-box-yes-no "Do you want to install the Common Lisp HyperSpec (from Xanalys)?"
-    		"Install Common Lisp HyperSpec") 'win:idyes)
-    	(let ((gzpath (namestring (truename (merge-pathnames "HyperSpec-6-0.tar.gz"))))
-    		  (tarpath (namestring (truename (merge-pathnames "HyperSpec-6-0.tar"))))
-              (hyperspec-path (namestring (truename (merge-pathnames "hyperspec/")))))
-            
-            ;; unless the Hyperspec is already installed at this location, extract
-            ;; it to that location
-            (unless (probe-file (merge-pathnames "Front\\Contents.htm" hyperspec-path))
-                (format t "Unzipping ~A...~%" gzpath)
-                (force-output)
-                (ccl:uncompress-file gzpath tarpath)
-                (format t "Extracting files from ~A...~%" tarpath)
-                (tar-extract tarpath))
-            
-            (with-open-file (init-file (merge-pathnames "init.lisp") :direction :output :if-exists :append)
-                (format init-file "~%;;; Set the Hyperspec path~%(setf *hyperspec-local-path* ~S)~%"
-                    hyperspec-path))
-            (setf *hyperspec-local-path* hyperspec-path))
-        (let ()
-            (with-open-file (init-file (merge-pathnames "init.lisp") :direction :output :if-exists :append)
-                (format init-file "~%;;; Set the Hyperspec path~%(setf *hyperspec-local-path* nil)~%"))
-            (setf *hyperspec-local-path* nil))))
+  (let ((gzpath (namestring (truename (merge-pathnames "HyperSpec-6-0.tar.gz"))))
+		(tarpath (namestring (truename (merge-pathnames "HyperSpec-6-0.tar"))))
+		(hyperspec-path (namestring (truename (merge-pathnames "hyperspec/")))))
+	
+	;; unless the Hyperspec is already installed at this location, extract
+	;; it to that location
+	(unless (probe-file (merge-pathnames "Front\\Contents.htm" hyperspec-path))
+	  (format t "Unzipping ~A...~%" gzpath)
+	  (force-output)
+	  (ccl:uncompress-file gzpath tarpath)
+	  (format t "Extracting files from ~A...~%" tarpath)
+	  (tar-extract tarpath)
+	  (delete-file tarpath))
+	(setf *hyperspec-local-path* hyperspec-path)))
 
 (install-hyperspec)
 

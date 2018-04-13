@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Helpful WEB-pages about WiX:
+    http://weblogs.sqlteam.com/mladenp/archive/2010/02/17/WiX-3-Tutorial-Understanding-main-WXS-and-WXI-file.aspx
+    http://p-nand-q.com/programming/windows/wix/files.html
+    https://github.com/sbcl/sbcl/blob/master/tools-for-build/wxs.lisp
+
+Using 'dark.exe' *.msi decompiler seems to be the most efficient way to learn about WiX. Decompiling SBCL's installer and 7-zip's installer revealed a lot of useful information.
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+
+  <!-- installer configuration -->
+  <?include Config.wxi ?>
+
+  <Product Id="*"
+           Name="$(var.ProductName) $(var.VersionNumber)"
+           Language="1033"
+           Version="$(var.VersionNumber)"
+           Manufacturer="$(var.ManufacturerName)"
+           UpgradeCode="$(var.UpgradeCode)">
+    <!-- Package installer version and installation scope. Media definition. -->
+    <Package InstallerVersion="301"
+             Platform="$(var.Platform)"
+             Compressed="yes"
+             InstallScope="perMachine"/>
+    <Media Id="1"
+           Cabinet="data.cab"
+           EmbedCab="yes" />
+    <!-- specify license file -->
+    <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
+    <!-- Upgrade settings -->
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion OnlyDetect="yes"
+                      Minimum="$(var.VersionNumberWithRevision)"
+                      IncludeMinimum="no"
+                      Property="NEWER_VERSION_FOUND" />
+      <!--
+          We need 'IncludeMaximum=yes' to treat
+          the same version installation as upgrade (reinstallation).
+          Microsoft does not recommend it.
+          It is very useful during development though.
+          Unfortunately, then we should suppress
+          light.exe's warning 1076.
+      -->
+      <UpgradeVersion Minimum="0.0.0.0"
+                      IncludeMinimum="yes"
+                      Maximum="$(var.VersionNumberWithRevision)"
+                      IncludeMaximum="yes"
+                      Property="OLDER_VERSION_FOUND" />
+    </Upgrade>
+
+    <!-- Install only on Windows XP SP2 or newer -->
+    <Condition Message="Your operating system version is not supported. Windows XP SP2 or newer is required.">
+      <![CDATA[Installed OR (((VersionNT > 501) OR ((VersionNT = 501) AND (ServicePackLevel >= 2))) AND MsiNTProductType = 1)]]>
+    </Condition>
+
+    <!-- Installation sequence description -->
+    <CustomAction Id="NewerVersionFound" Error="Newer version is installed!" />
+    <InstallExecuteSequence>
+      <!-- Check for newer versions with FindRelatedProducts and execute the custom action after it -->
+      <Custom Action="NewerVersionFound" After="FindRelatedProducts">
+        <![CDATA[NEWER_VERSION_FOUND]]>
+      </Custom>
+      <!-- Remove the previous versions of the product -->
+      <RemoveExistingProducts After="InstallInitialize"/>
+      <!-- WixCloseApplications is a built in custom action that uses util:CloseApplication below -->
+      <Custom Action="WixCloseApplications" Before="InstallInitialize" />
+    </InstallExecuteSequence>
+    <!-- Close installed applications -->
+    <util:CloseApplication Id="CloseGuiApplication"
+                           CloseMessage="yes"
+                           Description="The GUI process must be closed before installation."
+                           ElevatedCloseMessage="no"
+                           RebootPrompt="no"
+                           Target="$(var.GuiProcessName)" />
+    <util:CloseApplication Id="CloseConsoleApplication"
+                           CloseMessage="yes"
+                           Description="The console process must be closed before installation."
+                           ElevatedCloseMessage="no"
+                           RebootPrompt="no"
+                           Target="$(var.ConsoleProcessName)" />
+    <!-- Installation GUI description. -->
+    <!-- <UIRef Id="WixUI_InstallDir" /> -->
+    <UIRef Id="WixUI_FeatureTree" />
+    <UI>
+      <!-- These dialog references are needed for CloseApplication above to work correctly -->
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <!-- Here we'll add the GUI logic for installation and updating in a future post-->
+    </UI>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <!-- Menu directory structure -->
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ProgramMenuDir"
+                   Name="$(var.ProductName)">
+        </Directory>
+      </Directory>
+      <!-- Program installation directory structure -->
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLLOCATION"
+                   Name="$(var.ProductName)">
+          <Directory Id="INSTALLDIR">
+            <!-- Conditionally include Visual Studio C++ Runtime Files -->
+              <?ifdef VCRedist ?>
+              <Merge Id="VCRedist_CRT" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
+              <?if $(var.VCRedist_MFC) = "yes" ?>
+              <Merge Id="VCRedist_MFC" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_MFC_$(var.Platform).msm" DiskId="1" Language="0"/>
+              <Merge Id="VCRedist_MFCLOC" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_MFCLOC_$(var.Platform).msm" DiskId="1" Language="0"/>
+              <?endif?>
+              <?if $(var.VCRedist_OpenMP) = "yes" ?>
+              <Merge Id="VCRedist_OpenMP" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_OpenMP_$(var.Platform).msm" DiskId="1" Language="0"/>
+              <?endif?>
+              <?if $(var.VCRedist_CXXAMP) = "yes" ?>
+              <Merge Id="VCRedist_CXXAMP" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_CXXAMP_$(var.Platform).msm" DiskId="1" Language="0"/>
+              <?endif?>
+              <?endif?>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <!-- Set install path to the previous installation directory -->
+    <Property Id="INSTALLDIR">
+      <RegistrySearch Id="RegInstallPath"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="Software\$(var.ManufacturerName)\$(var.ProductName)"
+                      Name="Path"
+                      />
+    </Property>
+    
+    <!-- Features -->
+    <FeatureGroupRef Id="ProductFeatures" />
+  </Product>
+</Wix>
+

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include Config.wxi?>
+  <Fragment>
+    <Icon Id="CormanLispIcon.ico" SourceFile=".\CormanLispIDE\RES\CormanLisp.ICO" />
+    <DirectoryRef Id="ProgramMenuDir">
+      <Component Id="CormanLispShortcuts"
+                 Guid="{46362BE6-2086-46D0-B2C7-B6E5C3E584CD}">
+        <!-- Alternative: Target="[#CormanLisp_IDE_Executable]"/> -->
+        <Shortcut Id="CormanLispIDE.lnk"
+                  Directory="ProgramMenuDir"
+                  Name="$(var.ProductName) IDE.lnk"
+                  Target="[INSTALLDIR]\CormanLisp.exe"/>
+        <!-- Alternative: Target="[#CormanLisp_Console_Executable]"/> -->
+        <Shortcut Id="CormanLispREPL.lnk"
+                  Directory="ProgramMenuDir"
+                  Name="$(var.ProductName) REPL.lnk"
+                  Target="[INSTALLDIR]\clconsole.exe"
+                  Icon="CormanLispIcon.ico"/>
+        <Shortcut Id="Manual.lnk"
+                  Directory="ProgramMenuDir"
+                  Name="Corman Lisp Manual.lnk"
+                  Target="[INSTALLDIR]\documentation\CormanLisp.pdf"/>
+        <RegistryValue Action="write"
+                       Type="integer"
+                       Root="HKCU"
+                       Key="Software\$(var.ManufacturerName)\$(var.ProductName)"
+                       Name="installed"
+                       Value="1" KeyPath="yes"/>
+        <RemoveFolder Id="ProgramMenuDir"
+                      Directory="ProgramMenuDir"
+                      On="uninstall" />
+      </Component>
+    </DirectoryRef>
+    <!-- Product shortcuts -->
+    <ComponentGroup Id="ProductShortcuts">
+      <ComponentRef Id="CormanLispShortcuts"/>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

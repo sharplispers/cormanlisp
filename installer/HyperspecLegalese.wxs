@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <DirectoryRef Id="INSTALLDIR">
+      <!-- Core product files -->
+      <Component Id="HyperSpecLegaleseFiles"
+                 Guid="{86DD959D-2C1E-40C3-8406-D0FC32029ADF}">
+        <File Id="HyperSpecLegalese.text"
+              Name="HyperSpec-Legalese.text"
+              DiskId="1"
+              Source=".\HyperSpec-Legalese.text" />
+        <File Id="HyperSpecREADME.text"
+              Name="HyperSpec-README.text"
+              DiskId="1"
+              Source=".\HyperSpec-README.text" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
+

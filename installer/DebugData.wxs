@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <DirectoryRef Id="INSTALLDIR">
+      <!-- debug data files -->
+      <Component Id="DebugDataFiles" Guid="{59A45CAD-80F1-4C15-8F9B-BE9D6735359E}">
+        <File Id="clboot.pdb"
+              Name="clboot.pdb"
+              DiskId="1"
+              Source=".\clboot.pdb" />
+        <File Id="clbootapp.pdb"
+              Name="clbootapp.pdb"
+              DiskId="1"
+              Source=".\clbootapp.pdb" />
+        <File Id="clconsole.pdb"
+              Name="clconsole.pdb"
+              DiskId="1"
+              Source=".\clconsole.pdb" />
+        <File Id="clconsoleapp.pdb"
+              Name="clconsoleapp.pdb"
+              DiskId="1"
+              Source=".\clconsoleapp.pdb" />
+        <File Id="CormanLisp.pdb"
+              Name="CormanLisp.pdb"
+              DiskId="1"
+              Source=".\CormanLisp.pdb" />
+        <File Id="CormanLispServer.pdb"
+              Name="CormanLispServer.pdb"
+              DiskId="1"
+              Source=".\CormanLispServer.pdb" />
+        <File Id="dlltemplate.pdb"
+              Name="dlltemplate.pdb"
+              DiskId="1"
+              Source=".\dlltemplate.pdb" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include Config.wxi?>
+  <Fragment>
+    <!-- features description -->
+    <Feature Id="ProductCore"
+             ConfigurableDirectory="INSTALLDIR"
+             Title="$(var.ProductName)"
+             Display="expand"
+             Absent="disallow"
+             Level="1">
+      <ComponentGroupRef Id="ProductBase" Primary="yes" />
+      <ComponentGroupRef Id="DocDir" />
+      <ComponentGroupRef Id="SysDir" />
+      <ComponentGroupRef Id="LibrariesDir" />
+      <ComponentGroupRef Id="ModulesDir" />
+      <Feature Id="StartMenuShortcuts"
+               Title="Start Menu shortcuts">
+        <ComponentGroupRef Id="ProductShortcuts"/>
+      </Feature>
+      <Feature Id="SetCORMANLISP_HOME"
+               Title="Set 'CORMANLISP_HOME' environmental variable">
+        <ComponentRef Id="SetEnv_CORMANLISP_HOME"/>
+      </Feature>
+      <Feature Id="SetPATH"
+               Title="Add to 'Path'">
+        <ComponentRef Id="AddProductToPath" />
+      </Feature>
+      <Feature Id="CormanLispServerHeaders" Title="COM-server C++ headers">
+        <ComponentGroupRef Id="HeadersDir" />
+      </Feature>
+      <Feature Id="CormanLispExamples" Title="Examples">
+        <ComponentGroupRef Id="ExamplesDir" />
+      </Feature>
+      <Feature Id="CormanLispDebugData" Title="Debug data files (*.PDB)">
+        <ComponentRef Id="DebugDataFiles" />
+      </Feature>
+      <Feature Id="HyperSpecFiles" Title="HyperSpec">
+        <ComponentRef Id="HyperSpecLegaleseFiles" />
+        <ComponentGroupRef Id="HyperSpecDir" />
+      </Feature>
+      <!-- VC++ redistributable -->
+      <?ifdef VCRedist ?>
+      <Feature Id="VCRedistInstall"
+               Title="Visual C++ Runtime (Version: $(var.VCRedist))">
+        <MergeRef Id="VCRedist_CRT" />
+        <?if $(var.VCRedist_MFC) = "yes" ?>
+        <MergeRef Id="VCRedist_MFC" />
+        <MergeRef Id="VCRedist_MFCLOC" />
+        <?endif?>
+        <?if $(var.VCRedist_OpenMP) = "yes" ?>
+        <MergeRef Id="VCRedist_OpenMP" />
+        <?endif?>
+        <?if $(var.VCRedist_CXXAMP) = "yes" ?>
+        <MergeRef Id="VCRedist_CXXAMP" />
+        <?endif?>
+      </Feature>
+      <?endif?>
+    </Feature>
+
+    <!-- Product features -->
+    <FeatureGroup Id="ProductFeatures">
+      <FeatureRef Id="ProductCore" />
+    </FeatureGroup>
+  </Fragment>
+</Wix>

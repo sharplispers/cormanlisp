@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="installer">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{70776da3-d7a2-465c-9e66-957d8ed662cb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AddToPath.wxs">
+      <Filter>installer</Filter>
+    </None>
+    <None Include="Config.wxi">
+      <Filter>installer</Filter>
+    </None>
+    <None Include="Core.wxs">
+      <Filter>installer</Filter>
+    </None>
+    <None Include="DebugData.wxs">
+      <Filter>installer</Filter>
+    </None>
+    <None Include="Features.wxs">
+      <Filter>installer</Filter>
+    </None>
+    <None Include="HyperspecLegalese.wxs">
+      <Filter>installer</Filter>
+    </None>
+    <None Include="Main.wxs">
+      <Filter>installer</Filter>
+    </None>
+    <None Include="Shortcuts.wxs">
+      <Filter>installer</Filter>
+    </None>
+    <None Include="..\makemsi.bat" />
+    <None Include="..\Utilities\install-hyperspec.lisp">
+      <Filter>Utilities</Filter>
+    </None>
+    <None Include="..\Utilities\license-to-rtf.lisp">
+      <Filter>Utilities</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="include.xsl">
+      <Filter>installer</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>

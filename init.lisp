@@ -65,8 +65,15 @@
 
 ;;; set your own local path for the Hyperspec
 ;; eg. (setq *hyperspec-local-path* "c:/roger/lisp/HyperSpec/")
-(setq *hyperspec-local-path* (concatenate 'string *cormanlisp-directory* "HyperSpec/"))
+;; unless the Hyperspec is already installed at this location
+;; it to that location
 
+;; Automatically set HyperSpec path to the one installed with Corman Lisp.
+(let ((hyperspec-install-path (merge-pathnames "HyperSpec\\"
+											   (namestring *cormanlisp-directory*))))
+  (when (probe-file (merge-pathnames "Front\\Contents.htm" hyperspec-install-path))
+	(setq *hyperspec-local-path* (namestring hyperspec-install-path))))
+  
 ;;; set your own declaration symbols list
 ;; eg. (setf ide:*declaration-symbols* '("defun" "define-symbol-macro")) or
 ;;     (setf ide:*declaration-symbols* (append ide:*declaration-symbols* '("defwinconstant" "defwinapi")))
@@ -91,3 +98,4 @@
             "CormanLisp.img")))
 ;; export from CL package
 (export (find-symbol "LOAD-DEFAULT-IMAGE" 'cl) 'cl)
+

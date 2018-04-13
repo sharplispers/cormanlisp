@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Standard|Win32">
+      <Configuration>Standard</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{70E7D2D9-32CA-40E5-AC89-6CD71B4D1EF3}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>Installer</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
+    <NMakeOutput>$(SolutionDir)CormanLispInstaller.msi</NMakeOutput>
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeBuildCommandLine>$(SolutionDir)makemsi.bat</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>$(SolutionDir)makemsi.bat</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>cmd.exe /c "del ^"$(SolutionDir)CormanLispInstaller.msi^""</NMakeCleanCommandLine>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="..\makemsi.bat" />
+    <None Include="..\Utilities\install-hyperspec.lisp" />
+    <None Include="..\Utilities\license-to-rtf.lisp" />
+    <None Include="AddToPath.wxs" />
+    <None Include="Config.wxi" />
+    <None Include="Core.wxs" />
+    <None Include="DebugData.wxs" />
+    <None Include="Features.wxs" />
+    <None Include="HyperspecLegalese.wxs" />
+    <None Include="Main.wxs" />
+    <None Include="Shortcuts.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="include.xsl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

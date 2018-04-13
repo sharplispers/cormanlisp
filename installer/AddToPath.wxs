@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <DirectoryRef Id="INSTALLDIR">
+      <!-- add product to path -->
+      <Component Id="AddProductToPath"
+                 Guid="{F39576AD-698B-48F5-9E74-8C1C2EDC375B}"
+                 KeyPath="yes">
+        <Environment Id="Env_PATH"
+                     Name="PATH"
+                     Value="[INSTALLDIR]"
+                     Separator=";"
+                     Action="set"
+                     Part="last"
+                     System="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
