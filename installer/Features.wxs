@@ -16,7 +16,11 @@
       <ComponentGroupRef Id="ModulesDir" />
       <Feature Id="StartMenuShortcuts"
                Title="Start Menu shortcuts">
-        <ComponentGroupRef Id="ProductShortcuts"/>
+        <ComponentGroupRef Id="ProductStartMenuShortcuts"/>
+      </Feature>
+      <Feature Id="DesktopShortcuts"
+               Title="Desktop shortcuts">
+        <ComponentGroupRef Id="ProductDesktopShortcuts"/>
       </Feature>
       <Feature Id="SetCORMANLISP_HOME"
                Title="Set 'CORMANLISP_HOME' environmental variable">

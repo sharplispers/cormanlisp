@@ -96,25 +96,30 @@ Using 'dark.exe' *.msi decompiler seems to be the most efficient way to learn ab
                    Name="$(var.ProductName)">
         </Directory>
       </Directory>
+      <!-- Desktop Directory -->
+      <Directory Id="DesktopFolder">
+        <Directory Id="DesktopDir">
+        </Directory>
+      </Directory>
       <!-- Program installation directory structure -->
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLLOCATION"
                    Name="$(var.ProductName)">
           <Directory Id="INSTALLDIR">
             <!-- Conditionally include Visual Studio C++ Runtime Files -->
-              <?ifdef VCRedist ?>
-              <Merge Id="VCRedist_CRT" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
-              <?if $(var.VCRedist_MFC) = "yes" ?>
-              <Merge Id="VCRedist_MFC" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_MFC_$(var.Platform).msm" DiskId="1" Language="0"/>
-              <Merge Id="VCRedist_MFCLOC" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_MFCLOC_$(var.Platform).msm" DiskId="1" Language="0"/>
-              <?endif?>
-              <?if $(var.VCRedist_OpenMP) = "yes" ?>
-              <Merge Id="VCRedist_OpenMP" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_OpenMP_$(var.Platform).msm" DiskId="1" Language="0"/>
-              <?endif?>
-              <?if $(var.VCRedist_CXXAMP) = "yes" ?>
-              <Merge Id="VCRedist_CXXAMP" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_CXXAMP_$(var.Platform).msm" DiskId="1" Language="0"/>
-              <?endif?>
-              <?endif?>
+            <?ifdef VCRedist ?>
+            <Merge Id="VCRedist_CRT" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
+            <?if $(var.VCRedist_MFC) = "yes" ?>
+            <Merge Id="VCRedist_MFC" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_MFC_$(var.Platform).msm" DiskId="1" Language="0"/>
+            <Merge Id="VCRedist_MFCLOC" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_MFCLOC_$(var.Platform).msm" DiskId="1" Language="0"/>
+            <?endif?>
+            <?if $(var.VCRedist_OpenMP) = "yes" ?>
+            <Merge Id="VCRedist_OpenMP" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_OpenMP_$(var.Platform).msm" DiskId="1" Language="0"/>
+            <?endif?>
+            <?if $(var.VCRedist_CXXAMP) = "yes" ?>
+            <Merge Id="VCRedist_CXXAMP" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_CXXAMP_$(var.Platform).msm" DiskId="1" Language="0"/>
+            <?endif?>
+            <?endif?>
           </Directory>
         </Directory>
       </Directory>
