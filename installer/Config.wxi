@@ -12,11 +12,17 @@
   <?define MajorVersion="3" ?>
   <?define MinorVersion="1" ?>
   <?define BuildVersion="0" ?>
+  <!-- Language code -->
+  <?define Language="1033" ?>
   <!-- Revision is NOT used by WiX in the upgrade procedure -->
   <?define Revision="0" ?>
   <!-- Full version number to display -->
   <?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.BuildVersion)" ?>
   <?define VersionNumberWithRevision="$(var.MajorVersion).$(var.MinorVersion).$(var.BuildVersion).$(var.Revision)" ?>
+  <!--
+      Icon in Add/Remove programs
+  -->
+  <?define ProductIconFile=".\CormanLispIDE\RES\CormanLisp.ICO" ?>
   <!--
       Visual C++ Runtime Version.
       Comment it out to not include VC++ redistributable.

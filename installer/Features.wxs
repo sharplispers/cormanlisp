@@ -36,12 +36,12 @@
       <Feature Id="CormanLispExamples" Title="Examples">
         <ComponentGroupRef Id="ExamplesDir" />
       </Feature>
-      <Feature Id="CormanLispDebugData" Title="Debug data files (*.PDB)">
-        <ComponentRef Id="DebugDataFiles" />
-      </Feature>
       <Feature Id="HyperSpecFiles" Title="HyperSpec">
         <ComponentRef Id="HyperSpecLegaleseFiles" />
         <ComponentGroupRef Id="HyperSpecDir" />
+      </Feature>
+      <Feature Id="CormanLispDebugData" Title="Debug data files (*.PDB)">
+        <ComponentRef Id="DebugDataFiles" />
       </Feature>
       <!-- VC++ redistributable -->
       <?ifdef VCRedist ?>
