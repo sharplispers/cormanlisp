@@ -600,19 +600,18 @@
 
 (defun resolve-lisp-file-path (file)
   "Checks if supplied file exists with well-known Lisp files extensions. If the check fails this functions returns NIL."
-  (let ((res))
 	(if (and (pathname-type file)
-			 (setq res (probe-file file)))
-		res
-		(or (probe-file (make-pathname :name file
-									   :type "lisp"
-									   :version nil))
-			(probe-file (make-pathname :name file
-									   :type "lsp"
-									   :version nil))
-			(probe-file (make-pathname :name file
-									   :type "cl"
-									   :version nil))))))
+			 (probe-file file))
+		file
+        (flet ((check-extension (ext)
+                    (let ((path (make-pathname :name file
+                                    :type ext
+                                    :version nil)))
+                        (when (probe-file path)
+                            path))))
+            (or (check-extension "lisp")
+                (check-extension "lsp")
+                (check-extension "cl")))))
 
 ;;;
 ;;; Common Lisp COMPILE-FILE-PATHNAME function.
