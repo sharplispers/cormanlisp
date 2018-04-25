@@ -631,5 +631,5 @@
 	(make-string 1 :initial-element char))		;; make-string is defined later
 (setq *COMPILER-WARN-ON-UNDEFINED-FUNCTION* t)
 	
-(setq *features* '(:cormanlisp :pl :common-lisp :win32))
+(setq *features* '(:cormanlisp :pl :common-lisp :win32 :os-windows :x86 :32-bit :little-endian))
 
