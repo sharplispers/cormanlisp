@@ -3,36 +3,58 @@
   <Fragment>
     <DirectoryRef Id="INSTALLDIR">
       <!-- debug data files -->
-      <Component Id="DebugDataFiles" Guid="{59A45CAD-80F1-4C15-8F9B-BE9D6735359E}">
+      <Component Id="cmp_clboot.pdb"
+                 Guid="{B266B14F-91A8-42EA-9CF0-BCDA5FA9E031}">
         <File Id="clboot.pdb"
-              Name="clboot.pdb"
-              DiskId="1"
-              Source=".\clboot.pdb" />
+              Source=".\clboot.pdb"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_clbootapp.pdb"
+                 Guid="{3278AC88-2B41-4559-B16F-36D41F35F052}">
         <File Id="clbootapp.pdb"
-              Name="clbootapp.pdb"
-              DiskId="1"
-              Source=".\clbootapp.pdb" />
+              Source=".\clbootapp.pdb"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_clconsole.pdb"
+                 Guid="{3674C9E3-BD82-4E74-8AC0-9D200CC65BC9}">
         <File Id="clconsole.pdb"
-              Name="clconsole.pdb"
-              DiskId="1"
-              Source=".\clconsole.pdb" />
+              Source=".\clconsole.pdb"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_clconsoleapp.pdb"
+                 Guid="{3150BBC2-05D6-42B9-93B5-EEB331EC08E0}">
         <File Id="clconsoleapp.pdb"
-              Name="clconsoleapp.pdb"
-              DiskId="1"
-              Source=".\clconsoleapp.pdb" />
+              Source=".\clconsoleapp.pdb"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_CormanLisp.pdb"
+                 Guid="{45F9A92C-F632-4657-A5C9-919E5A2AD214}">
         <File Id="CormanLisp.pdb"
-              Name="CormanLisp.pdb"
-              DiskId="1"
-              Source=".\CormanLisp.pdb" />
+              Source=".\CormanLisp.pdb"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_CormanLispServer.pdb"
+                 Guid="{0AA7706E-EFCB-4C2B-86F7-47F2C739F84E}">
         <File Id="CormanLispServer.pdb"
-              Name="CormanLispServer.pdb"
-              DiskId="1"
-              Source=".\CormanLispServer.pdb" />
+              Source=".\CormanLispServer.pdb"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_dlltemplate.pdb"
+                 Guid="{64F7D041-B92B-4CC1-9902-D9F7ABF88F0C}">
         <File Id="dlltemplate.pdb"
-              Name="dlltemplate.pdb"
-              DiskId="1"
-              Source=".\dlltemplate.pdb" />
+              Source=".\dlltemplate.pdb"
+              KeyPath="yes" />
       </Component>
     </DirectoryRef>
+
+    <ComponentGroup Id="DebugDataFiles">
+      <ComponentRef Id="cmp_clboot.pdb" />
+      <ComponentRef Id="cmp_clbootapp.pdb" />
+      <ComponentRef Id="cmp_clconsole.pdb" />
+      <ComponentRef Id="cmp_clconsoleapp.pdb" />
+      <ComponentRef Id="cmp_CormanLisp.pdb" />
+      <ComponentRef Id="cmp_CormanLispServer.pdb" />
+      <ComponentRef Id="cmp_dlltemplate.pdb" />
+    </ComponentGroup>
   </Fragment>
 </Wix>

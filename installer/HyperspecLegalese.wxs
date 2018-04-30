@@ -2,19 +2,24 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
     <DirectoryRef Id="INSTALLDIR">
-      <!-- Core product files -->
-      <Component Id="HyperSpecLegaleseFiles"
-                 Guid="{86DD959D-2C1E-40C3-8406-D0FC32029ADF}">
+      <Component Id="cmp_HyperSpecLegalese.text"
+                 Guid="{CF2641AF-6267-437C-B3C7-6D037DF18E38}">
         <File Id="HyperSpecLegalese.text"
-              Name="HyperSpec-Legalese.text"
-              DiskId="1"
-              Source=".\HyperSpec-Legalese.text" />
+              Source=".\HyperSpec-Legalese.text"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_HyperSpecREADME.text"
+                 Guid="{E246B1C3-6D74-4B6C-8CE1-10791ABB1DE3}">
         <File Id="HyperSpecREADME.text"
-              Name="HyperSpec-README.text"
-              DiskId="1"
-              Source=".\HyperSpec-README.text" />
+              Source=".\HyperSpec-README.text"
+              KeyPath="yes" />
       </Component>
     </DirectoryRef>
+
+    <ComponentGroup Id="HyperSpecLegaleseFiles">
+      <ComponentRef Id="cmp_HyperSpecLegalese.text" />
+      <ComponentRef Id="cmp_HyperSpecREADME.text" />
+    </ComponentGroup>
   </Fragment>
 </Wix>
 

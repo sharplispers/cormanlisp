@@ -14,59 +14,67 @@
                        KeyPath="yes"/>
       </Component>
       <!-- Core product files -->
-      <Component Id="CormanLispCore" Guid="{EAED0349-C9F0-454F-91CB-73B80DBBB517}">
+      <Component Id="cmp_CormanLisp.exe" Guid="{654B4BD7-F39D-42F9-ADD3-D51D05E3D205}">
         <File Id="CormanLisp_IDE_Executable"
-              Name="CormanLisp.exe"
-              DiskId="1"
-              Source=".\CormanLisp.exe" />
+              Source=".\CormanLisp.exe"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_clconsole.exe" Guid="{978D45C9-44BB-4FF1-BACB-D658584305DD}">
         <File Id="CormanLisp_Console_Executable"
-              Name="clconsole.exe"
-              DiskId="1"
-              Source=".\clconsole.exe" />
+              Source=".\clconsole.exe"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_CormanLisp.img" Guid="{A88FFCFE-AFEB-4C36-B99F-43C53641AE52}">
         <File Id="CormanLisp_Image"
-              Name="CormanLisp.img"
-              DiskId="1"
-              Source=".\CormanLisp.img" />
+              Source=".\CormanLisp.img"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_CormanLispServer.dll" Guid="{D86D9F14-C8B0-451F-A579-18857D43750F}">
         <File Id="CormanLispServer"
-              Name="CormanLispServer.dll"
-              DiskId="1"
-              Source=".\CormanLispServer.dll" />
+              Source=".\CormanLispServer.dll"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_clconsoleapp.exe" Guid="{BBE2237C-81AC-49C9-99E7-987159280F57}">
         <File Id="CormanLispConsoleTemplate"
-              Name="clconsoleapp.exe"
-              DiskId="1"
-              Source=".\clconsoleapp.exe" />
+              Source=".\clconsoleapp.exe"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_clboot.exe" Guid="{898B9CF8-DEEC-4295-9C8F-F632684C214B}">
         <File Id="CormanLispGUITemplate"
-              Name="clboot.exe"
-              DiskId="1"
-              Source=".\clboot.exe" />
+              Source=".\clboot.exe"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_clbootapp.exe" Guid="{42921841-8B25-420C-A86D-3F45F7F365D1}">
         <File Id="CormanLispGUITemplateStatic"
-              Name="clbootapp.exe"
-              DiskId="1"
-              Source=".\clbootapp.exe" />
+              Source=".\clbootapp.exe"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_dlltemplate.dll" Guid="{DB18E529-43C8-4F04-ADC6-D7C97DB34D66}">
         <File Id="CormanLispDLLTemplateStatic"
-              Name="dlltemplate.dll"
-              DiskId="1"
-              Source=".\dlltemplate.dll" />
+              Source=".\dlltemplate.dll"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_init.lisp" Guid="{164DD982-2ADF-4133-A7A4-10BD56059D71}">
         <File Id="CormanLispCoreInit"
-              Name="init.lisp"
-              DiskId="1"
-              Source=".\init.lisp" />
+              Source=".\init.lisp"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_makeimg.bat" Guid="{C3D2254E-DC8F-4320-84B6-17027A5C8AE9}">
         <File Id="MakeImgBat"
-              Name="makeimg.bat"
-              DiskId="1"
-              Source=".\makeimg.bat" />
+              Source=".\makeimg.bat"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_LICENSE.txt" Guid="{FBDE86B5-980A-4EC4-BB1A-3C0188C6DB9A}">
         <File Id="CormanLispLicense"
-              Name="LICENSE.txt"
-              DiskId="1"
-              Source=".\LICENSE.txt" />
+              Source=".\LICENSE.txt"
+              KeyPath="yes" />
       </Component>
       <!-- RDNZL Dynamic Library -->
-      <Component Id="RDNZL_DLL"
+      <Component Id="cmp_RDNZL.dll"
                  Guid="{6D17A89E-C877-4DEC-970C-CAC6D41C9261}">
         <File Id="RDNZL.dll"
-              Name="RDNZL.dll"
-              DiskId="1"
-              Source=".\RDNZL.dll" />
+              Source=".\RDNZL.dll"
+              KeyPath="yes" />
       </Component>
       <!-- set environmental variable -->
       <Component Id="SetEnv_CORMANLISP_HOME"
@@ -74,14 +82,28 @@
                  KeyPath="yes">
         <Environment Id="Env_CORMANLISP_HOME"
                      Name="CORMANLISP_HOME"
-                     Value="[INSTALLDIR]" Action="set" System="yes" />
+                     Value="[INSTALLDIR]"
+                     Action="set"
+                     System="yes" />
       </Component>
     </DirectoryRef>
     <!-- Product Base description -->
     <ComponentGroup Id="ProductBase">
       <ComponentRef Id="RegValueProductInstallPath" />
-      <ComponentRef Id="CormanLispCore" />
-      <ComponentRef Id="RDNZL_DLL" />
+      
+      <ComponentRef Id="cmp_CormanLisp.exe" />
+      <ComponentRef Id="cmp_clconsole.exe" />
+      <ComponentRef Id="cmp_CormanLisp.img" />
+      <ComponentRef Id="cmp_CormanLispServer.dll" />
+      <ComponentRef Id="cmp_clconsoleapp.exe" />
+      <ComponentRef Id="cmp_clboot.exe" />
+      <ComponentRef Id="cmp_clbootapp.exe" />
+      <ComponentRef Id="cmp_dlltemplate.dll" />
+      <ComponentRef Id="cmp_init.lisp" />
+      <ComponentRef Id="cmp_makeimg.bat" />
+      <ComponentRef Id="cmp_LICENSE.txt" />
+      
+      <ComponentRef Id="cmp_RDNZL.dll" />
     </ComponentGroup>
   </Fragment>
 </Wix>
