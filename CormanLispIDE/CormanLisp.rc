@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#include "../CormanLispServer/include/Version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -544,8 +545,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,5,1
- PRODUCTVERSION 2,0,5,1
+ FILEVERSION VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, 0
+ PRODUCTVERSION VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, 0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -562,12 +563,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Roger Corman"
             VALUE "FileDescription", "CormanLisp"
-            VALUE "FileVersion", "2, 0, 6, 0"
+            VALUE "FileVersion", VERSION_STRING
             VALUE "InternalName", "CormanLisp"
             VALUE "LegalCopyright", "Copyright © Corman Technologies"
             VALUE "OriginalFilename", "CormanLisp.exe"
             VALUE "ProductName", "CormanLisp"
-            VALUE "ProductVersion", "2, 0, 6, 0"
+            VALUE "ProductVersion", VERSION_STRING
         END
     END
     BLOCK "VarFileInfo"

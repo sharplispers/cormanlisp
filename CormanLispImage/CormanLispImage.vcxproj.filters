@@ -320,6 +320,9 @@
     <None Include="..\Sys\xp.lisp">
       <Filter>Sys</Filter>
     </None>
+    <None Include="..\Sys\version.lisp">
+      <Filter>Sys</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Sys">

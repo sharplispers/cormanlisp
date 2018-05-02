@@ -53,6 +53,9 @@
     <ClInclude Include="include\UserInfo.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\Version.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CormanLispServer.def">

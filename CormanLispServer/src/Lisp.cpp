@@ -29,6 +29,7 @@
 #include "threadclasses.h"
 #include "ErrorMessage.h"
 #include "CormanLispServer.h"
+#include "Version.h"
 
 #ifdef X86
 #include <wtypes.h>
@@ -43,7 +44,12 @@ LispObj QV__[QV_MAX] = {0};
 LispObj* QV = QV__;
 unsigned long NumReturnValues;
 unsigned long NumLispThreads = 0;
-unsigned long KernelVersionID = 3010;	// Corman Lisp 3.0
+// Kernel Version ID format:
+// two first digits - major version
+// two last digits - minor version
+// Example:
+// Corman Lisp 3.1 = 301 (0301)
+unsigned long KernelVersionID = VERSION_MAJOR * 100 + VERSION_MINOR;
 
 LispObj searchSymbol(LispObj package, LispObj str);
 LispObj addSymbol(LispObj package, LispObj key, LispObj value, xbool externFlag);

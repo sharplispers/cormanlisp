@@ -19,6 +19,7 @@
 #include "lisp.h"
 #include "lispmath.h"
 #include "CormanLispServer.h"
+#include "Version.h"
 #include "../../zlib/zlib.h"
 
 #pragma warning (disable:4127)				// conditional expression is constant
@@ -4493,7 +4494,9 @@ FunctEntry functTable[] =
 	// One needs the following functions to bootstrap Corman Lisp image
 	{ "%CORMANLISP-DIRECTORY-NAMESTRING", (LispFunc)CormanLisp_Directory_Namestring }, // get Corman Lisp directory namestring
 	{ "%CHANGE-DIRECTORY",          (LispFunc)Change_Directory },        // change working directory - it is needed during image building process.
-	{ "%IMAGE-LOADS-COUNT",         (LispFunc)Image_Loads_Count }        // returns number of LOAD-IMAGE calls.
+	{ "%IMAGE-LOADS-COUNT",         (LispFunc)Image_Loads_Count },       // returns number of LOAD-IMAGE calls.
+
+	{ "%CORMANLISP-VERSION-STRING", (LispFunc)CormanLispVersionString }        // returns number of LOAD-IMAGE calls.
     // ----------------------------------------------------------
 };
 long sizeFunctTable = sizeof(functTable)/sizeof(FunctEntry);
@@ -4885,5 +4888,12 @@ LispFunction(Image_Loads_Count)
 
 	ret = createLispInteger(getImageLoadsCount());
 
+	LISP_FUNC_RETURN(ret);
+}
+
+LispDeclare(CormanLispVersionString)
+{
+	LISP_FUNC_BEGIN(0);
+	ret = stringNode(VERSION_STRING);
 	LISP_FUNC_RETURN(ret);
 }

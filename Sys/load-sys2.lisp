@@ -86,6 +86,7 @@
 (load-file "sys/sockets.lisp")
 (load-file "sys/xp.lisp")
 (load-file "sys/threads.lisp")
+(load-file "sys/version.lisp")
 (load-file "sys/auto-update.lisp")
 (load-file "sys/jumpmenu.lisp")
 (load-file "sys/ide-menus.lisp")

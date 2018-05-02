@@ -658,8 +658,8 @@
 (defun remove-tail-recursion (lambda name) lambda)	;; implement this in another file
 
 (defun lisp-implementation-type () "Corman Common Lisp")
-(defun lisp-implementation-version () "3.02")
-(defun lisp-implementation-version-string () "3.02")
+(defun lisp-implementation-version () (%cormanlisp-version-string)) ; redefined in 'version.lisp'
+(defun lisp-implementation-version-string () (lisp-implementation-version))
 
 (defconstant call-arguments-limit     1024)
 (defconstant lambda-parameters-limit   256)

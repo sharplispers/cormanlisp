@@ -18,7 +18,7 @@
         compile-cormanlisp-image
         *auto-update-level*))
 
-(defparameter *cormanlisp-patch-level* 0)
+(defparameter *cormanlisp-patch-level* (cormanlisp-patch-level))
 (defparameter *patches-available* nil)
 (defparameter *patches-installed* nil)
 (defparameter *patch-server* "www.cormanlisp.com")

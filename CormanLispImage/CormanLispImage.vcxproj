@@ -107,6 +107,7 @@
     <None Include="..\Sys\types.lisp" />
     <None Include="..\Sys\util.lisp" />
     <None Include="..\Sys\uvector.lisp" />
+    <None Include="..\Sys\version.lisp" />
     <None Include="..\Sys\vm.lisp" />
     <None Include="..\Sys\win-conditions.lisp" />
     <None Include="..\Sys\win32.lisp" />

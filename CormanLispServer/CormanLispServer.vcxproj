@@ -99,6 +99,7 @@
     <ClInclude Include="include\LispThreadQueue.h" />
     <ClInclude Include="include\Stdafx.h" />
     <ClInclude Include="include\UserInfo.h" />
+    <ClInclude Include="include\Version.h" />
     <ClInclude Include="res\resource.h" />
   </ItemGroup>
   <ItemGroup>
