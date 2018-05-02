@@ -27,6 +27,10 @@ del HyperSpec-Legalese.text
 del HyperSpec-README.text
 clconsole.exe -execute Utilities\install-hyperspec.lisp
 
+rem Generate file with build version information
+del installer\Version.wxi
+clconsole.exe -execute Utilities\generate-version-wxi.lisp
+
 rem Generate include fragments.
 rem These should be synchronised with values in 'Config.wxi'
 

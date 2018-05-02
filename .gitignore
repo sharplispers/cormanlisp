@@ -36,5 +36,6 @@ installer/Documentation.wxs
 installer/Examples.wxs
 installer/Headers.wxs
 installer/HyperSpec.wxs
+installer/Version.wxi
 installer/LICENSE.rtf
 

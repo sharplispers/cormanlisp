@@ -38,6 +38,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\makemsi.bat" />
+    <None Include="..\Utilities\generate-version-wxi.lisp" />
     <None Include="..\Utilities\install-hyperspec.lisp" />
     <None Include="..\Utilities\license-to-rtf.lisp" />
     <None Include="AddToPath.wxs" />

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<?include Version.wxi?>
 <Include>
   <!--
       Manufacturer and  product name
@@ -9,9 +10,15 @@
       Versioning. These have to be changed for upgrades.
       It's not enough to just include newer files.
   -->
+  <!--
+      NOTE: The following variables are defined in the
+      automatically generated 'Version.wxi' file.
+  -->
+  <!--
   <?define MajorVersion="3" ?>
   <?define MinorVersion="1" ?>
   <?define BuildVersion="0" ?>
+  -->
   <!-- Language code -->
   <?define Language="1033" ?>
   <!-- Revision is NOT used by WiX in the upgrade procedure -->

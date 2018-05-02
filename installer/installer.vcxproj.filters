@@ -41,6 +41,9 @@
     <None Include="..\Utilities\license-to-rtf.lisp">
       <Filter>Utilities</Filter>
     </None>
+    <None Include="..\Utilities\generate-version-wxi.lisp">
+      <Filter>Utilities</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="include.xsl">
