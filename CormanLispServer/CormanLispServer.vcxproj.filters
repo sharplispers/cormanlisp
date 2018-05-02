@@ -114,7 +114,7 @@
     <ClCompile Include="src\Write.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="UserInfo.cpp">
+    <ClCompile Include="src\UserInfo.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

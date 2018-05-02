@@ -122,8 +122,8 @@
     <ClCompile Include="src\Read.cpp" />
     <ClCompile Include="src\Stdafx.cpp" />
     <ClCompile Include="src\ThreadClasses.cpp" />
+    <ClCompile Include="src\UserInfo.cpp" />
     <ClCompile Include="src\Write.cpp" />
-    <ClCompile Include="UserInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res\CormanLispServer.rc">
