@@ -18,9 +18,9 @@
 ;	(setf *hyperspec-local-path* 
 ;		(concatenate 'string "file://" pl:*cormanlisp-directory* "/HyperSpec/")))
 
-(defvar *hyperspec-version* 6)		;; we support either 4 or 6
+(defvar *hyperspec-version* 7)		;; we support either 4 or 6-7
 
-(defvar *hyperspec-internet-path* "http://www.xanalys.com/software_tools/reference/HyperSpec/")
+(defvar *hyperspec-internet-path* "www.lispworks.com/documentation/HyperSpec/")
 
 (defun win::install-hyperspec () #| place holder |#)
 
@@ -2028,4 +2028,5 @@ ZEROP                                      "f_zerop.htm#zerop"
 		(elt hyperspec-refs (+ x 1))))
 
 (setq hyperspec-refs nil)
-(defvar *hyperspec-loaded* t)
+(defparameter *hyperspec-loaded* t) ; defined in "misc-features.lisp"
+
