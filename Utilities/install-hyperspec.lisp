@@ -72,8 +72,8 @@ typedef struct _header
 			(ccl:unmap-file address)))
 
 (defun install-hyperspec ()
-  (let ((gzpath (namestring (truename (merge-pathnames "HyperSpec-6-0.tar.gz"))))
-		(tarpath (namestring (truename (merge-pathnames "HyperSpec-6-0.tar"))))
+  (let ((gzpath (namestring (truename (merge-pathnames "HyperSpec-7-0.tar.gz"))))
+		(tarpath (namestring (truename (merge-pathnames "HyperSpec-7-0.tar"))))
 		(hyperspec-path (namestring (truename (merge-pathnames "hyperspec/")))))
 	
 	;; unless the Hyperspec is already installed at this location, extract
