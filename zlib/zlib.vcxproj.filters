@@ -23,7 +23,16 @@
     <ClCompile Include="deflate.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gzio.c">
+    <ClCompile Include="gzclose.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gzlib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gzread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gzwrite.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="infback.c">
@@ -36,9 +45,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="inftrees.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="minigzip.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="trees.c">
@@ -56,6 +62,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="deflate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gzguts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inffast.h">
@@ -76,13 +85,13 @@
     <ClInclude Include="zconf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="zconf.in.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="zlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="zutil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="contrib\minizip\unzip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
