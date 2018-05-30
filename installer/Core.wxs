@@ -76,6 +76,19 @@
               Source=".\RDNZL.dll"
               KeyPath="yes" />
       </Component>
+      <!-- OpenSSL -->
+      <Component Id="cmp_libssl_1_1.dll"
+                 Guid="{46223E22-04FA-44AF-A2FC-046B240FC730}">
+        <File Id="libssl_1_1.dll"
+              Source=".\libssl-1_1.dll"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_libcrypto_1_1.dll"
+                 Guid="{CF2442F9-BB57-41B4-BA0D-DE5147EF21B5}">
+        <File Id="libcrypto_1_1.dll"
+              Source=".\libcrypto-1_1.dll"
+              KeyPath="yes" />
+      </Component>
       <!-- set environmental variable -->
       <Component Id="SetEnv_CORMANLISP_HOME"
                  Guid="{307EA98D-C472-4D90-9FD7-A27018E87263}"
@@ -104,6 +117,8 @@
       <ComponentRef Id="cmp_LICENSE.txt" />
       
       <ComponentRef Id="cmp_RDNZL.dll" />
+      <ComponentRef Id="cmp_libssl_1_1.dll" />
+      <ComponentRef Id="cmp_libcrypto_1_1.dll" />
     </ComponentGroup>
   </Fragment>
 </Wix>

@@ -1,4 +1,4 @@
-;;;; SSL socket library for Corman Lisp - Version 1.4
+;;;; SSL socket library for Corman Lisp - Version 1.5
 ;;;;
 ;;;; Copyright (C) 1999 Christopher Double. All Rights Reserved.
 ;;;; 
@@ -43,7 +43,8 @@
 ;;;; This product includes software developed by the OpenSSL Project for 
 ;;;; use in the OpenSSL Toolkit (http://www.openssl.org/),
 ;;;; cryptographic software written by Eric Young (eay@cryptsoft.com) and
-;;;; software written by Tim Hudson (tjh@cryptsoft.com). 
+;;;; software written by Tim Hudson (tjh@cryptsoft.com).
+;;;; Modified by Artem Boldarev (artem.boldarev@gmail.com). 
 ;;;;
 ;;;; 18/12/1999 - 1.0 
 ;;;;              Initial release.
@@ -66,6 +67,10 @@
 ;;;; 05/09/2000 - 1.4
 ;;;;              Added support for SSL sockets through a proxy server in the
 ;;;;              same manner as the support added to the SOCKETS package.
+;;;; 30/05/2018 - 1.5 (Artem Boldarev)
+;;;;              Added support for OpenSSL 1.1.x.
+;;;;              Added support for TLS sockets, removed support for SSLv2, SSLv3 sockets (as these protocols are obsolete)
+;;;;              Made the library initialisation safer.
 ;;;;
 (require 'SOCKETS)
 
@@ -88,12 +93,15 @@
 
 (in-package :ssl-sockets)
 
-#! (:export t :library "ssleay32")
-void SSL_load_error_strings();
-int SSL_library_init();
-void *SSLv2_client_method();	/* SSLv2 */
-void *SSLv3_client_method();	/* SSLv3 */
-void *SSLv23_client_method();	/* SSLv3 but can rollback to v2 */
+; /* old name: ssleay32 */
+#! (:export t :library "libssl-1_1")
+//void SSL_load_error_strings();
+//int SSL_library_init();
+//void *SSLv2_client_method();	/* SSLv2 */
+//void *SSLv3_client_method();	/* SSLv3 */
+//void *SSLv23_client_method();	/* SSLv3 but can rollback to v2 */
+//void *TLSv1_client_method();    /* TLSv1 */
+void *TLS_client_method();    /* TLS */
 void *SSL_CTX_new(void *meth);
 void *SSL_new(void *ctx);
 int	SSL_set_fd(void *s, int fd);
@@ -105,10 +113,9 @@ void SSL_free(void *ssl);
 void SSL_CTX_free(void * ctx);
 !#
 
-(defun start-ssl-sockets ()
+(defun start-ssl-sockets () ;; a mock function
 	"Initialize the SSL libraries."
-	(SSL_library_init)
-	(ssl_load_error_strings))
+    t)
 
 (defclass ssl-socket-mixin (base-socket)
 	((ssl-method :initform nil :accessor ssl-socket-method)
@@ -128,10 +135,10 @@ void SSL_CTX_free(void * ctx);
 		"SSL socket that tunnels through a proxy server."))
   
 (defmethod initialize-instance :after ((s ssl-socket-mixin) &key host port &allow-other-keys)
-	(declare (ignore host port))
-	(let* ((method (sslv23_client_method))
-			(ctx (ssl_ctx_new method))
-			(handle (ssl_new ctx)))
+    (declare (ignore host port))
+    (let* ((method (TLS_client_method))
+           (ctx (ssl_ctx_new method))
+		(handle (ssl_new ctx)))
 		(ssl_set_fd handle (socket-descriptor s))
 		(ssl_connect handle)
 		(setf (ssl-socket-method s) method)
@@ -158,14 +165,14 @@ void SSL_CTX_free(void * ctx);
 		(setf (ssl-socket-ctx s) nil)))
 
 (defun make-client-ssl-socket (&key host port (proxy *default-proxy-server*))
-	"Create and return an ssl client socket attached to the HOST and PORT."
-	(if proxy
-		(make-instance 'proxy-client-ssl-socket
-			:host (proxy-server-host proxy)
-			:port (proxy-server-port proxy)
-			:real-host host :real-port port
-			:proxy proxy)
-		(make-instance 'client-ssl-socket :host host :port port)))
+  "Create and return an ssl client socket attached to the HOST and PORT."
+  (if proxy
+    (make-instance 'proxy-client-ssl-socket
+                   :host (proxy-server-host proxy)
+                   :port (proxy-server-port proxy)
+                   :real-host host :real-port port
+                   :proxy proxy)
+    (make-instance 'client-ssl-socket :host host :port port)))
 
 (defmacro with-client-ssl-socket ((socket &key host port proxy) &body body)
 	"Ensures that the SOCKET is closed when scope of WITH-SSL-CLIENT-SOCKET
@@ -186,14 +193,9 @@ void SSL_CTX_free(void * ctx);
 (use-package :sockets)
 (use-package :ssl-sockets)
 
-(start-sockets)
-(start-ssl-sockets)
-
-;; I got the example website www.elliottwave.com from the 
-;; JavaSSL example available at http://www.ixworld.com/javassl
 ;;
 ;; Slow way
-(with-client-ssl-socket (s :host "www.elliottwave.com" :port 443)
+(with-client-ssl-socket (s :host "wikipedia.org" :port 443)
 	(write-socket-line s "GET / HTTP/1.1")
 	(write-socket-line s "")	
 	(loop as line = (read-socket-line s nil :eof)
@@ -201,7 +203,7 @@ void SSL_CTX_free(void * ctx);
 		do (format t "~A~%" line) (force-output)))
 
 ;; Faster way
-(with-client-ssl-socket (s :host "www.elliottwave.com" :port 443)
+(with-client-ssl-socket (s :host "wikipedia.org" :port 443)
 	(write-socket-line s "GET / HTTP/1.1")
 	(write-socket-line s "")
 	(let ((content-length 0))
@@ -217,7 +219,7 @@ void SSL_CTX_free(void * ctx);
 		(read-socket s content-length)))
 
 ;; Streams faster way
-(with-client-ssl-socket (s :host "www.elliottwave.com" :port 443)
+(with-client-ssl-socket (s :host "wikipedia.org" :port 443)
 	(with-socket-stream (stream s)
 		(write-line "GET / HTTP/1.0" stream)
 		(write-line "" stream)
@@ -238,7 +240,7 @@ void SSL_CTX_free(void * ctx);
 ;; Using Proxy
 (let ((*default-proxy-server* 
 			(make-instance 'generic-proxy-server :host "proxy.myserver.com" :port 8080)))
-	(with-client-ssl-socket (s :host "www.elliottwave.com" :port 443)
+	(with-client-ssl-socket (s :host "wikipedia.org" :port 443)
 		(with-socket-stream (stream s)
 			(write-line "GET / HTTP/1.0" stream)
 			(write-line "" stream)

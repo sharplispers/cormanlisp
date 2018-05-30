@@ -45,6 +45,19 @@
               Source=".\dlltemplate.pdb"
               KeyPath="yes" />
       </Component>
+      <!-- OpenSSL -->
+      <Component Id="cmp_libssl_1_1.pdb"
+                 Guid="{BCAB325F-34B1-4B2A-B09E-4A4731BB5499}">
+        <File Id="libssl_1_1.pdb"
+              Source=".\libssl-1_1.pdb"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_libcrypto_1_1.pdb"
+                 Guid="{925AA839-4230-4118-8A99-1196DD59E114}">
+        <File Id="libcrypto_1_1.pdb"
+              Source=".\libcrypto-1_1.pdb"
+              KeyPath="yes" />
+      </Component>
     </DirectoryRef>
 
     <ComponentGroup Id="DebugDataFiles">
@@ -55,6 +68,8 @@
       <ComponentRef Id="cmp_CormanLisp.pdb" />
       <ComponentRef Id="cmp_CormanLispServer.pdb" />
       <ComponentRef Id="cmp_dlltemplate.pdb" />
+      <ComponentRef Id="cmp_libssl_1_1.pdb" />
+      <ComponentRef Id="cmp_libcrypto_1_1.pdb" />
     </ComponentGroup>
   </Fragment>
 </Wix>
