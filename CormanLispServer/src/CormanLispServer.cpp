@@ -10,6 +10,7 @@
 //							global UserInfo object.
 //
 
+#include <ws2tcpip.h>
 #include "stdafx.h"
 #include <process.h>
 #include <windows.h>
@@ -368,6 +369,7 @@ UINT LispMainProc(LPVOID /*pParam*/)
 	ThreadRecord* th = 0;
 	DWORD currThreadID = 0;
 	currThreadID = GetCurrentThreadId();
+	WSADATA wsd;
 
 	__asm	mov  dummy, ebp
 
@@ -395,8 +397,14 @@ UINT LispMainProc(LPVOID /*pParam*/)
 	pushDynamicBinding(CURRENT_THREAD_HANDLE, fp);
 	fp = 0;
 
+	if (WSAStartup(MAKEWORD(2, 2), &wsd) != 0)
+		goto end;
+
 	lispmain();
 
+	WSACleanup();
+
+end:
 	CoUninitialize();
 	_endthreadex(0);
 	return 0;

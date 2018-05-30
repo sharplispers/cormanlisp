@@ -299,23 +299,16 @@
 				(handle-winsock-error)
 				(progn ,pointer-result ,@body)))))
 	
-(defvar *sockets-started* nil
+(defvar *sockets-started* t ; WinSock is initialised by the Lisp kenel
 	"Set to T when START-SOCKETS is called.")
 
 (defun start-sockets ()
 	"Initialize the winsock libraries."
-	(unless *sockets-started*
-		(with-fresh-foreign-block (wsa 'WSADATA)
-			(with-winsock-error-handling ()
-				(WSAStartup (make-word 1 1) wsa)))
-		(setq *sockets-started* t)))
+	t)
 		
 (defun stop-sockets ()
 	"Shutdown the winsock libraries."
-	(when *sockets-started*
-		(with-winsock-error-handling ()
-			(WSACleanup))
-		(setq *sockets-started* nil)))
+	nil)
 
 (defmacro with-sockets-started (&body body)
 	"Helper macro to automatically start and stop sockets."

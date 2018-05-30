@@ -68,7 +68,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(SolutionDir)\CormanLispServer\bin\CormanLispStatic.lib;$(SolutionDir)\zlib\zlib.lib;userenv.lib;odbc32.lib;odbccp32.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\CormanLispServer\bin\CormanLispStatic.lib;$(SolutionDir)\zlib\zlib.lib;ws2_32.lib;userenv.lib;odbc32.lib;odbccp32.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)\clbootapp.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ManifestFile>

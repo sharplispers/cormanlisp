@@ -67,7 +67,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(SolutionDir)\CormanLispServer\bin\CormanLispStatic.lib;$(SolutionDir)\zlib\zlib.lib;odbc32.lib;userenv.lib;odbccp32.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\CormanLispServer\bin\CormanLispStatic.lib;$(SolutionDir)\zlib\zlib.lib;ws2_32.lib;odbc32.lib;userenv.lib;odbccp32.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)\clconsoleapp.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ManifestFile>
