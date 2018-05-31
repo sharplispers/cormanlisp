@@ -415,7 +415,7 @@
 							(format nil "~A   ~60T; ~A" instruction instruction-ref)
 							(format nil "~A   ~60T; ~S" instruction instruction-ref)))))
 			
-			(format t ";#x~x:~4t~A~%" offset instruction)
+			(format t ";#x~5,'0x:~4t~A~%" offset instruction)
 			(incf offset instruction-bytes))))
 
 ;;;
