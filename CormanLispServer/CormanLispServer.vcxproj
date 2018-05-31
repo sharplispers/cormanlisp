@@ -88,6 +88,17 @@
   <ItemGroup>
     <ClInclude Include="..\include\CharBuf.h" />
     <ClInclude Include="..\include\ICormanLisp.h" />
+    <ClInclude Include="distorm\include\distorm.h" />
+    <ClInclude Include="distorm\include\mnemonics.h" />
+    <ClInclude Include="distorm\src\config.h" />
+    <ClInclude Include="distorm\src\decoder.h" />
+    <ClInclude Include="distorm\src\instructions.h" />
+    <ClInclude Include="distorm\src\insts.h" />
+    <ClInclude Include="distorm\src\operands.h" />
+    <ClInclude Include="distorm\src\prefix.h" />
+    <ClInclude Include="distorm\src\textdefs.h" />
+    <ClInclude Include="distorm\src\wstring.h" />
+    <ClInclude Include="distorm\src\x86defs.h" />
     <ClInclude Include="include\CoConnectionPoint.H" />
     <ClInclude Include="include\CoCormanLisp.h" />
     <ClInclude Include="include\CoEnumConnectionPoints.H" />
@@ -104,8 +115,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CormanLispServer.def" />
+    <None Include="distorm\COPYING" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="distorm\src\decoder.c" />
+    <ClCompile Include="distorm\src\distorm.c" />
+    <ClCompile Include="distorm\src\instructions.c" />
+    <ClCompile Include="distorm\src\insts.c" />
+    <ClCompile Include="distorm\src\mnemonics.c" />
+    <ClCompile Include="distorm\src\operands.c" />
+    <ClCompile Include="distorm\src\prefix.c" />
+    <ClCompile Include="distorm\src\textdefs.c" />
+    <ClCompile Include="distorm\src\wstring.c" />
     <ClCompile Include="src\CharBuf.cpp" />
     <ClCompile Include="src\CoConnectionPoint.cpp" />
     <ClCompile Include="src\CoCormanLisp.cpp" />
@@ -113,7 +134,6 @@
     <ClCompile Include="src\CoEnumConnections.cpp" />
     <ClCompile Include="src\Compx86.cpp" />
     <ClCompile Include="src\CormanLispServer.cpp" />
-    <ClCompile Include="src\Disasm.cpp" />
     <ClCompile Include="src\Gc.cpp" />
     <ClCompile Include="src\Lisp.cpp" />
     <ClCompile Include="src\Lispfunc.cpp" />
@@ -123,6 +143,7 @@
     <ClCompile Include="src\Read.cpp" />
     <ClCompile Include="src\Stdafx.cpp" />
     <ClCompile Include="src\ThreadClasses.cpp" />
+    <ClCompile Include="src\Unassemble.cpp" />
     <ClCompile Include="src\UserInfo.cpp" />
     <ClCompile Include="src\Write.cpp" />
   </ItemGroup>

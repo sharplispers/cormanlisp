@@ -9,6 +9,15 @@
       <UniqueIdentifier>{1cf6f487-b5da-4bb2-8ba7-8456720debd0}</UniqueIdentifier>
       <Extensions>*.cpp</Extensions>
     </Filter>
+    <Filter Include="distorm">
+      <UniqueIdentifier>{ef5169a1-aa7d-40c5-9f4d-791c886f4c42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="distorm\include">
+      <UniqueIdentifier>{3fad6297-ce40-4f6d-8999-bee0e3f19207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="distorm\src">
+      <UniqueIdentifier>{00b9f757-2e40-4df2-8bbc-7f8d5841c6f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\CharBuf.h">
@@ -56,10 +65,46 @@
     <ClInclude Include="include\Version.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="distorm\include\distorm.h">
+      <Filter>distorm\include</Filter>
+    </ClInclude>
+    <ClInclude Include="distorm\include\mnemonics.h">
+      <Filter>distorm\include</Filter>
+    </ClInclude>
+    <ClInclude Include="distorm\src\config.h">
+      <Filter>distorm\src</Filter>
+    </ClInclude>
+    <ClInclude Include="distorm\src\decoder.h">
+      <Filter>distorm\src</Filter>
+    </ClInclude>
+    <ClInclude Include="distorm\src\instructions.h">
+      <Filter>distorm\src</Filter>
+    </ClInclude>
+    <ClInclude Include="distorm\src\insts.h">
+      <Filter>distorm\src</Filter>
+    </ClInclude>
+    <ClInclude Include="distorm\src\operands.h">
+      <Filter>distorm\src</Filter>
+    </ClInclude>
+    <ClInclude Include="distorm\src\prefix.h">
+      <Filter>distorm\src</Filter>
+    </ClInclude>
+    <ClInclude Include="distorm\src\textdefs.h">
+      <Filter>distorm\src</Filter>
+    </ClInclude>
+    <ClInclude Include="distorm\src\wstring.h">
+      <Filter>distorm\src</Filter>
+    </ClInclude>
+    <ClInclude Include="distorm\src\x86defs.h">
+      <Filter>distorm\src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CormanLispServer.def">
       <Filter>include</Filter>
+    </None>
+    <None Include="distorm\COPYING">
+      <Filter>distorm</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -82,9 +127,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\CormanLispServer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Disasm.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Gc.cpp">
@@ -118,6 +160,36 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\UserInfo.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="distorm\src\decoder.c">
+      <Filter>distorm\src</Filter>
+    </ClCompile>
+    <ClCompile Include="distorm\src\distorm.c">
+      <Filter>distorm\src</Filter>
+    </ClCompile>
+    <ClCompile Include="distorm\src\instructions.c">
+      <Filter>distorm\src</Filter>
+    </ClCompile>
+    <ClCompile Include="distorm\src\insts.c">
+      <Filter>distorm\src</Filter>
+    </ClCompile>
+    <ClCompile Include="distorm\src\mnemonics.c">
+      <Filter>distorm\src</Filter>
+    </ClCompile>
+    <ClCompile Include="distorm\src\operands.c">
+      <Filter>distorm\src</Filter>
+    </ClCompile>
+    <ClCompile Include="distorm\src\prefix.c">
+      <Filter>distorm\src</Filter>
+    </ClCompile>
+    <ClCompile Include="distorm\src\textdefs.c">
+      <Filter>distorm\src</Filter>
+    </ClCompile>
+    <ClCompile Include="distorm\src\wstring.c">
+      <Filter>distorm\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Unassemble.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
