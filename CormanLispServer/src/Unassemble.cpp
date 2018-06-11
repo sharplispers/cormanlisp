@@ -5,6 +5,8 @@
 #include "../distorm/include/distorm.h"
 #include "../distorm/include/mnemonics.h"
 
+#pragma warning (disable:4996) // sprintf() is insecure.
+
 #define OUTPUT_BUF_SIZE (128)
 #define MAX_INSTRUCTION_SIZE (15) // maximum size of the instruction on x86
 
