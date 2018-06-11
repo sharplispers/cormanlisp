@@ -8,6 +8,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="delstaticlib.bat" />
+    <None Include="MakefileStatic.mk" />
     <None Include="makestaticlib.bat" />
   </ItemGroup>
   <ItemGroup>
@@ -39,13 +40,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
-    <NMakeBuildCommandLine>$(SolutionDir)CormanLispServer\makestaticlib.bat</NMakeBuildCommandLine>
-    <NMakeOutput>$(SolutionDir)\CormanLispServer\bin\CormanLispServer.lib</NMakeOutput>
-    <NMakeReBuildCommandLine>$(SolutionDir)CormanLispServer\makestaticlib.bat</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine>nmake /f MakefileStatic.mk</NMakeBuildCommandLine>
+    <NMakeOutput>$(SolutionDir)CormanLispServer\bin\CormanLispStatic.lib</NMakeOutput>
+    <NMakeReBuildCommandLine>nmake /f MakefileStatic.mk rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(SolutionDir)CormanLispServer\bin\</OutDir>
     <IntDir>$(SolutionDir)CormanLispServer\bin\</IntDir>
-    <NMakeCleanCommandLine>$(SolutionDir)CormanLispServer\delstaticlib.bat</NMakeCleanCommandLine>
+    <NMakeCleanCommandLine>nmake /f MakefileStatic.mk clean</NMakeCleanCommandLine>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>

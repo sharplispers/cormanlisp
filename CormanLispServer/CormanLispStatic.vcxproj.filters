@@ -3,5 +3,6 @@
   <ItemGroup>
     <None Include="makestaticlib.bat" />
     <None Include="delstaticlib.bat" />
+    <None Include="MakefileStatic.mk" />
   </ItemGroup>
 </Project>

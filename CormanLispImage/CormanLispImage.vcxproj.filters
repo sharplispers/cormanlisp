@@ -323,6 +323,7 @@
     <None Include="..\Sys\version.lisp">
       <Filter>Sys</Filter>
     </None>
+    <None Include="Makefile" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Sys">

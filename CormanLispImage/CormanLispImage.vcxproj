@@ -115,6 +115,7 @@
     <None Include="..\Sys\working.lisp" />
     <None Include="..\Sys\write.lisp" />
     <None Include="..\Sys\xp.lisp" />
+    <None Include="Makefile" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\clconsole\clconsole.vcxproj">
@@ -145,12 +146,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Standard|Win32'">
-    <NMakeBuildCommandLine>$(SolutionDir)makeimg.bat</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>nmake</NMakeBuildCommandLine>
     <NMakeOutput>$(SolutionDir)CormanLisp.img</NMakeOutput>
-    <NMakeReBuildCommandLine>$(SolutionDir)makeimg.bat</NMakeReBuildCommandLine>
+    <NMakeReBuildCommandLine>nmake rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-    <NMakeCleanCommandLine>$(SolutionDir)delimg.bat</NMakeCleanCommandLine>
+    <NMakeCleanCommandLine>nmake clean</NMakeCleanCommandLine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeCleanCommandLine>$(SolutionDir)delimg.bat</NMakeCleanCommandLine>
