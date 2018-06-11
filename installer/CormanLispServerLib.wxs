@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <DirectoryRef Id="INSTALLDIR">
+      <!-- debug data files -->
+      <Component Id="cmp_CormanLispServer.lib"
+                 Guid="{99244EB1-45F8-4F5C-9E02-9AC9EC455BF6}">
+        <File Id="CormanLispServer.lib"
+              Source=".\CormanLispServer\bin\CormanLispServer.lib"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="cmp_CormanLispServer.exp"
+                 Guid="{B5F13B6E-2BBD-4532-8B94-617E132E2BA4}">
+        <File Id="CormanLispServer.exp"
+              Source=".\CormanLispServer\bin\CormanLispServer.exp"
+              KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <ComponentGroup Id="CormanLispServerLib">
+      <ComponentRef Id="cmp_CormanLispServer.lib" />
+      <ComponentRef Id="cmp_CormanLispServer.exp" />
+    </ComponentGroup>
+  </Fragment>
+</Wix>

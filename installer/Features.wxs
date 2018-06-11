@@ -30,8 +30,9 @@
                Title="Add to 'Path'">
         <ComponentRef Id="AddProductToPath" />
       </Feature>
-      <Feature Id="CormanLispServerHeaders" Title="COM-server C++ headers">
+      <Feature Id="CormanLispServerDev" Title="COM-server C++ headers and libraries">
         <ComponentGroupRef Id="HeadersDir" />
+        <ComponentGroupRef Id="CormanLispServerLib" />
       </Feature>
       <Feature Id="CormanLispExamples" Title="Examples">
         <ComponentGroupRef Id="ExamplesDir" />

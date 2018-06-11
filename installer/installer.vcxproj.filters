@@ -49,5 +49,8 @@
     <Xml Include="include.xsl">
       <Filter>installer</Filter>
     </Xml>
+    <Xml Include="CormanLispServerLib.wxs">
+      <Filter>installer</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

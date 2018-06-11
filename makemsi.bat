@@ -3,8 +3,8 @@ rem configuration Variables
 set InstallerName=CormanLispInstaller.msi
 
 set GeneratedWXSFiles=.\installer\Sys.wxs .\installer\Libraries.wxs .\installer\Modules.wxs .\installer\Documentation.wxs .\installer\Headers.wxs .\installer\Examples.wxs .\installer\HyperSpec.wxs
-set InstallerFiles= %GeneratedWXSFiles% .\installer\HyperSpecLegalese.wxs .\installer\Features.wxs .\installer\DebugData.wxs .\installer\AddToPath.wxs .\installer\Shortcuts.wxs .\installer\Core.wxs .\installer\Main.wxs
-set InstallerObjectFiles= .\installer\Sys.wixobj .\installer\Libraries.wixobj .\installer\Modules.wixobj .\installer\Documentation.wixobj .\installer\Headers.wixobj .\installer\Examples.wixobj .\installer\HyperSpec.wixobj .\installer\HyperSpecLegalese.wixobj .\installer\Features.wixobj  .\installer\DebugData.wixobj .\installer\AddToPath.wixobj .\installer\Shortcuts.wixobj .\installer\Core.wixobj .\installer\Main.wixobj
+set InstallerFiles= %GeneratedWXSFiles% .\installer\CormanLispServerLib.wxs .\installer\HyperSpecLegalese.wxs .\installer\Features.wxs .\installer\DebugData.wxs .\installer\AddToPath.wxs .\installer\Shortcuts.wxs .\installer\Core.wxs .\installer\Main.wxs
+set InstallerObjectFiles= .\installer\Sys.wixobj .\installer\Libraries.wixobj .\installer\Modules.wixobj .\installer\Documentation.wixobj .\installer\Headers.wixobj .\installer\CormanLispServerLib.wixobj .\installer\Examples.wixobj .\installer\HyperSpec.wixobj .\installer\HyperSpecLegalese.wixobj .\installer\Features.wixobj  .\installer\DebugData.wixobj .\installer\AddToPath.wixobj .\installer\Shortcuts.wixobj .\installer\Core.wixobj .\installer\Main.wixobj
 
 set HeatOptions=-gg -scom -sreg -sfrag -ke -dr INSTALLDIR  -t .\installer\include.xsl
 set WixExtensions=-ext WixUIExtension -ext WixUtilExtension
