@@ -52,7 +52,7 @@
 ;;;	Common Lisp DEFINE-COMPILER-MACRO macro.
 ;;;
 (defmacro define-compiler-macro (name lambda-list &rest forms)
-	(let ((doc-form nil) 
+	(let ((doc nil)
 		  (lambda-form nil)
 		  (declarations nil)
 		  (form-sym (gensym))
@@ -61,9 +61,8 @@
 		;; look for declarations and doc string
 		(do* ((f forms (cdr f)))
 			((null f) (setq forms f))
-			(if (and (stringp (car f)) (null doc-form) (cdr f))
-				(setq doc-form 
-					`((setf (documentation ',name 'macro) ,(car f))))
+			(if (and (stringp (car f)) (null doc) (cdr f))
+				(setq doc (car f))
 				(if (and (consp (car f)) (eq (caar f) 'declare))
 					(push (car f) declarations)
 					(progn (setq forms f) (return)))))
@@ -74,11 +73,11 @@
 				(cl::macro-bind ,lambda-list 
 					(if (eq (car ,form-sym) 'funcall) (cdr ,form-sym) ,form-sym)
 					,@(nreverse declarations) 
-					(block ,name ,@forms)))) 
-		`(progn
-			,@doc-form
-			(setf (compiler-macro-function ',name) (function ,lambda-form))
-			',name))) 
+					(block ,name ,@forms))))
+		`(progn (setf (compiler-macro-function ',name) (function ,lambda-form))
+                                     (setf (ccl::macro-lambda-list (compiler-macro-function ',name)) ',lambda-list)
+                                     ,@(when doc `((setf (ccl::function-documentation (compiler-macro-function ',name)) ,doc)))
+			 (setf (documentation ',name 'compiler-macro) ,doc) ',name)))
 
 ;;;
 ;;; Corman Lisp (non-standard) CODE-GENERATOR-FUNCTION function.

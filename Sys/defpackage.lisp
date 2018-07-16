@@ -156,7 +156,7 @@
 				(:documentation
                     (when documentation
                         (error "More than one :documentation option specified."))
-                    (setq documentation (car value)))
+                    (setq documentation (list (car value)))) ; distinguish from nil
                 (otherwise (error "Bad defpackage option: ~A." (car p)))))
         (unless use-supplied-p
                   (setq use default-packages))
@@ -185,8 +185,8 @@
 		(when export
 		  (dolist (sym export)
 			(push `(export-create ,sym ',name) forms)))
-		(when documentation
-		  (push `(setf (documentation ',(intern (string name)) 'package) ,documentation) forms))
+		(when documentation ; doc should be attached to package but could't find room. Assign to a unique keyword instead
+		  (push `(setf (documentation ',(intern (string name) :keyword) 'package) ',(car documentation)) forms))
 		(push `(find-package ',name) forms)
 		`(eval-when (:load-toplevel :compile-toplevel :execute)
 			,@(nreverse forms))))

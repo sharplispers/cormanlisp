@@ -735,7 +735,7 @@
 	(getf (gethash symbol *documentation-registry*) doc-type))
 
 (defun |(SETF DOCUMENTATION)| (doc-string symbol doc-type)
-	(setf (getf (gethash symbol *documentation-registry*) doc-type) doc-string)
+	(when doc-string (setf (getf (gethash symbol *documentation-registry*) doc-type) doc-string))
 	doc-string)
 
 ;; now clear the property list

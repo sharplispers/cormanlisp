@@ -131,7 +131,7 @@
 ;;	This redefines the built-in special form.
 ;;
 (defmacro defun (name lambda-list &rest forms)
-  (let ((doc-form nil) 
+  (let ((doc nil)
         (lambda-form nil) 
         (declarations nil)
         (setf-form nil)
@@ -148,18 +148,21 @@
         ;; look for declarations and doc string
         (do* ((f forms (cdr f)))
             ((null f) (setq forms f))
-            (if (and (typep (car f) 'string) (null doc-form) (cdr f))
-                (setq doc-form `((setf (documentation ',name 'function) ,(car f))))
+            (if (and (typep (car f) 'string) (null doc) (cdr f))
+                (setq doc (car f))
                 (if (and (consp (car f)) (eq (caar f) 'declare))
                     (push (car f) declarations)
                     (progn (setq forms f) (return)))))
         (setq lambda-form 
             `(lambda ,lambda-list ,@(nreverse declarations) (block ,block-name ,@forms)))
 
-        `(progn ,@doc-form
-            (setf (symbol-function ',name) (function ,lambda-form))
-            ,@(when setf-form `((cl::register-setf-function ',setf-form ',name))) ',original-name)))
+        `(progn (setf (symbol-function ',name) (function ,lambda-form))
+                    ,@(when setf-form `((cl::register-setf-function ',setf-form ',name)))
+                    ,@(when doc `((setf (ccl::function-documentation (symbol-function ',name)) ,doc)))
+                    (setf (documentation ',name 'function) ,doc) ',original-name)))
 
+(defun ccl::function-documentation ())
+(defun (setf ccl::function-documentation) (val fun) (setf (getf (uref (uref fun function-code-buffer-offset) compiled-code-info-offset) 'documentation) val))
 (defun ccl::macro-lambda-list () nil)
 (defun (setf ccl::macro-lambda-list) (val list) (declare (ignore val list)) nil)
  
@@ -168,7 +171,7 @@
 ;;	This redefines the built-in special form.
 ;;
 (defmacro defmacro (name lambda-list &rest forms)
-	(let ((doc-form nil) 
+	(let ((doc nil)
 		  (lambda-form nil)
 		  (declarations nil)
 		  (setf-form nil))
@@ -182,9 +185,8 @@
 		;; look for declarations and doc string
 		(do* ((f forms (cdr f)))
 			((null f) (setq forms f))
-			(if (and (typep (car f) 'string) (null doc-form) (cdr f))
-				(setq doc-form 
-					`((setf (documentation ',name 'function) ,(car f))))
+			(if (and (typep (car f) 'string) (null doc) (cdr f))
+				(setq doc (car f))
 				(if (and (consp (car f)) (eq (caar f) 'declare))
 					(push (car f) declarations)
 					(progn (setq forms f) (return)))))
@@ -195,19 +197,13 @@
 				(macro-bind ,lambda-list 
 					form
 					,@(nreverse declarations) 
-					(block ,name ,@forms)))) 
+					(block ,name ,@forms))))
 		
-		(if setf-form 		
-			`(progn
-				,@doc-form
-				(setf (macro-function ',name) (function ,lambda-form))
-				(register-setf-function ',setf-form ',name)
-				',name) 
-			`(progn
-				,@doc-form
-				(setf (macro-function ',name) (function ,lambda-form))
-				(setf (ccl::macro-lambda-list (symbol-function ',name)) ',lambda-list)
-				',name)))) 
+		`(progn (setf (macro-function ',name) (function ,lambda-form))
+                                     ,@(when setf-form `((register-setf-function ',setf-form ',name)))
+                                     (setf (ccl::macro-lambda-list (symbol-function ',name)) ',lambda-list)
+                                     ,@(when doc `((setf (ccl::function-documentation (symbol-function ',name)) ,doc)))
+                                     (setf (documentation ',name 'function) ,doc) ',name)))
 
 (defmacro defsetf (sym first &rest rest)
 	(if (symbolp first) ;; if short form

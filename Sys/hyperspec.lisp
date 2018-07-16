@@ -22,6 +22,8 @@
 
 (defvar *hyperspec-internet-path* "www.lispworks.com/documentation/HyperSpec/")
 
+(defvar *use-external-browser* nil)
+
 (defun win::install-hyperspec () #| place holder |#)
 
 (defun hyperspec (sym)
@@ -46,15 +48,16 @@
 		   (hyperspec-ref (getf doc-list ':hyperspec))
 		   (path (if *hyperspec-local-path* 
 					*hyperspec-local-path* 
-					*hyperspec-internet-path*)))
+					*hyperspec-internet-path*))
+	       (url (concatenate 'string
+				 (when *hyperspec-local-path* "file:///") ; intriguingly needed for some browsers (at least Chrome and Firefox).
+                                 (namestring path) 
+                                 "Body/" 
+                                 hyperspec-ref 
+                                 (if (= *hyperspec-version* 4) ".html" ""))))
 		(if hyperspec-ref
-			(cl::display-url 
-				(concatenate 'string 
-					(namestring path) 
-					"Body/" 
-					hyperspec-ref 
-					(if (= *hyperspec-version* 4) ".html" "")))
-			(error "The symbol ~A does not have a hyperspec location registered" sym))))
+		    (if *use-external-browser* (win::shell-execute url "") (cl::display-url url))
+		    (error "The symbol ~A does not have a hyperspec location registered" sym))))
  
  
 (defvar hyperspec-refs 
