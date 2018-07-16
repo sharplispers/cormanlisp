@@ -327,7 +327,7 @@
 	(getf (get '*documentation-registry* symbol) doc-type))
 
 (defun |(SETF DOCUMENTATION)| (doc-string symbol doc-type)
-	(setf (getf (get '*documentation-registry* symbol) doc-type) doc-string)
+	(when doc-string (setf (getf (get '*documentation-registry* symbol) doc-type) doc-string))
 	doc-string)
 
 (register-setf-function 'symbol-plist '|(SETF SYMBOL-PLIST)|)
