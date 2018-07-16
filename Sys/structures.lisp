@@ -13,8 +13,8 @@
 (provide :structures)
 (in-package :common-lisp)
 
-(defun intern-structure-class (name superclasses) 
-	(declare (ignore name superclasses))) ;; redefined by CLOS
+(defun intern-structure-class (name superclass doc)
+	(declare (ignore name superclass doc))) ;; redefined by CLOS
 
 (defun define-struct-template (name class type base initial-offset num-slots &rest fields)
 	(apply 'vector name class type base initial-offset num-slots fields))
@@ -503,8 +503,8 @@
 						(push inline struct-template-info)))
 				(t (error "Invalid slot option: ~A~%" opt))))
 
-		(setq struct-template 
-			(apply #'define-struct-template name (intern-structure-class name (mapcar 'find-class base-list)) struct-type 
+		(setq struct-template
+			(apply #'define-struct-template name (unless struct-type (intern-structure-class name base doc-string)) struct-type
 					base-list initial-offset slot-count (reverse struct-template-info)))
 
 		;; install template		
@@ -613,7 +613,11 @@
 
 		(push `',name expressions)	
 		`(progn
-			(let* ((,struct-template-sym ,struct-template)) 
+			(let* ((,struct-template-sym
+                                                            (apply 'define-struct-template ',name
+                            ,(unless struct-type `(intern-structure-class ',name ',base ,doc-string))
+                            ',struct-type 
+						',base-list ,initial-offset ,slot-count ',(reverse struct-template-info)))) 
 				,@(reverse struct-template-expressions))
 			,@(nreverse expressions))))
 
