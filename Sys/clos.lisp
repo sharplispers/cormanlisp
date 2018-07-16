@@ -19,6 +19,10 @@
 ;;;;
 ;;;;                RGC  9/19/03  Incorporated Frank Adrian's modification to DEFGENERIC to support :documentation option.
 ;;;;                RGC  8/17/06  Modified method generation to handle &AUX in argument lists
+;;;;                LC    9/6/17  Lower EQL specializer overhead and name EQL specializers to their "intern form" for display purposes.
+;;;;                LC   2/19/18  Class redefinition with propagation to subclasses and instances, :documentation and :default-initargs
+;;;;                              DEFCLASS options, Forward-referenced-class, Built-in-class and other AMOP Metaobjects and guidelines.
+;;;;                LC    3/3/18  Shared slot fixes.
 ;;;;
 ;;;; Note from Roger Corman, 7/29/2001:
 ;;;; This file has been hacked and modified for over 5 years by
@@ -546,7 +550,6 @@
 (defun class-name (class) (std-slot-value class 'name))
 (defun (setf class-name) (new-value class) (setf (slot-value class 'name) new-value))
 
-; ANSI CL generic DOCUMENTATION not available yet
 (defun class-documentation (class) (slot-value class 'documentation))
 (defun (setf class-documentation) (new-value class)
     (setf (slot-value class 'documentation) new-value))
@@ -649,14 +652,12 @@
        `(find-class ',(cadr option))))
     (:documentation (list ':documentation `',(cadr option)))
     (:default-initargs
-      (list 
+      (list
        ':direct-default-initargs
-       `(list ,@(mapcar
-                  #'(lambda (x) x)
-                  (mapplist
-                    #'(lambda (key value)
-                        `(list ',key ',value #'(lambda () ,value)))
-                    (cdr option))))))
+       `(list ,@(mapplist
+                        #'(lambda (key value)
+                               `(list ',key ',value #'(lambda () ,value)))
+                        (cdr option)))))
     (t (list `',(car option) `',(cdr option)))))
 
 ;;; find-class
@@ -711,7 +712,7 @@
 		class))
 
 (defun std-after-initialization-for-classes (class 
-		&key direct-superclasses direct-slots &allow-other-keys)
+		&key direct-superclasses direct-slots (documentation nil supp) &allow-other-keys)
 	;; update class hierarchy
 	(let ((supers
 				(or direct-superclasses
@@ -733,6 +734,8 @@
 			(dolist (writer (slot-definition-writers direct-slot))
 				(add-writer-method
 					class writer (slot-definition-name direct-slot)))))
+
+            (when (and supp (or (stringp documentation) (not documentation))) (setf (documentation (class-name class) 'type) documentation))
 
 	(values))
 
@@ -809,7 +812,7 @@
 
 (defun finalize-inheritance (class) (std-finalize-inheritance class))
 
-; Delete either the slot class-shared-slot-definitions or class-shared-slots as shared slots are in slot-definitions as well
+; Delete either the slot class-shared-slot-definitions or class-shared-slots as shared slots are in both
 ; but leave for compatibility and speed? for now. 
 (defun std-finalize-inheritance (class)
   (setf (class-precedence-list class) (compute-class-precedence-list class))
@@ -833,7 +836,7 @@
              (class-shared (mapcar #'slot-definition-name class-shared-slot-definitions)))
         (setf (std-instance-slots instance) (allocate-slot-storage (length class-local) secret-unbound-value))
         (setf (std-instance-signature instance)
-                (list class-effective-slots class-shared-slot-definitions)) ; we'll next use setf
+                (list class-effective-slots class-shared-slot-definitions)) ; we'll next use setf on slot-value
         (dolist (slot class-local)
             (multiple-value-bind (ignore val foundp) (get-properties p-slot-value (list slot)) (declare (ignore ignore))
                 (and foundp (setf (slot-value instance slot) val))))
@@ -1175,13 +1178,13 @@
                 (documentation-form
                     (let ((doc-string (cadr (find-if #'(lambda (opt) (eq (car opt) :documentation)) non-method-options))))
                         (when doc-string `(setf (documentation ',function-name 'function) ,doc-string)))))            
-            `(progn 
+            `(prog1
                 (ensure-generic-function
                     ',function-name 
                     :lambda-list ',lambda-list
                     ,@(canonicalize-defgeneric-options non-method-options))
-                 ,(when documentation-form documentation-form)
-                 ,@method-definitions
+                ,(when documentation-form documentation-form)
+                ,@method-definitions
                  ))))
 
 (defun canonicalize-defgeneric-options (options)
@@ -1493,7 +1496,7 @@
 	
 	;; as soon as we define one method with an EQL specifier, we assume
 	;; methods of that generic function may specify this way
-	;(if eql-specializers ** redundantly too soon as add-method has to for it can bee called by the user
+	;(if eql-specializers ** redundantly too soon as add-method has to, for it can be called by the user
 	;	(setf (method-table-eql-specializers (classes-to-emf-table gf)) t))
 	
 	(let ((new-method
@@ -1547,7 +1550,7 @@
         (setf (method-table-eql-specializers (classes-to-emf-table gf)) t)) ; set to t to recalculate eqls
     (pushnew method (class-direct-methods specializer)))
   (finalize-generic-function gf)
-  gf) ; method should return gf.
+  gf) ; add-method should return gf.
 
 (defun remove-method (gf method)
   (setf (generic-function-methods gf)
@@ -1559,7 +1562,7 @@
     (setf (class-direct-methods class)
           (remove method (class-direct-methods class))))
   (finalize-generic-function gf)
-  gf) ; method should return gf. Bug when trying to print a deleted method.
+  gf) ; remove-method should return gf. Bug when trying to print a deleted method.
 
 (defun find-method (gf qualifiers specializers
                     &optional (errorp t))
@@ -2295,6 +2298,7 @@
 (defclass integer (number) ())
 (defclass float (number) ())
 (defclass ratio (number) ())
+
 ;; 10. Define the other standard metaobject classes.
 ;;; redefine to add type support for TYPEP
 (defmacro defclass (name direct-superclasses slot-definitions
@@ -2674,11 +2678,7 @@
     class)
 
 (defmethod ensure-class-using-class ((class null) name &rest all-keys &key (metaclass the-class-standard-class) &allow-other-keys)
-    (let ((class (apply #'make-instance metaclass :name name all-keys)))
-        (setf (find-class name) class)
-        (when (stringp (class-documentation class))
-            (setf (documentation name 'type) (class-documentation class)))
-        class))
+    (setf (find-class name) (apply #'make-instance metaclass :name name all-keys)))
 
 ;;; add forward-referenced-class functionality
 
@@ -2691,8 +2691,10 @@
 ;;; we should consider the more general case by defining a generic function say, default-direct-superclass.
 (defmethod compute-class-precedence-list ((class standard-class))
     (let ((list (call-next-method)))
-        (when (forward-referenced-class-p (car (last list))) (push-on-end #.(find-class 'standard-object) list) (push-on-end #.(find-class t) list))
-        list))
+        (if (forward-referenced-class-p (car (last list)))
+            (nconc (remove-if #'(lambda (x) (member x '#.(list (find-class 'standard-object) (find-class t)))) list)
+		   (list #.(find-class 'standard-object) #.(find-class t)))
+	    list)))
 
 (defmethod finalize-inheritance ((class forward-referenced-class)) (error "Cannot finalize ~a." class))
 
@@ -2747,25 +2749,18 @@
 					(nreverse slots))
 				,@forms))))
 		
-(defun intern-structure-class (name superclasses)
-    (setq superclasses (list (if superclasses (car superclasses) #.(find-class 'structure-object))))
-    (let ((class (find-class name nil)) structp)
-        (if (and class (setq structp (eq (class-of class) #.(find-class 'structure-class)))
-                    (equal superclasses (class-direct-superclasses class)))
-            class
-            (progn (and class (not structp) (cerror "Continue anyway." "The Symbol ~a already names the ~a" name class))
-                       (ensure-class name
-                           :direct-superclasses superclasses
+(defun intern-structure-class (name superclass doc)
+    (ensure-class name
+                           :direct-superclasses (list (or (and superclass (find-class superclass)) #.(find-class 'structure-object)))
                            :metaclass 'structure-class
-                           :direct-slots nil
-                           :shared-slots nil)))))
+                           :documentation doc))
 
 (defun struct-template (struct-name)
 	(get struct-name :struct-template))
 
 (defun patch-clos (struct-name)
 	(setf (elt (struct-template struct-name) 1) 
-		(intern-structure-class struct-name nil)))
+		(intern-structure-class struct-name nil (documentation struct-name 'structure))))
 	
 ;; make sure the following common lisp structures (which are defined before
 ;; this module is loaded) have CLOS definitions
@@ -2779,7 +2774,7 @@
 ;;; EQL specializer support
 
 ;;; Returns a CLOS class representing a type that is specific
-;;;	for the object. Used in method dispatch to implement EQL 
+;;;	for the object. Used in defmethod to implement EQL 
 ;;;	specialisers.
 
 (defun intern-eql-specializer (object &optional (intern-form object))
@@ -2790,7 +2785,6 @@
         (or real (let ((newsingle (make-instance #.(find-class 'eql-specializer)
                                                                        :name intern-form :direct-superclasses (list (or singleton (class-of object))))))
                         (setf (slot-value newsingle 'object) object (gethash object *clos-singleton-specializers*) newsingle)))))
-
 
 ;; need to restore warning here
 (setq *COMPILER-WARN-ON-UNDEFINED-FUNCTION* t)	;; restore warnings
