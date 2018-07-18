@@ -2,6 +2,9 @@
 (push-module-directory "SYS")
 ;;(setf (current-directory) *cormanlisp-directory*)
 
+;;; Use external WWW-browser for documentation lookups
+;;(setf ccl::*use-external-browser* t)
+
 ;;;
 ;;; Various special variables used by the system or the IDE
 ;;;
