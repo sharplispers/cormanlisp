@@ -569,9 +569,9 @@ STDMETHODIMP ConsoleCormanLispClient::OpenEditWindow(char* /*file*/, HWND* /*wnd
 	return E_FAIL;
 }
 
-STDMETHODIMP ConsoleCormanLispClient::OpenURL(char* /*file*/, HWND* /*wnd*/)
+STDMETHODIMP ConsoleCormanLispClient::OpenURL(char* file, HWND* /*wnd*/)
 {
-	return E_FAIL;
+	return (ShellExecuteA(NULL, "open", file, NULL, NULL, SW_SHOWNORMAL) > (HINSTANCE)32 ? S_OK : E_FAIL);
 }
 
 STDMETHODIMP ConsoleCormanLispClient::AddMenu(char* /*menuName*/)
