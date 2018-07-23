@@ -812,14 +812,14 @@ bool CCormanLispApp::waitingForDocumentToOpen()
 {
 	{
 		ScopedLock url_lock(m_urlLock);
-		ScopedLock file_lock(m_urlLock);
+		ScopedLock file_lock(m_fileLock);
 		if (!(m_fileToOpen[0] | m_urlToOpen[0]))
 			return false;
 	}
 	delay(100);		// delay 100 ms
 	{
 		ScopedLock url_lock(m_urlLock);
-		ScopedLock file_lock(m_urlLock);
+		ScopedLock file_lock(m_fileLock);
 		return (m_fileToOpen[0] | m_urlToOpen[0]) ? true : false;
 	}
 }
