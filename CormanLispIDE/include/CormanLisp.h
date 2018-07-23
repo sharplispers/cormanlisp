@@ -29,9 +29,10 @@
 #include "SMDIFrameWnd.h"
 #include "SMDIChildWnd.h"
 
-#include "../CormanLispServer/include/threadclasses.h" // for ScopedLock, CriticalSection
-
 class CBrowserDoc;
+
+class ScopedLock;
+class CriticalSection;
 
 class LispDialogBar : public CDialogBar
 {

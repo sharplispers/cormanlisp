@@ -30,6 +30,8 @@
 #include "CommonLispFuncs.h"
 #include "PreferencesDialog.h"
 
+#include "../CormanLispServer/include/threadclasses.h" // for ScopedLock, CriticalSection (both are implemented in the header).
+
 #ifndef WM_MENUCOMMAND
 #define WM_MENUCOMMAND 0x0126
 #endif
