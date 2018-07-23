@@ -739,15 +739,21 @@ BOOL CCormanLispApp::OnIdle(LONG lCount)
 		}
 	}
 
-	if (m_fileToOpen[0])
 	{
-		m_lastDocOpened = OpenDocumentFile(m_fileToOpen);
-		m_fileToOpen[0] = 0;
+		ScopedLock _(m_fileLock);
+		if (m_fileToOpen[0])
+		{
+			m_lastDocOpened = OpenDocumentFile(m_fileToOpen);
+			m_fileToOpen[0] = 0;
+		}
 	}
-	if (m_urlToOpen[0])
 	{
-		NavigateURL(m_urlToOpen);
-		m_urlToOpen[0] = 0;
+		ScopedLock _(m_urlLock);
+		if (m_urlToOpen[0])
+		{
+			NavigateURL(m_urlToOpen);
+			m_urlToOpen[0] = 0;
+		}
 	}
 	if (!m_replaceSelection.IsEmpty())
 	{
@@ -771,7 +777,10 @@ BOOL CCormanLispApp::OnIdle(LONG lCount)
 
 bool CCormanLispApp::SetDocumentToOpen(const char* file)
 {
-	strcpy_s(m_fileToOpen, sizeof(m_fileToOpen), file);
+	{
+		ScopedLock _(m_fileLock);
+		strcpy_s(m_fileToOpen, sizeof(m_fileToOpen), file);
+	}
 
 	// trigger the idle processing
 	BOOL ret = PostMessage(GetMainWnd()->m_hWnd, WM_ENTERIDLE, 0, 0);
@@ -780,7 +789,10 @@ bool CCormanLispApp::SetDocumentToOpen(const char* file)
 
 bool CCormanLispApp::SetURLToOpen(const char* file)
 {
-	strcpy_s(m_urlToOpen, sizeof(m_urlToOpen), file);
+	{
+		ScopedLock _(m_urlLock);
+		strcpy_s(m_urlToOpen, sizeof(m_urlToOpen), file);
+	}
 
 	// trigger the idle processing
 	BOOL ret = PostMessage(GetMainWnd()->m_hWnd, WM_ENTERIDLE, 0, 0);
@@ -798,10 +810,18 @@ bool CCormanLispApp::SetReplaceSelection(const char* text, int numChars)
 
 bool CCormanLispApp::waitingForDocumentToOpen()
 {
-	if (!(m_fileToOpen[0] | m_urlToOpen[0]))
-		return false;
+	{
+		ScopedLock url_lock(m_urlLock);
+		ScopedLock file_lock(m_urlLock);
+		if (!(m_fileToOpen[0] | m_urlToOpen[0]))
+			return false;
+	}
 	delay(100);		// delay 100 ms
-	return (m_fileToOpen[0] | m_urlToOpen[0]) ? true : false;
+	{
+		ScopedLock url_lock(m_urlLock);
+		ScopedLock file_lock(m_urlLock);
+		return (m_fileToOpen[0] | m_urlToOpen[0]) ? true : false;
+	}
 }
 
 void CCormanLispApp::CloseAllDocuments(BOOL bEndSession)

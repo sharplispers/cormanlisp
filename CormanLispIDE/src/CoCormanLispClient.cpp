@@ -145,11 +145,23 @@ STDMETHODIMP CoCormanLispClient::OpenURL(char* file, HWND* wnd)
 	if (m_eventLoopThreadID != GetCurrentThreadId())
 	{
 		while (theApp.waitingForDocumentToOpen());
-		bool ret = theApp.SetURLToOpen(file);
+		ret = theApp.SetURLToOpen(file);
 		while (theApp.waitingForDocumentToOpen());
 	}
 	else
-		theApp.NavigateURL(file);
+	{
+		//theApp.NavigateURL(file);
+		// We cannot call NavigateURL() directly from Lisp as it seems to leave stack
+		// in inconsistent state in the case of an error (well, at least from the Lisp's POV).
+		// To avoid the problem we use this ugly hack.
+		// The problem is probably related to the (SEH) exception handling:
+		// Internet Explorer internally uses (or causes) some exception on which we rely too (just a theory).
+
+		while (theApp.waitingForDocumentToOpen());
+		ret = theApp.SetURLToOpen(file);
+		theApp.OnBrowse(); // create browser window (to return its handle)
+		// Later the documented will be opened in a browser window.
+	}
 	if (theApp.m_browser)
 		*wnd = theApp.m_browser->m_hWnd;
 	return ret ? S_OK : E_FAIL;

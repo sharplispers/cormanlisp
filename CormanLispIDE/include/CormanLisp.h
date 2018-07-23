@@ -29,6 +29,8 @@
 #include "SMDIFrameWnd.h"
 #include "SMDIChildWnd.h"
 
+#include "../CormanLispServer/include/threadclasses.h" // for ScopedLock, CriticalSection
+
 class CBrowserDoc;
 
 class LispDialogBar : public CDialogBar
@@ -135,8 +137,12 @@ private:
 	IConnectionPoint* m_pShutdownConnectionPoint;
 	CoCormanLispClient* m_CormanLispClient;
 	CoCormanLispShutdownClient* m_CormanLispShutdownClient;
+
 	char m_fileToOpen[_MAX_PATH + 1];		// pending document to open
 	char m_urlToOpen[MAX_URL + 1];		// pending document to open
+	CriticalSection m_fileLock;
+	CriticalSection m_urlLock;
+
 	char m_CormanLispPersonalDirectory[_MAX_PATH + 1]; // path to "%USERPROFILE%\Documents\Corman Lisp" directory
 	bool m_appIsClosing;
 	int m_nUnits;

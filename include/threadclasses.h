@@ -83,6 +83,15 @@ public:
 	CRITICAL_SECTION m_sect;
 };
 
+class ScopedLock
+{
+public:
+	ScopedLock(CriticalSection &cs) : m_cs(cs) {m_cs.Enter();}
+	~ScopedLock() { m_cs.Leave(); }
+public:
+	CriticalSection &m_cs;
+};
+
 inline PLSyncObject::operator HANDLE() const
 	{ return m_hObject;}
 
