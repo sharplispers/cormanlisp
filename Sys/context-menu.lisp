@@ -147,6 +147,7 @@ WINUSERAPI BOOL WINAPI AttachThreadInput(DWORD idAttach, DWORD idAttachTo, BOOL 
             (or
                 (and (fboundp selected-form)
                     (functionp (symbol-function selected-form))
+		    (not (typep (symbol-function selected-form) 'generic-function))
                     (ccl:function-source-file (symbol-function selected-form)))
                 (and (x86::code-generator-function selected-form)
                     (ccl:function-source-file (x86::code-generator-function selected-form)))))
