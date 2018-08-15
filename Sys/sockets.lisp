@@ -170,6 +170,9 @@
 ;;;;              Removed redundant read-line, write-line functions which are not
 ;;;;              needed here (the standard versions of those functions will support sockets).
 ;;;;
+;;;; 14/08/2018   Luis Cervantes
+;;;;              IPv6 support.
+;;;;
 (require 'WINSOCK)
 
 (defpackage "SOCKETS"
@@ -182,7 +185,9 @@
 		"START-SOCKETS"
 		"STOP-SOCKETS"
 		"WITH-SOCKETS-STARTED"
-		"HOST-TO-IPADDR"
+                        "*IPV6*"
+                        "IPV6-INSTALLED-P"
+                        "HOST-TO-IPADDR"
 		"IPADDR-TO-NAME"
 		"IPADDR-TO-DOTTED"
 		"BASE-SOCKET"
@@ -319,36 +324,28 @@
 				,@body)
 			(stop-sockets))))
 
-(defun host-to-ipaddr (dotted-or-name)
-	"Return the ipaddr given a host name or dotted IP address."
-	(let* ((name (lisp-string-to-c-string dotted-or-name))
-			(ipaddr (inet_addr name)))
-		(when (and (= ipaddr INADDR_NONE)
-				(not (equal dotted-or-name "255.255.255.255")))
-			(setq ipaddr
-				(let* ((he (with-winsock-pointer-expected () 
-								(gethostbyname name)))
-						(addr-list (cref hostent he winsock::h_addr_list))
-						(addr0 (cref ((:unsigned-long *) *) addr-list 0)))
-					(cref (:unsigned-long *) addr0 0))))
-		ipaddr))
+(defvar *ipv6* nil "Controls whether IPv6 addresses will be looked up by default during name resolution. Valid values: nil, :only or t")
 
-(defun ipaddr-to-name (ipaddr)
-	"Given an ipaddr, lookup the host name"
-	(with-fresh-foreign-block (temp-ipaddr :unsigned-long)
-		(setf (cref (:unsigned-long *) temp-ipaddr 0) ipaddr)
-		(c-string-to-lisp-string
-			(cref hostent
-				(with-winsock-pointer-expected ()
-					(gethostbyaddr temp-ipaddr (sizeof :unsigned-long) AF_INET))
-				winsock::h_name))))
-					
-			
-(defun ipaddr-to-dotted (ipaddr)
-	"Given ipaddr, return the dotted name."
-	(c-string-to-lisp-string 
-		(with-winsock-pointer-expected ()
-			(inet_ntoa (int-to-foreign-ptr ipaddr)))))
+(defun ipv6-installed-p () (get-addr-info "::" :ipv6 :only))
+
+;;; An ADDR is a plist of the form
+;;; (:family AF_INETx :port p :flow f :ipaddr #(B1...Bi...Bn) :scope s :dotted string)
+;;; where x is 6 for IPv6, p, f, and s are integers, Bi is a Byte integer representation, n is 4 for IPv4 and 16 for IPv6,
+;;; and string is a dotted or colon representation for information purposes only.
+;;; For IPv4 the properties flow and scope are not used.
+
+;;; In a protocol-independent approach, it is more convenient to use the ADDR instead of the ipaddr proper.
+;;; We define the functions host-to-ipaddr, ipaddr-to-dotted and ipaddr-to-dotted with this in mind.
+
+(defun host-to-ipaddr (dotted-or-name &key port (ipv6 *ipv6*)) "Return the ipaddr (addr) given a host name or dotted IP address.
+Port: symbol, string or integer. IPv6: nil, :only or t"
+    (get-addr-info dotted-or-name :port (or port 0) :host-is-name :unspec :ipv6 ipv6 :errorp t))
+
+(defun ipaddr-to-name (addr) "Given an ipaddr (addr), lookup the host name"
+    (get-name-info addr :errorp t))
+
+(defun ipaddr-to-dotted (addr) "Given ipaddr (addr), return the dotted name."
+    (or (getf addr :dotted) (get-name-info addr :dottedp t :errorp t)))
 
 (defclass base-socket ()
 	((socket-descriptor 
@@ -421,50 +418,35 @@
 	()
 	(:documentation
 		"A standard socket that is used through a proxy server."))
-  
+
+(defun family (socket) (symbol-value (getf (socket-host-ipaddr socket) :family)))
+
 (defmethod initialize-instance :after ((s base-socket) &allow-other-keys)
 	(ccl:register-finalization s #'(lambda (x) (close-socket x))))
 
 (defmethod initialize-instance ((s local-socket) &key host port &allow-other-keys)
     (call-next-method)
-	(setf (socket-host-ipaddr s) (host-to-ipaddr host))
-	(setf (socket-port s) (or port 0))
-	(setf (socket-descriptor s)	
-		(with-invalid-socket-check ()
-			(socket AF_INET SOCK_STREAM 0))))
+    (setf (socket-host-ipaddr s) (host-to-ipaddr host :port port))
+    (setf (socket-descriptor s)
+        (with-invalid-socket-check ()
+            (socket (family s) SOCK_STREAM 0))))
 
 (defmethod initialize-instance :after ((s local-socket) &allow-other-keys)
-  (with-fresh-foreign-block (sin-local 'sockaddr_in)
-    (with-fresh-foreign-block (size 'int)
-      (setf (cref (int *) size 0) (sizeof 'sockaddr_in))
-      (with-socket-error-check ()
-          (getsockname (socket-descriptor s) sin-local size)
-        (setf (socket-port s)
-              (ntohs (cref sockaddr_in sin-local winsock::sin_port)))))))
+    (let ((local (malloc *addr-size*)) (addr-size (malloc (sizeof 'int))))
+        (setf (cref (int *) addr-size *) *addr-size*)
+        (with-socket-error-check () (getsockname (socket-descriptor s) local addr-size)
+            (setf (socket-port s) (getf (c-to-addr local) :port)))))
 
 (defmethod initialize-instance ((s client-socket) &key host port &allow-other-keys)
-	(declare (ignore port host))
-	(call-next-method)
-	(with-fresh-foreign-block (sin-remote 'sockaddr_in)
-		(setf (cref sockaddr_in sin-remote winsock::sin_family) AF_INET)
-		(let ((sin0 (cref sockaddr_in sin-remote winsock::sin_addr)))
-			(setf (cref in_addr sin0 winsock::S_addr) (socket-host-ipaddr s))
-			(setf (cref sockaddr_in sin-remote winsock::sin_port) (htons (socket-port s)))
-			(with-socket-error-check ()
-				(connect (socket-descriptor s) sin-remote (sizeof 'sockaddr_in))))))
+    (declare (ignore port host))
+    (call-next-method)
+    (with-socket-error-check () (connect (socket-descriptor s) (addr-to-c (socket-host-ipaddr s)) *addr-size*)))
 
 (defmethod initialize-instance ((s server-socket) &key host port &allow-other-keys)
-	(declare (ignore port host))
-	(call-next-method)
-	(with-fresh-foreign-block (sin-local 'sockaddr_in)
-		(setf (cref sockaddr_in sin-local winsock::sin_family) AF_INET)
-		(let ((sin0 (cref sockaddr_in sin-local winsock::sin_addr)))
-			(setf (cref in_addr sin0 winsock::S_addr) (socket-host-ipaddr s)))
-		(setf (cref sockaddr_in sin-local winsock::sin_port) (htons (socket-port s)))
-		(with-socket-error-check () 
-			(bind (socket-descriptor s) sin-local (sizeof 'sockaddr_in)))
-		(with-socket-error-check ()
-			(winsock:listen (socket-descriptor s) SOMAXCONN))))
+    (declare (ignore port host))
+    (call-next-method)
+    (with-socket-error-check () (bind (socket-descriptor s) (addr-to-c (socket-host-ipaddr s)) *addr-size*))
+    (with-socket-error-check () (winsock::listen (socket-descriptor s) SOMAXCONN)))
 
 (defmethod initialize-instance :after ((s proxy-socket-mixin) &key real-host real-port proxy &allow-other-keys)
 	(proxy-server-connect proxy s real-host real-port)
@@ -485,14 +467,10 @@
 		communicating with the remote host."))
 
 (defmethod accept-socket ((s server-socket))
-	(with-fresh-foreign-block (sin-remote 'sockaddr_in)
-		(with-fresh-foreign-block (size-addr 'long)
-			(setf (cref (:unsigned-long *) size-addr 0) (sizeof 'sockaddr_in))
-			(let ((as (with-invalid-socket-check ()
-					(accept (socket-descriptor s) sin-remote size-addr))))								
-				(make-instance (remote-socket-class s) 
-					:descriptor as
-					:address (cref (:unsigned-long *)sin-remote 1))))))
+    (let ((remote (malloc *addr-size*)) (addr-size (malloc (sizeof 'int))))
+        (setf (cref (int *) addr-size *) *addr-size*)
+        (let ((as (with-invalid-socket-check () (accept (socket-descriptor s) remote addr-size))))
+            (make-instance (remote-socket-class s) :descriptor as :address (c-to-addr remote)))))
 
 (defgeneric close-socket (s)
 	(:documentation 
@@ -1141,6 +1119,46 @@
 	(write-socket-line s "GO")
 	(format t "~A~%" (read-socket-line s))
 	(format t "~A~%" (read-socket-line s)))
+
+;; Use the server with streams
+(with-client-socket (s :host "localhost" :port 8000)
+	(with-socket-stream (stream s)
+		(write-line "GO" stream)
+		(force-output stream)
+		(format t "~A~%" (read-line stream))
+		(format t "~A~%" (read-line stream))))
+
+;; Close the server
+(with-client-socket (s :host "localhost" :port 8000)
+	(write-socket-line s "quit"))
+
+;; Use IPv6
+(setq *ipv6* :only)
+
+;;Example of reading from an HTTP server.
+(let ((s (make-client-socket :host "www.yahoo.com" :port 'http)))
+  (write-socket-line s "GET / HTTP/1.0")
+  (write-socket-line s "")
+  (loop as line = (read-socket-line s nil :eof)
+	  until (eq line :eof)
+	  do (format t "~A~%" line))
+  (close-socket s))
+
+;; Server test - uses start-socket-server, streams and IPv6
+(defun start-server-test3 (&optional (port 8000))
+	(with-server-socket (s :host "::" :port port)
+		(start-socket-server (s rs)
+			(let ((stream (make-socket-stream rs)))
+				(when (equal (read-line stream) "quit")
+					(return-from start-server-test3))
+				(write-line 
+					(coerce (make-list 80 :initial-element #\Z) 'string)
+					stream)
+				(write-line 
+					(coerce (make-list 80 :initial-element #\A) 'string)
+					stream)
+				(force-output stream)))))
+(th:create-thread #'start-server-test3)
 
 ;; Use the server with streams
 (with-client-socket (s :host "localhost" :port 8000)
