@@ -9,6 +9,10 @@
 ;;; Various special variables used by the system or the IDE
 ;;;
 
+;;; Set sockets:*ipv6* to NIL if you wish to disable
+;;; IPv6 socket functionality. Valid values are NIL, :only or t.
+(setq sockets:*ipv6* (when (sockets:ipv6-installed-p) t))
+
 ;;; Set ccl:*auto-update-enabled* to NIL if you wish to disable
 ;;; automatic checking for updates (patches) by the IDE.
 (setf ccl:*auto-update-enabled* nil)
