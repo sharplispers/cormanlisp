@@ -62,7 +62,8 @@ typedef struct fd_set {
 /*
 #define FD_CLR(fd, set) do { \
     u_int __i; \
-    for (__i = 0; __i < ((fd_set FAR *)(set))->fd_count ; __i++) { \
+    for (__i = 0; __i < ((fd_set FAR *)(set))->fd_count ;
+          __i++) { \
         if (((fd_set FAR *)(set))->fd_array[__i] == fd) { \
             while (__i < ((fd_set FAR *)(set))->fd_count-1) { \
                 ((fd_set FAR *)(set))->fd_array[__i] = \
@@ -935,7 +936,7 @@ struct sockaddr_in6 {
                 u_long     sin6_flowinfo;    /* IPv6 flow information */
                 in6_addr  sin6_addr;         /* struct IPv6 address */
                 u_long     sin6_scope_id;  /* set of interfaces for a scope */
-};                                                        /* long 28 */
+};                                                        /* length 28. sockaddr_storage 128 */
 
 /* Structure used in getaddrinfo() call */
 
@@ -949,6 +950,12 @@ typedef struct addrinfo {
   sockaddr  *ai_addr;              /* struct Binary address */
   void          *ai_next;              /* struct addrinfo Next structure in linked list */
 } ADDRINFO, FAR * LPADDRINFO;
+
+/* Flags used in "hints" argument to getaddrinfo() */
+
+#define AI_PASSIVE             0x1  /* Socket address will be used in bind() call */
+#define AI_CANONNAME     0x2  /* Return canonical name in first ai_canonname */
+#define AI_NUMERICHOST 0x4  /* Nodename must be a numeric address string */
 
 int
 PASCAL FAR
@@ -967,6 +974,9 @@ freeaddrinfo(
 
 #define NI_MAXHOST  1025  /* Max size of a fully-qualified domain name */
 #define NI_MAXSERV      32  /* Max size of a service name */
+
+// #define INET_ADDRSTRLEN  16 /* Max size of numeric form of IPv4 address */
+// #define INET6_ADDRSTRLEN 46 /* Max size of numeric form of IPv6 address */
 
 /* Flags for getnameinfo() */
 
@@ -999,14 +1009,18 @@ getnameinfo(
         (if (eq (cref (:short *) sockaddr *) AF_INET)
             (with-c-struct (ignore sockaddr sockaddr_in)
                 (getnameinfo sockaddr 16 dotted 64 null 0 NI_NUMERICHOST)
-                (cl::mapappend #'list
-                    '(:family :port :ipaddr :dotted)
-                    (list 'af_inet (ntohs sin_port) (c-bytes-to-lisp-bytes sin_addr 4) (c-string-to-lisp-string dotted))))
+                (list :family 'af_inet
+                       :port (ntohs sin_port)
+                       :ipaddr (c-bytes-to-lisp-bytes sin_addr 4)
+                       :dotted (c-string-to-lisp-string dotted)))
             (with-c-struct (ignore sockaddr sockaddr_in6)
                 (getnameinfo sockaddr 28 dotted 64 null 0 NI_NUMERICHOST)
-                (cl::mapappend #'list
-                    '(:family :port :flow :ipaddr :scope :dotted)
-                    (list 'af_inet6 (ntohs sin6_port) sin6_flowinfo (c-bytes-to-lisp-bytes sin6_addr 16) sin6_scope_id (c-string-to-lisp-string dotted)))))))
+                (list :family 'af_inet6
+                       :port (ntohs sin6_port)
+                       :flow sin6_flowinfo
+                       :ipaddr (c-bytes-to-lisp-bytes sin6_addr 16)
+                       :scope sin6_scope_id
+                       :dotted (c-string-to-lisp-string dotted))))))
 
 (defun addr-to-c (addr)
     (let ((family (symbol-value (getf addr :family))) (c (malloc *addr-size*)))
@@ -1015,26 +1029,32 @@ getnameinfo(
                 (setq sin_family family sin_port (htons (getf addr :port)))
                 (lisp-bytes-to-c-bytes (getf addr :ipaddr) sin_addr))
             (with-c-struct (ignore c sockaddr_in6)
-                (setq sin6_family family sin6_port (htons (getf addr :port)) sin6_flowinfo (getf addr :flow) sin6_scope_id (getf addr :scope))
+                (setq sin6_family family sin6_port (htons (getf addr :port))
+                         sin6_flowinfo (getf addr :flow) sin6_scope_id (getf addr :scope))
                 (lisp-bytes-to-c-bytes (getf addr :ipaddr) sin6_addr))) c))
 
-(defun get-addr-info (host &key (port 0) host-is-name ipv6 errorp) "Port: symbol, string or integer. Host-is-name if host string is a host name: nil, :unspec or t. IPv6: nil, :only or t"
+(defun get-addr-info (host &key (port 0) host-is-name ipv6 errorp)
+    "Port: symbol, string or integer. Host-is-name if host string is a host name: nil, :unspec or t. IPv6: nil, :only or t."
     (let ((hint (malloc (sizeof 'addrinfo))) (p (malloc (sizeof 'win:pvoid))) pp)
         (clear-mem hint (sizeof 'addrinfo))
         (with-c-struct (ignore hint addrinfo)
-            (setq ai_flags (if (eq host-is-name t) 0 4) ai_family (if (eq ipv6 t) AF_UNSPEC (if (not ipv6) AF_INET AF_INET6)))) ; AI_NUMERICHOST 4
+            (setq ai_flags (if (eq host-is-name t) 0 AI_NUMERICHOST)
+                     ai_family (if (eq ipv6 t) AF_UNSPEC (if (not ipv6) AF_INET AF_INET6))))
         (if (zerop (getaddrinfo (lisp-string-to-c-string host) (lisp-string-to-c-string (format nil "~a" port)) hint p))
             (setq pp (cref (win:pvoid *) p *))
             (when (and errorp (not (eq host-is-name :unspec))) (error "Winsock error ~A." (WSAGetLastError))))
-        (or (and pp (unwind-protect (c-to-addr (cref ADDRINFO pp ai_addr)) (freeaddrinfo pp)))
+        (or (and pp (do ((p pp (cref addrinfo p ai_next)) res) ((cpointer-null p) (freeaddrinfo pp) (nreverse res))
+                              (push (c-to-addr (cref addrinfo p ai_addr)) res)))
              (and (eq host-is-name :unspec) (get-addr-info host :port port :host-is-name t :ipv6 ipv6 :errorp errorp)))))
 
-(defun get-name-info (addr &key dottedp portp errorp) "Retuns host and port names as values"
+(defun get-name-info (addr &key dottedp portp errorp) "Returns host and port names as values."
     (let ((host-text (malloc NI_MAXHOST)) (serv-text (if portp (malloc NI_MAXSERV) null)))
-        (if (zerop (getnameinfo (addr-to-c addr) *addr-size* host-text NI_MAXHOST serv-text NI_MAXSERV (logior (if dottedp NI_NUMERICHOST 0) (if errorp NI_NAMEREQD 0))))
+        (if (zerop (getnameinfo (addr-to-c addr) *addr-size* host-text NI_MAXHOST serv-text NI_MAXSERV
+                                             (logior (if dottedp NI_NUMERICHOST 0) (if errorp NI_NAMEREQD 0))))
             (values (c-string-to-lisp-string host-text) (when portp (c-string-to-lisp-string serv-text))) ; when portp... to return nil rather than numeric port string
             (let ((error (WSAGetLastError)))  ; no error as in Vista and later but lets user know of failure by returning nil as the second value rather than numeric port string
-                (if (and portp (eq WSANO_DATA error)) (get-name-info addr :dottedp dottedp :errorp errorp) (when errorp (error "Winsock error ~A." error)))))))
+                (if (and portp (eq WSANO_DATA error))
+                    (get-name-info addr :dottedp dottedp :errorp errorp)
+                    (when errorp (error "Winsock error ~A." error)))))))
 
 (provide "WINSOCK")
-									  
