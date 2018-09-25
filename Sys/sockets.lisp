@@ -172,6 +172,8 @@
 ;;;;
 ;;;; 14/08/2018   Luis Cervantes
 ;;;;              IPv6 support.
+;;;; 15/09/2018   Luis Cervantes
+;;;;              Datagram support.
 ;;;;
 (require 'WINSOCK)
 
@@ -187,7 +189,7 @@
 		"WITH-SOCKETS-STARTED"
                         "*IPV6*"
                         "IPV6-INSTALLED-P"
-                        "HOST-TO-IPADDR"
+		"HOST-TO-IPADDR"
 		"IPADDR-TO-NAME"
 		"IPADDR-TO-DOTTED"
 		"BASE-SOCKET"
@@ -208,6 +210,8 @@
 		"SERVER-SOCKET"
 		"ACCEPT-SOCKET"
 		"CLOSE-SOCKET"
+                        "RECEIVE-FROM"
+                        "SEND-TO"
 		"WRITE-SOCKET-LINE"
 		"DO-FFI-READ-SOCKET"
 		"DO-FFI-WRITE-SOCKET"
@@ -304,7 +308,7 @@
 				(handle-winsock-error)
 				(progn ,pointer-result ,@body)))))
 	
-(defvar *sockets-started* t ; WinSock is initialised by the Lisp kenel
+(defvar *sockets-started* t ; WinSock is initialised by the new beta Lisp kenel
 	"Set to T when START-SOCKETS is called.")
 
 (defun start-sockets ()
@@ -324,7 +328,7 @@
 				,@body)
 			(stop-sockets))))
 
-(defvar *ipv6* nil "Controls whether IPv6 addresses will be looked up by default during name resolution. Valid values: nil, :only or t")
+(defvar *ipv6* nil "Controls whether IPv6 addresses will be looked up by default during name resolution. Valid values: nil, :only or t.")
 
 (defun ipv6-installed-p () (get-addr-info "::" :ipv6 :only))
 
@@ -337,14 +341,18 @@
 ;;; In a protocol-independent approach, it is more convenient to use the ADDR instead of the ipaddr proper.
 ;;; We define the functions host-to-ipaddr, ipaddr-to-dotted and ipaddr-to-dotted with this in mind.
 
-(defun host-to-ipaddr (dotted-or-name &key port (ipv6 *ipv6*)) "Return the ipaddr (addr) given a host name or dotted IP address.
-Port: symbol, string or integer. IPv6: nil, :only or t"
-    (get-addr-info dotted-or-name :port (or port 0) :host-is-name :unspec :ipv6 ipv6 :errorp t))
+(defun host-to-ipaddr (dotted-or-name &key port (ipv6 *ipv6*) all) "Return the ipaddr (addr) given a host name, a dotted IP address or an addr.
+Port: symbol, string or integer. IPv6: nil, :only or t.
+All: If it is nil, return the first address available otherwise return the list of all addresses."
+    (let ((res (if (stringp dotted-or-name)
+                      (get-addr-info dotted-or-name :port (or port 0) :host-is-name :unspec :ipv6 ipv6 :errorp t)
+                      (list dotted-or-name))))
+        (if all res (car res))))
 
-(defun ipaddr-to-name (addr) "Given an ipaddr (addr), lookup the host name"
+(defun ipaddr-to-name (addr) "Given an ipaddr (addr), lookup the host name."
     (get-name-info addr :errorp t))
 
-(defun ipaddr-to-dotted (addr) "Given ipaddr (addr), return the dotted name."
+(defun ipaddr-to-dotted (addr) "Given an ipaddr (addr), return the dotted name."
     (or (getf addr :dotted) (get-name-info addr :dottedp t :errorp t)))
 
 (defclass base-socket ()
@@ -365,12 +373,14 @@ Port: symbol, string or integer. IPv6: nil, :only or t"
 		used to communicate with the remote host."))
 
 (defclass local-socket (base-socket)
-	((host-ipaddr :initform nil :accessor socket-host-ipaddr)
-		(port :initform nil :accessor socket-port))
-	(:documentation
-		"Base class for sockets that are created and used on the client machine.
-		Takes the keywords :HOST and :PORT on creation of the instance. :HOST can
-		be a hostname or dotted ip address."))
+    ((host-ipaddr :initform nil :accessor socket-host-ipaddr)
+     (port :initform nil :accessor socket-port)
+     (type :accessor socket-type))
+    (:documentation
+"Base abstract class for sockets that are created and used on the client machine.
+Takes the keywords :HOST, :PORT, and :TYPE on creation of an instance.
+HOST: can be a hostname, a dotted ip address or an addr.
+PORT: symbol, string or integer. TYPE: :stream (default) or :datagram."))
 		
 (defclass client-socket (local-socket) ()
 	(:documentation
@@ -419,17 +429,12 @@ Port: symbol, string or integer. IPv6: nil, :only or t"
 	(:documentation
 		"A standard socket that is used through a proxy server."))
 
-(defun family (socket) (symbol-value (getf (socket-host-ipaddr socket) :family)))
-
 (defmethod initialize-instance :after ((s base-socket) &allow-other-keys)
 	(ccl:register-finalization s #'(lambda (x) (close-socket x))))
 
-(defmethod initialize-instance ((s local-socket) &key host port &allow-other-keys)
+(defmethod initialize-instance ((s local-socket) &key type &allow-other-keys)
     (call-next-method)
-    (setf (socket-host-ipaddr s) (host-to-ipaddr host :port port))
-    (setf (socket-descriptor s)
-        (with-invalid-socket-check ()
-            (socket (family s) SOCK_STREAM 0))))
+    (setf (socket-type s) (if (eq type :datagram) 'sock_dgram 'sock_stream)))
 
 (defmethod initialize-instance :after ((s local-socket) &allow-other-keys)
     (let ((local (malloc *addr-size*)) (addr-size (malloc (sizeof 'int))))
@@ -438,15 +443,23 @@ Port: symbol, string or integer. IPv6: nil, :only or t"
             (setf (socket-port s) (getf (c-to-addr local) :port)))))
 
 (defmethod initialize-instance ((s client-socket) &key host port &allow-other-keys)
-    (declare (ignore port host))
     (call-next-method)
-    (with-socket-error-check () (connect (socket-descriptor s) (addr-to-c (socket-host-ipaddr s)) *addr-size*)))
+    (let (lsocs)
+        (unwind-protect
+            (dolist (addr (host-to-ipaddr host :port port :all t) (error "No response from ~a at port ~a." host port))
+                (let* ((fam (getf addr :family)) (soc (car (find fam lsocs :key #'cadr))))
+                    (unless soc (setq soc (caar (push (list (with-invalid-socket-check () (socket (symbol-value fam) (symbol-value (socket-type s)) 0)) fam) lsocs))))
+                    (when (zerop (connect soc (addr-to-c addr) *addr-size*)) (setf (socket-host-ipaddr s) addr (socket-descriptor s) soc) (return))))
+            (mapc #'(lambda (x) (unless (eq (socket-descriptor s) (car x)) (closesocket (car x)))) lsocs))))
 
 (defmethod initialize-instance ((s server-socket) &key host port &allow-other-keys)
-    (declare (ignore port host))
     (call-next-method)
-    (with-socket-error-check () (bind (socket-descriptor s) (addr-to-c (socket-host-ipaddr s)) *addr-size*))
-    (with-socket-error-check () (winsock::listen (socket-descriptor s) SOMAXCONN)))
+    (let* ((addr (host-to-ipaddr host :port port))
+             (type (socket-type s))
+             (soc (with-invalid-socket-check () (socket (symbol-value (getf addr :family)) (symbol-value type) 0))))
+        (setf (socket-host-ipaddr s) addr (socket-descriptor s) soc)
+        (with-socket-error-check () (bind soc (addr-to-c addr) *addr-size*))
+        (when (eq type 'sock_stream) (with-socket-error-check () (winsock::listen soc SOMAXCONN)))))
 
 (defmethod initialize-instance :after ((s proxy-socket-mixin) &key real-host real-port proxy &allow-other-keys)
 	(proxy-server-connect proxy s real-host real-port)
@@ -488,7 +501,39 @@ Port: symbol, string or integer. IPv6: nil, :only or t"
 						(when (or (= result SOCKET_ERROR) (= result 0))
 							(return)))))
 			(closesocket descriptor)
-			(setf (socket-descriptor s) nil))))
+			(setf (socket-descriptor s) nil) t)))
+
+(defmethod close-socket ((s local-socket))
+    (let ((soc (socket-descriptor s)))
+        (when soc (if (eq (socket-type s) 'sock_stream) (call-next-method)
+                             (let () (closesocket soc) (setf (socket-descriptor s) nil) t)))))
+
+;;; Methods to read and write Datagrams
+
+(defvar *datagram-size* 1024)
+
+(defmethod receive-from ((socket local-socket) &optional bytep)
+    (unless (eq (socket-type socket) 'sock_dgram) (error "RECEIVE-FROM is used for Datagram Sockets only."))
+    (let* ((data (malloc *datagram-size*)) (from (malloc *addr-size*))
+             (addr-size (let ((addr-size (malloc 4))) (setf (cref (int *) addr-size *) *addr-size*) addr-size))
+             (n (with-socket-error-check () (recvfrom (socket-descriptor socket) data *datagram-size* 0 from addr-size))))
+        (and (not bytep) (< n *datagram-size*) (setf (cref (byte *) data n) 0))
+        (values (if bytep (c-bytes-to-lisp-bytes data n) (c-string-to-lisp-string data)) (c-to-addr from))))
+
+(defmethod send-to :before ((socket server-socket) byte-vector-or-string &key to)
+    (declare (ignore byte-vector-or-string))
+    (unless to (error "The :TO key must be specified for Server Sockets.")))
+
+(defmethod send-to ((socket local-socket) byte-vector-or-string &key to)
+    (unless (eq (socket-type socket) 'sock_dgram) (error "SEND-TO is used for Datagram Sockets only."))
+    (with-socket-error-check ()
+        (sendto (socket-descriptor socket)
+                     (if (eq (array-element-type byte-vector-or-string) 'character)
+                         (lisp-string-to-c-string byte-vector-or-string)
+                         (lisp-bytes-to-c-bytes byte-vector-or-string))
+                     (length byte-vector-or-string) 0 (if to (addr-to-c to) null) *addr-size*)))
+
+;;;
 
 (defgeneric do-ffi-write-socket (s buffer length)
 	(:documentation
@@ -668,7 +713,7 @@ Port: symbol, string or integer. IPv6: nil, :only or t"
 			(when (not (eql ch #\Return))
 				(vector-push-extend ch str)))))
 
-(defun make-client-socket (&key host port (proxy *default-proxy-server*))
+(defun make-client-socket (&key host port type (proxy *default-proxy-server*))
 	"Create and return a client socket attached to the HOST and PORT."
 	(if proxy
 		(make-instance 'proxy-client-socket
@@ -677,27 +722,27 @@ Port: symbol, string or integer. IPv6: nil, :only or t"
 			:real-host host
 			:real-port port
 			:proxy proxy)
-		(make-instance 'client-socket :host host :port port)))
+		(make-instance 'client-socket :host host :port port :type type)))
 
-(defun make-server-socket (&key host port)
+(defun make-server-socket (&key host port type)
 	"Create and return a sever socket listening on the HOST and PORT."
-	(make-instance 'server-socket :host host :port port))
+	(make-instance 'server-socket :host host :port port :type type))
 
-(defmacro with-client-socket ((socket &key host port proxy) &body body)
+(defmacro with-client-socket ((socket &key host port type proxy) &body body)
 	"Ensures that the SOCKET is closed when scope of WITH-CLIENT-SOCKET
 	has ended."
 	(let ((p-name (gensym)))
 		`(let* ((,p-name (if ,proxy ,proxy *default-proxy-server*))
-				(,socket (make-client-socket :host ,host :port ,port :proxy ,p-name)))
+				(,socket (make-client-socket :host ,host :port ,port :type ,type :proxy ,p-name)))
 			(unwind-protect
 				(progn
 					,@body)
 				(close-socket ,socket)))))
 
-(defmacro with-server-socket ((socket &key host port) &body body)
+(defmacro with-server-socket ((socket &key host port type) &body body)
 	"Ensures that the SOCKET is closed when scope of WITH-SERVER-SOCKET
 	has ended."
-	`(let ((,socket (make-server-socket :host ,host :port ,port)))
+	`(let ((,socket (make-server-socket :host ,host :port ,port :type ,type)))
 		(unwind-protect
 			(progn
 				,@body)
@@ -1132,6 +1177,21 @@ Port: symbol, string or integer. IPv6: nil, :only or t"
 (with-client-socket (s :host "localhost" :port 8000)
 	(write-socket-line s "quit"))
 
+;; Datagram Server test.
+(defun start-server-test3 (&optional (port 8001))
+    (with-server-socket (s :host "0.0.0.0" :port port :type :datagram)
+        (do () (()) (multiple-value-bind (string addr) (receive-from s)
+                          (format t "Datagram from ~A in server ~A. Received ~s~%" (getf addr :dotted) (socket-descriptor s) string) (force-output)
+                          (send-to s (format nil "Hello ~a." (getf addr :dotted)) :to addr)
+                          (when (equal string "quit") (return))))))
+(th:create-thread #'start-server-test3)
+
+;; Use the datagram server.
+(with-client-socket (s :host "localhost" :port 8001 :type :datagram)
+    (send-to s "Sending out an SOS.")
+    (format t "Got: ~s~%" (receive-from s)) (force-output)
+    (send-to s "quit"))
+
 ;; Use IPv6
 (setq *ipv6* :only)
 
@@ -1144,13 +1204,13 @@ Port: symbol, string or integer. IPv6: nil, :only or t"
 	  do (format t "~A~%" line))
   (close-socket s))
 
-;; Server test - uses start-socket-server, streams and IPv6
-(defun start-server-test3 (&optional (port 8000))
+;; Server test - uses start-socket-server, streams and IPv6.
+(defun start-server-test4 (&optional (port 8000))
 	(with-server-socket (s :host "::" :port port)
 		(start-socket-server (s rs)
 			(let ((stream (make-socket-stream rs)))
 				(when (equal (read-line stream) "quit")
-					(return-from start-server-test3))
+					(return-from start-server-test4))
 				(write-line 
 					(coerce (make-list 80 :initial-element #\Z) 'string)
 					stream)
@@ -1158,9 +1218,9 @@ Port: symbol, string or integer. IPv6: nil, :only or t"
 					(coerce (make-list 80 :initial-element #\A) 'string)
 					stream)
 				(force-output stream)))))
-(th:create-thread #'start-server-test3)
+(th:create-thread #'start-server-test4)
 
-;; Use the server with streams
+;; Use the server with streams.
 (with-client-socket (s :host "localhost" :port 8000)
 	(with-socket-stream (stream s)
 		(write-line "GO" stream)
@@ -1168,7 +1228,7 @@ Port: symbol, string or integer. IPv6: nil, :only or t"
 		(format t "~A~%" (read-line stream))
 		(format t "~A~%" (read-line stream))))
 
-;; Close the server
+;; Close the server.
 (with-client-socket (s :host "localhost" :port 8000)
 	(write-socket-line s "quit"))
 
