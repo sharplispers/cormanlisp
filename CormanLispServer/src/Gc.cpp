@@ -3813,6 +3813,7 @@ static void offsetUvector(LispObj obj, long offset, long length)
     case CLOSInstanceType:
         ADJUST(UVECTOR(obj)[CLOS_INSTANCE_CLASS_OFFSET]);
         ADJUST(UVECTOR(obj)[CLOS_INSTANCE_SLOTS_OFFSET]);
+        ADJUST(UVECTOR(obj)[CLOS_INSTANCE_SIGNATURE_OFFSET]);
         break;
 
     case ForeignStackType:
