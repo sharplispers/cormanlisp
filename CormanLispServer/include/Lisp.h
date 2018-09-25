@@ -648,7 +648,7 @@ const char ASCII_NEWLINE	= (char)0x0a;
 #define SINGLE_FLOAT_OFFSET			1
 #define SINGLE_FLOAT_SIZE			1
 
-//	CLOS Instance  (future usage)
+//	CLOS Instance
 //------------------------------------------|
 //|	0	uvector length = 2| CLOSInstanceType|
 //------------------------------------------|
@@ -656,11 +656,12 @@ const char ASCII_NEWLINE	= (char)0x0a;
 //------------------------------------------|
 //|	2	slots								|
 //------------------------------------------|
-//|	3	unused								|
+//|	3	signature							|
 //------------------------------------------|
 #define CLOS_INSTANCE_CLASS_OFFSET	1
 #define CLOS_INSTANCE_SLOTS_OFFSET	2
-#define CLOS_INSTANCE_SIZE			2
+#define CLOS_INSTANCE_SIGNATURE_OFFSET	3
+#define CLOS_INSTANCE_SIZE			3
 
 //	Foreign stack pointer
 //------------------------------------------|
