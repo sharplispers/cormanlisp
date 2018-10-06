@@ -9,9 +9,15 @@
 ;;; Various special variables used by the system or the IDE
 ;;;
 
-;;; Set sockets:*ipv6* to NIL if you wish to disable
-;;; IPv6 socket functionality. Valid values are NIL, :only or t.
-(setq sockets:*ipv6* (when (sockets:ipv6-installed-p) t))
+;;; Starting from Corman Lisp 3.1.0, the variable *IPV6* is set to T and
+;;; the :IPv6 feature is added to the *FEATURES* list when lisp is
+;;; loaded, if IPv6 is installed in your computer. *IPV6* controls
+;;; whether IPv6 addresses are looked up by default during name
+;;; resolution. Valid values are; NIL, :ONLY and T. If IPv6 is installed
+;;; but you don’t have an IPv6 connection, it is best to set *IPV6* to
+;;; NIL as it may slow down connections by trying to unsuccessfully
+;;; connect to IPv6 addresses.
+; (setq sockets:*ipv6* nil)
 
 ;;; Set ccl:*auto-update-enabled* to NIL if you wish to disable
 ;;; automatic checking for updates (patches) by the IDE.
