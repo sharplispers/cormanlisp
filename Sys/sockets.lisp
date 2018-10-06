@@ -953,6 +953,11 @@ PORT: symbol, string or integer. TYPE: :stream (default) or :datagram."))
 ;(unless *sockets-started*
 ;	(start-sockets))
 
+(cl::register-load-image-restore-func
+    #'(lambda () (if (ipv6-installed-p)
+                            (let () (pushnew :ipv6 *features*) (setq *ipv6* t))
+                            (setq *features* (delete :ipv6 *features*) *ipv6* nil))))
+
 (provide 'SOCKETS)
 
 ;;;
