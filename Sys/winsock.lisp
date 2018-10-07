@@ -1051,8 +1051,10 @@ getnameinfo(
     (let ((host-text (malloc NI_MAXHOST)) (serv-text (if portp (malloc NI_MAXSERV) null)))
         (if (zerop (getnameinfo (addr-to-c addr) *addr-size* host-text NI_MAXHOST serv-text NI_MAXSERV
                                              (logior (if dottedp NI_NUMERICHOST 0) (if errorp NI_NAMEREQD 0))))
-            (values (c-string-to-lisp-string host-text) (when portp (c-string-to-lisp-string serv-text))) ; when portp... to return nil rather than numeric port string
-            (let ((error (WSAGetLastError)))  ; no error as in Vista and later but lets user know of failure by returning nil as the second value rather than numeric port string
+            (values (c-string-to-lisp-string host-text)
+                    (when portp (setq serv-text (c-string-to-lisp-string serv-text)) (unless (numberp (read-from-string serv-text)) serv-text)))
+            ; no error as in Vista and later but lets user know of failure by returning nil as the second value rather than numeric port string
+            (let ((error (WSAGetLastError)))
                 (if (and portp (eq WSANO_DATA error))
                     (get-name-info addr :dottedp dottedp :errorp errorp)
                     (when errorp (error "Winsock error ~A." error)))))))
