@@ -38,42 +38,29 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Standard|Win32 = Standard|Win32
-		Standard|x64 = Standard|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{99BD3558-DEEE-4F99-913E-DAC97A12926E}.Standard|Win32.ActiveCfg = Standard|Win32
 		{99BD3558-DEEE-4F99-913E-DAC97A12926E}.Standard|Win32.Build.0 = Standard|Win32
-		{99BD3558-DEEE-4F99-913E-DAC97A12926E}.Standard|x64.ActiveCfg = Standard|Win32
 		{F914CF4D-5904-477F-A388-00C05E749D18}.Standard|Win32.ActiveCfg = Standard|Win32
 		{F914CF4D-5904-477F-A388-00C05E749D18}.Standard|Win32.Build.0 = Standard|Win32
-		{F914CF4D-5904-477F-A388-00C05E749D18}.Standard|x64.ActiveCfg = Standard|Win32
 		{DE479E27-E406-43A8-BCBD-8506EBC31038}.Standard|Win32.ActiveCfg = Standard|Win32
 		{DE479E27-E406-43A8-BCBD-8506EBC31038}.Standard|Win32.Build.0 = Standard|Win32
-		{DE479E27-E406-43A8-BCBD-8506EBC31038}.Standard|x64.ActiveCfg = Standard|Win32
 		{95914474-F1BA-4190-8FF3-4F03386FC8D6}.Standard|Win32.ActiveCfg = Standard|Win32
 		{95914474-F1BA-4190-8FF3-4F03386FC8D6}.Standard|Win32.Build.0 = Standard|Win32
-		{95914474-F1BA-4190-8FF3-4F03386FC8D6}.Standard|x64.ActiveCfg = Standard|Win32
 		{AE675399-2236-4F77-BBAD-B665F9C1022C}.Standard|Win32.ActiveCfg = Standard|Win32
 		{AE675399-2236-4F77-BBAD-B665F9C1022C}.Standard|Win32.Build.0 = Standard|Win32
-		{AE675399-2236-4F77-BBAD-B665F9C1022C}.Standard|x64.ActiveCfg = Standard|Win32
 		{EE43A1A5-ED5E-4247-B0CF-FB5F3EC80A03}.Standard|Win32.ActiveCfg = Standard|Win32
 		{EE43A1A5-ED5E-4247-B0CF-FB5F3EC80A03}.Standard|Win32.Build.0 = Standard|Win32
-		{EE43A1A5-ED5E-4247-B0CF-FB5F3EC80A03}.Standard|x64.ActiveCfg = Standard|Win32
 		{C31B2675-B04B-45F1-BBB2-35F099375CF8}.Standard|Win32.ActiveCfg = Standard|Win32
 		{C31B2675-B04B-45F1-BBB2-35F099375CF8}.Standard|Win32.Build.0 = Standard|Win32
-		{C31B2675-B04B-45F1-BBB2-35F099375CF8}.Standard|x64.ActiveCfg = Standard|Win32
 		{FF6CFCF2-F424-4B17-93FF-469DEAD1D723}.Standard|Win32.ActiveCfg = Standard|Win32
 		{FF6CFCF2-F424-4B17-93FF-469DEAD1D723}.Standard|Win32.Build.0 = Standard|Win32
-		{FF6CFCF2-F424-4B17-93FF-469DEAD1D723}.Standard|x64.ActiveCfg = Standard|Win32
 		{AC999700-A6C5-4BBD-8A01-D29ED089E951}.Standard|Win32.ActiveCfg = Standard|Win32
 		{AC999700-A6C5-4BBD-8A01-D29ED089E951}.Standard|Win32.Build.0 = Standard|Win32
-		{AC999700-A6C5-4BBD-8A01-D29ED089E951}.Standard|x64.ActiveCfg = Standard|Win32
 		{9C2663C3-E055-42A7-A678-7A3F6472EC8D}.Standard|Win32.ActiveCfg = Standard|Win32
 		{9C2663C3-E055-42A7-A678-7A3F6472EC8D}.Standard|Win32.Build.0 = Standard|Win32
-		{9C2663C3-E055-42A7-A678-7A3F6472EC8D}.Standard|x64.ActiveCfg = Standard|Win32
 		{70E7D2D9-32CA-40E5-AC89-6CD71B4D1EF3}.Standard|Win32.ActiveCfg = Standard|Win32
-		{70E7D2D9-32CA-40E5-AC89-6CD71B4D1EF3}.Standard|Win32.Build.0 = Standard|Win32
-		{70E7D2D9-32CA-40E5-AC89-6CD71B4D1EF3}.Standard|x64.ActiveCfg = Standard|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

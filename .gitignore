@@ -27,6 +27,7 @@ HyperSpec-README.text
 *.wixobj
 *.wixpdb
 *.tar
+clbootapp/bin/
 installer/Standard/
 # automatically generated installer components
 installer/Libraries.wxs
