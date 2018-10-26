@@ -330,7 +330,7 @@
 
 (defvar *ipv6* nil "Controls whether IPv6 addresses will be looked up by default during name resolution. Valid values: nil, :only or t.")
 
-(defun ipv6-installed-p () (get-addr-info "::" :ipv6 :only))
+(defun ipv6-installed-p () (address-family-available-p winsock::AF_INET6))
 
 ;;; An ADDR is a plist of the form
 ;;; (:family AF_INETx :port p :flow f :ipaddr #(B1...Bi...Bn) :scope s :dotted string)

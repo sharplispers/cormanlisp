@@ -2119,6 +2119,14 @@ VOID WINAPI DebugBreak();
 (defwinconstant FORMAT_MESSAGE_ARGUMENT_ARRAY  #x00002000)
 (defwinconstant FORMAT_MESSAGE_MAX_WIDTH_MASK  #x000000FF)
 
+(defwinstruct GUID
+	((Data1  DWORD)
+	 (Data2  WORD)
+     (Data3  WORD)
+     (Data4  (BYTE 4))
+	))
+(defwintype LPGUID (GUID *))
+
 #! (:library "Kernel32" :ignore "WINUSERAPI" :export t :pascal "WINAPI")
 DWORD WINAPI FormatMessageA(DWORD dwFlags,LPCVOID lpSource,DWORD dwMessageId,DWORD dwLanguageId,
 			LPSTR lpBuffer, DWORD nSize,void *Arguments);

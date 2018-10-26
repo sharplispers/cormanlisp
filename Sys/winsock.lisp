@@ -14,7 +14,7 @@
   (:shadow "LISTEN"))
 (in-package :winsock)
 
-(export '(*addr-size* c-to-addr addr-to-c get-addr-info get-name-info))
+(export '(*addr-size* c-to-addr addr-to-c get-addr-info get-name-info address-family-available-p))
 
 #! (:export t :library "WS2_32")
 /* 
@@ -498,6 +498,7 @@ struct sockproto {
 #define PF_UNSPEC       AF_UNSPEC
 #define PF_UNIX         AF_UNIX
 #define PF_INET         AF_INET
+#define PF_INET6        AF_INET6
 #define PF_IMPLINK      AF_IMPLINK
 #define PF_PUP          AF_PUP
 #define PF_CHAOS        AF_CHAOS
@@ -1000,6 +1001,107 @@ getnameinfo(
 
 !#
 
+;; protocol enumeration functionality
+
+#!  (:export t :library "WS2_32")
+#define MAX_PROTOCOL_CHAIN 7
+
+#define BASE_PROTOCOL      1
+#define LAYERED_PROTOCOL   0
+
+#define WSAPROTOCOL_LEN  255
+!#
+
+(win32:defwinstruct WSAPROTOCOLCHAIN
+      ((ChainLen win32::int)
+       (ChainEntries (win32::DWORD MAX_PROTOCOL_CHAIN))))
+(win32:defwintype LPWSAPROTOCOLCHAIN (WSAPROTOCOLCHAIN *))
+            
+(win32:defwinstruct WSAPROTOCOL_INFOW
+      ((dwServiceFlags1 win32::DWORD)
+       (dwServiceFlags2 win32::DWORD)
+       (dwServiceFlags3 win32::DWORD)
+       (dwServiceFlags4 win32::DWORD)
+       (dwProviderFlags win32::DWORD)
+       (ProviderId win32::GUID)
+       (dwCatalogEntryId win32::DWORD)
+       (ProtocolChain WSAPROTOCOLCHAIN)
+       (iVersion win32::int)
+       (iAddressFamily win32::int)
+       (iMaxSockAddr win32::int)
+       (iMinSockAddr win32::int)
+       (iSocketType win32::int)
+       (iProtocol win32::int)
+       (iProtocolMaxOffset win32::int)
+       (iNetworkByteOrder win32::int)
+       (iSecurityScheme win32::int)
+       (dwMessageSize win32::DWORD)
+       (dwProviderReserved win32::DWORD)
+       (szProtocol (win32::WCHAR #| WSAPROTOCOL_LEN + 1 |# 256))))
+(win32:defwintype LPWSAPROTOCOL_INFOW (WSAPROTOCOL_INFOW *))
+
+(win32:defwinstruct WSAPROTOCOL_INFOA
+      ((dwServiceFlags1 win32::DWORD)
+       (dwServiceFlags2 win32::DWORD)
+       (dwServiceFlags3 win32::DWORD)
+       (dwServiceFlags4 win32::DWORD)
+       (dwProviderFlags win32::DWORD)
+       (ProviderId win32::GUID)
+       (dwCatalogEntryId win32::DWORD)
+       (ProtocolChain WSAPROTOCOLCHAIN)
+       (iVersion win32::int)
+       (iAddressFamily win32::int)
+       (iMaxSockAddr win32::int)
+       (iMinSockAddr win32::int)
+       (iSocketType win32::int)
+       (iProtocol win32::int)
+       (iProtocolMaxOffset win32::int)
+       (iNetworkByteOrder win32::int)
+       (iSecurityScheme win32::int)
+       (dwMessageSize win32::DWORD)
+       (dwProviderReserved win32::DWORD)
+       (szProtocol (win32::CHAR #| WSAPROTOCOL_LEN + 1 |# 256))))
+(win32:defwintype LPWSAPROTOCOL_INFOA (WSAPROTOCOL_INFOA *))
+
+#! (:export t :library "WS2_32")
+/* Flag bit definitions for dwProviderFlags */
+#define PFL_MULTIPLE_PROTO_ENTRIES          0x00000001
+#define PFL_RECOMMENDED_PROTO_ENTRY         0x00000002
+#define PFL_HIDDEN                          0x00000004
+#define PFL_MATCHES_PROTOCOL_ZERO           0x00000008
+#define PFL_NETWORKDIRECT_PROVIDER          0x00000010
+
+/* Flag bit definitions for dwServiceFlags1 */
+#define XP1_CONNECTIONLESS                  0x00000001
+#define XP1_GUARANTEED_DELIVERY             0x00000002
+#define XP1_GUARANTEED_ORDER                0x00000004
+#define XP1_MESSAGE_ORIENTED                0x00000008
+#define XP1_PSEUDO_STREAM                   0x00000010
+#define XP1_GRACEFUL_CLOSE                  0x00000020
+#define XP1_EXPEDITED_DATA                  0x00000040
+#define XP1_CONNECT_DATA                    0x00000080
+#define XP1_DISCONNECT_DATA                 0x00000100
+#define XP1_SUPPORT_BROADCAST               0x00000200
+#define XP1_SUPPORT_MULTIPOINT              0x00000400
+#define XP1_MULTIPOINT_CONTROL_PLANE        0x00000800
+#define XP1_MULTIPOINT_DATA_PLANE           0x00001000
+#define XP1_QOS_SUPPORTED                   0x00002000
+#define XP1_INTERRUPT                       0x00004000
+#define XP1_UNI_SEND                        0x00008000
+#define XP1_UNI_RECV                        0x00010000
+#define XP1_IFS_HANDLES                     0x00020000
+#define XP1_PARTIAL_MESSAGE                 0x00040000
+#define XP1_SAN_SUPPORT_SDP                 0x00080000
+
+int PASCAL FAR WSCEnumProtocols(
+  LPINT               lpiProtocols,
+  LPWSAPROTOCOL_INFOW lpProtocolBuffer,
+  LPDWORD             lpdwBufferLength,
+  LPINT               lpErrno
+);
+
+!#
+
 (defvar *addr-size* 28) 
 
 (defun clear-mem (buffer size) (dotimes (n size) (setf (cref (byte *) buffer n) 0))) ; define calloc?
@@ -1058,5 +1160,26 @@ getnameinfo(
                 (if (and portp (eq WSANO_DATA error))
                     (get-name-info addr :dottedp dottedp :errorp errorp)
                     (when errorp (error "Winsock error ~A." error)))))))
+
+(defun address-family-available-p (address-family)
+  (let* ((lpdwBufferLength (ct:malloc (ct:sizeof 'win32::DWORD)))
+         (lpiErrno (ct:malloc (ct:sizeof 'win32::int))))
+    (setf (ct:cref (win32::DWORD *) lpdwBufferLength 0) 0)
+    (setf (ct:cref (win32::int *) lpiErrno 0) 0)
+    (unwind-protect
+        (progn
+          (WSCEnumProtocols (ct::int-to-foreign-ptr 0) (ct::int-to-foreign-ptr 0) lpdwBufferLength lpiErrno)
+          (let ((protocols-info-array (ct:malloc (ct:cref (win32::DWORD *) lpdwBufferLength 0))))
+            (unwind-protect
+                (let ((protocols-count (WSCEnumProtocols (ct::int-to-foreign-ptr 0) protocols-info-array lpdwBufferLength lpiErrno)))
+                  (block enumeration-loop
+                    (dotimes (n protocols-count)
+                      (let ((proto (cref (WSAPROTOCOL_INFOW *) protocols-info-array n)))
+                        (when (= (cref WSAPROTOCOL_INFOW proto iAddressFamily)
+                                 address-family)
+                          (return-from enumeration-loop t))))))
+              (ct:free protocols-info-array))))
+      (ct:free lpdwBufferLength)
+      (ct:free lpiErrno))))
 
 (provide "WINSOCK")
