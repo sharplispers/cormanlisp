@@ -72,10 +72,11 @@
       (with-output-to-string (out)
 	(simple-echo-xml in out))))
 
-(assert
+(dolist (*ignore-namespaces* '(nil t)) 
+  (assert
  (let ((xml "<FOO ATT1='1' ATT2='2'><B>Text</B><EMPTY></EMPTY>More text!<SUB><SUB></SUB></SUB></FOO>"))
    (equal (simple-echo-xml-string xml)
-          xml)))
+            xml))))
 
 (assert 
   (let ((xml "<p> </p>"))

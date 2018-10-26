@@ -1,6 +1,6 @@
 ;;;; -*- mode: lisp -*-
 ;;;;
-;;;; $Id: package.lisp,v 1.6 2005/11/20 14:24:34 scaekenberghe Exp $
+;;;; $Id: package.lisp,v 1.7 2006/01/19 20:00:06 scaekenberghe Exp $
 ;;;;
 ;;;; This is a Common Lisp implementation of a very basic XML parser.
 ;;;; The parser is non-validating.
@@ -8,7 +8,7 @@
 ;;;; see also http://pobox.com/~oleg/ftp/Scheme/xml.html or http://ssax.sourceforge.net
 ;;;; Different DOM models are provided, an XSML, an LXML and a xml-element struct based one.
 ;;;;
-;;;; Copyright (C) 2002, 2003, 2004, 2005 Sven Van Caekenberghe, Beta Nine BVBA.
+;;;; Copyright (C) 2002, 2003, 2004, 2005, 2006 Sven Van Caekenberghe, Beta Nine BVBA.
 ;;;;
 ;;;; You are granted the rights to distribute and use this software
 ;;;; as governed by the terms of the Lisp Lesser General Public License
@@ -23,6 +23,11 @@
    #:xml-parser-error #:xml-parser-error-message #:xml-parser-error-args #:xml-parser-error-stream
    #:xml-parser-state #:get-entities #:get-seed
    #:get-new-element-hook #:get-finish-element-hook #:get-text-hook
+   ;; callbacks
+   #:*attribute-name-parser*
+   #:*attribute-value-parser*
+   #:parse-attribute-name
+   #:parse-attribute-value
    ;; dom parser and printer
    #:parse-xml-dom #:parse-xml #:parse-xml-string #:parse-xml-file
    #:print-xml-dom #:print-xml #:print-xml-string

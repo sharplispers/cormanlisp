@@ -1,6 +1,6 @@
 ;;;; -*- mode: lisp -*-
 ;;;;
-;;;; $Id: dom.lisp,v 1.2 2005/08/29 15:01:47 scaekenberghe Exp $
+;;;; $Id: dom.lisp,v 1.1.1.1 2004/06/07 18:49:56 scaekenberghe Exp $
 ;;;;
 ;;;; This is the generic simple DOM parser and printer interface.
 ;;;;

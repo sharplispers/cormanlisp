@@ -1,6 +1,6 @@
 ;;;; -*- mode: lisp -*-
 ;;;;
-;;;; $Id: xml-struct-dom.lisp,v 1.3 2005/09/20 09:57:48 scaekenberghe Exp $
+;;;; $Id: xml-struct-dom.lisp,v 1.2 2005/08/29 15:01:47 scaekenberghe Exp $
 ;;;;
 ;;;; XML-STRUCT implementation of the generic DOM parser and printer.
 ;;;;

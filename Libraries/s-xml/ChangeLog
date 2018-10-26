@@ -1,3 +1,9 @@
+2006-01-19 Sven Van Caekenberghe <svc@mac.com>
+
+	* added a set of patches contributed by David Tolpin dvd@davidashen.net : we're now using char of type 
+	Character and #\Null instead of null, read/unread instead of peek/read and some more declarations for
+	more efficiency - added hooks for customizing parsing attribute names and values
+
 2005-11-20 Sven Van Caekenberghe <svc@mac.com>
 
 	* added xml prefix namespace as per REC-xml-names-19990114 (by Rudi Schlatte)

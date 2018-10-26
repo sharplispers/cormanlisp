@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.3 2004/07/08 19:31:22 scaekenberghe Exp $
+# $Id: Makefile,v 1.2 2004/06/11 13:46:48 scaekenberghe Exp $
 
 default:
 	@echo Possible targets:

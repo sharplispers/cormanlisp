@@ -44,15 +44,21 @@
 					      " text, with a leading & trailing space "))))
 
 (assert
- (xml-element-p (parse-xml-file (merge-pathnames "xhtml-page.xml" *load-pathname*)
+ (xml-element-p (parse-xml-file (merge-pathnames "test/xhtml-page.xml"
+						 (asdf:component-pathname
+						  (asdf:find-system :s-xml.test)))
 				:output-type :xml-struct)))
 
 (assert
- (xml-element-p (parse-xml-file (merge-pathnames "ant-build-file.xml" *load-pathname*)
+ (xml-element-p (parse-xml-file (merge-pathnames "test/ant-build-file.xml"
+						 (asdf:component-pathname
+						  (asdf:find-system :s-xml.test)))
 				:output-type :xml-struct)))
 
 (assert
- (xml-element-p (parse-xml-file (merge-pathnames "plist.xml" *load-pathname*)
+ (xml-element-p (parse-xml-file (merge-pathnames "test/plist.xml"
+						 (asdf:component-pathname
+						  (asdf:find-system :s-xml.test)))
 				:output-type :xml-struct)))
 
 (assert

@@ -1,4 +1,4 @@
-<!-- $Id: ant-build-file.xml,v 1.1.1.1 2004/06/07 18:49:59 scaekenberghe Exp $ -->
+<!-- $Id: ant-build-file.xml,v 1.1 2003/03/18 08:22:09 sven Exp $ -->
 <!-- Ant 1.2 build file -->
 
 <project name="Libretto" default="compile" basedir=".">

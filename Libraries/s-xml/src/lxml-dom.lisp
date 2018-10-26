@@ -1,6 +1,6 @@
 ;;;; -*- mode: lisp -*-
 ;;;;
-;;;; $Id: lxml-dom.lisp,v 1.6 2005/11/20 14:34:15 scaekenberghe Exp $
+;;;; $Id: lxml-dom.lisp,v 1.5 2005/09/20 09:57:44 scaekenberghe Exp $
 ;;;;
 ;;;; LXML implementation of the generic DOM parser and printer.
 ;;;;

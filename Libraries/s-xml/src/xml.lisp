@@ -1,15 +1,15 @@
 ;;;; -*- mode: lisp -*-
 ;;;;
-;;;; $Id: xml.lisp,v 1.14 2005/11/20 14:24:34 scaekenberghe Exp $
+;;;; $Id: xml.lisp,v 1.15 2006/01/19 20:00:06 scaekenberghe Exp $
 ;;;;
 ;;;; This is a Common Lisp implementation of a basic but usable XML parser.
-;;;; The parser is non-validating and not complete (no CDATA).
+;;;; The parser is non-validating and not complete (no PI).
 ;;;; Namespace and entities are handled.
 ;;;; The API into the parser is a pure functional parser hook model that comes from SSAX,
 ;;;; see also http://pobox.com/~oleg/ftp/Scheme/xml.html or http://ssax.sourceforge.net
 ;;;; Different DOM models are provided, an XSML, an LXML and a xml-element struct based one.
 ;;;;
-;;;; Copyright (C) 2002, 2003, 2004, 2005 Sven Van Caekenberghe, Beta Nine BVBA.
+;;;; Copyright (C) 2002, 2003, 2004, 2005, 2006 Sven Van Caekenberghe, Beta Nine BVBA.
 ;;;;
 ;;;; You are granted the rights to distribute and use this software
 ;;;; as governed by the terms of the Lisp Lesser General Public License
@@ -44,11 +44,34 @@
 		  :message message
 		  :args args
 		  :stream stream))
+
+;; attribute parsing hooks 
+;; this is a bit complicated, refer to the mailing lists for a more detailed explanation
    
+(defun parse-attribute-name (string)
+  "Default parser for the attribute name"
+  (declare (special *namespaces*))
+  (resolve-identifier string *namespaces* t))
+
+(defun parse-attribute-value (name string)
+  "Default parser for the attribute value"
+  (declare (ignore name)
+           (special *ignore-namespace*))
+  (if *ignore-namespaces*
+      (copy-seq string)
+      string))
+
+(defparameter *attribute-name-parser* #'parse-attribute-name
+  "Called to compute interned attribute name from a buffer that will be reused")
+
+(defparameter *attribute-value-parser* #'parse-attribute-value
+  "Called to compute an element of an attribute list from a buffer that will be reused")
+
 ;;; utilities
 
 (defun whitespace-char-p (char)
   "Is char an XML whitespace character ?"
+  (declare (type character char))
   (or (char= char #\space)
       (char= char #\tab)
       (char= char #\return)
@@ -56,6 +79,7 @@
 
 (defun identifier-char-p (char)
   "Is char an XML identifier character ?"
+  (declare (type character char))
   (or (and (char<= #\A char) (char<= char #\Z))
       (and (char<= #\a char) (char<= char #\z))
       (and (char<= #\0 char) (char<= char #\9))
@@ -68,8 +92,9 @@
   "Skip over XML whitespace in stream, return first non-whitespace
   character which was peeked but not read, return nil on eof"
   (loop
-   (let ((char (peek-char nil stream nil nil)))
-     (if (and char (whitespace-char-p char))
+   (let ((char (peek-char nil stream nil #\Null)))
+     (declare (type character char))
+     (if (whitespace-char-p char)
 	 (read-char stream)
        (return char)))))
 
@@ -111,14 +136,16 @@
 	  (gethash "nbsp" entities) (string #\space))
     entities))
 
-(defun resolve-entity (stream extendable-string entities &optional (entity (make-extendable-string)))
+(defun resolve-entity (stream extendable-string entities entity)
   "Read and resolve an XML entity from stream, positioned after the '&' entity marker, 
   accepting &name; &#DEC; and &#xHEX; formats,
   destructively modifying string, which is also returned,
   destructively modifying entity, incorrect entity formats result in errors"
+  (declare (type (vector character) entity))
   (loop
-   (let ((char (read-char stream nil nil)))
-     (cond ((null char) (error (parser-error "encountered eof before end of entity")))
+   (let ((char (read-char stream nil #\Null)))
+     (declare (type character char))
+     (cond ((char= char #\Null) (error (parser-error "encountered eof before end of entity")))
 	   ((char= #\; char) (return))
 	   (t (vector-push-extend char entity)))))
   (if (char= (char entity 0) #\#)
@@ -153,6 +180,13 @@
             :initarg :package
             :initform nil))
   (:documentation "Describes an XML namespace and how it is handled"))
+
+(setf (documentation 'get-uri 'function)
+      "The URI used to identify this namespace"
+      (documentation 'get-prefix 'function)
+      "The preferred prefix assigned to this namespace"
+      (documentation 'get-package 'function)
+      "The Common Lisp package where this namespace's symbols are interned")
 
 (defmethod print-object ((object xml-namespace) stream)
   (print-unreadable-object (object stream :type t :identity t)
@@ -389,25 +423,29 @@
 (defun parse-whitespace (stream extendable-string)
   "Read and collect XML whitespace from stream in string which is
   destructively modified, return first non-whitespace character which
-  was peeked but not read, return nil on eof"
+  was peeked but not read, return #\Null on eof"
+  (declare (type (vector character) extendable-string))
   (loop
-   (let ((char (peek-char nil stream nil nil)))
-     (if (and char (whitespace-char-p char))
+   (let ((char (peek-char nil stream nil #\Null)))
+     (declare (type character char))
+     (if (whitespace-char-p char)
 	 (vector-push-extend (read-char stream) extendable-string)
        (return char)))))
 
-(defun parse-string (stream state &optional (string (make-extendable-string)))
+(defun parse-string (stream state string)
   "Read and return an XML string from stream, delimited by either
   single or double quotes, the stream is expected to be on the opening
   delimiter, at the end the closing delimiter is also read, entities
   are resolved, eof before end of string is an error"
-  (let ((delimiter (read-char stream nil nil))
-	(char))
-    (when (or (null delimiter) (not (or (char= delimiter #\') (char= delimiter #\"))))
+  (declare (type (vector character) string))
+  (let ((delimiter (read-char stream nil #\Null))
+	(char #\Null))
+    (declare (type character delimiter char))
+    (unless (or (char= delimiter #\') (char= delimiter #\"))
       (error (parser-error "expected string delimiter" nil stream)))
     (loop
-     (setf char (read-char stream nil nil))
-     (cond ((null char) (error (parser-error "encountered eof before end of string")))
+     (setf char (read-char stream nil #\Null))
+     (cond ((char= char #\Null) (error (parser-error "encountered eof before end of string")))
 	   ((char= char delimiter) (return))
 	   ((char= char #\&) (resolve-entity stream string (get-entities state) (get-mini-buffer state)))
 	   (t (vector-push-extend char string))))
@@ -417,10 +455,12 @@
   "Read and collect XML text from stream in string which is
   destructively modified, the text ends with a '<', which is peeked and
   returned, entities are resolved, eof is considered an error"
-  (let (char)
+  (declare (type (vector character) extendable-string))
+  (let ((char #\Null))
+    (declare (type character char))
     (loop
-     (setf char (peek-char nil stream nil nil))
-     (when (null char) (error (parser-error "encountered unexpected eof in text")))
+     (setf char (peek-char nil stream nil #\Null))
+     (when (char= char #\Null) (error (parser-error "encountered unexpected eof in text")))
      (when (char= char #\<) (return))
      (read-char stream)
      (if (char= char #\&)
@@ -428,17 +468,19 @@
        (vector-push-extend char extendable-string)))
     char))
 
-(defun parse-identifier (stream &optional (identifier (make-extendable-string)))
+(defun parse-identifier (stream identifier)
   "Read and returns an XML identifier from stream, positioned at the
   start of the identifier, ending with the first non-identifier
   character, which is peeked, the identifier is written destructively
   into identifier which is also returned"
+  (declare (type (vector character) identifier))
   (loop
-   (let ((char (peek-char nil stream nil nil)))
-     (cond ((and char (identifier-char-p char))
-	    (read-char stream)
+   (let ((char (read-char stream nil #\Null)))
+     (declare (type character char))
+     (cond ((identifier-char-p char)
 	    (vector-push-extend char identifier))
 	   (t
+            (when (char/= char #\Null) (unread-char char stream))
 	    (return identifier))))))
 	 
 (defun skip-comment (stream)
@@ -448,25 +490,27 @@
   (let ((dashes-to-read 2))
     (loop
      (if (zerop dashes-to-read) (return))
-     (let ((char (read-char stream nil nil)))
-       (if (null char)
+     (let ((char (read-char stream nil #\Null)))
+       (declare (type character char))
+       (if (char= char #\Null)
 	   (error (parser-error "encountered unexpected eof for comment")))
        (if (char= char #\-)
 	   (decf dashes-to-read)
 	 (setf dashes-to-read 2)))))
-  (if (char/= (read-char stream nil nil) #\>)
+  (if (char/= (read-char stream nil #\Null) #\>)
       (error (parser-error "expected > ending comment" nil stream))))
 
-(defun read-cdata (stream state &optional (string (make-extendable-string)))
+(defun read-cdata (stream state string)
   "Reads in the CDATA and calls the callback for CDATA if it exists"
   ;; we already read the <![CDATA[ stuff
   ;; continue to read until we hit ]]>
   (let ((char #\space)
 	(last-3-characters (list #\[ #\A #\T))
 	(pattern (list #\> #\] #\])))
+    (declare (type character char))
     (loop
-     (setf char (read-char stream nil nil))
-     (when (null char) (error (parser-error "encountered unexpected eof in text")))
+     (setf char (read-char stream nil #\Null))
+     (when (char= char #\Null) (error (parser-error "encountered unexpected eof in text")))
      (push char last-3-characters)
      (setf (cdddr last-3-characters) nil)
      (cond
@@ -487,18 +531,19 @@
   stream, positioned after the opening '<', unexpected eof is an error"
   ;; opening < has been read, consume ? or !
   (read-char stream)
-  (let ((char (read-char stream nil nil)))
+  (let ((char (read-char stream nil #\Null)))
+    (declare (type character char))
     ;; see if we are dealing with a comment
     (when (char= char #\-)
-      (setf char (read-char stream nil nil))
+      (setf char (read-char stream nil #\Null))
       (when (char= char #\-)
 	(skip-comment stream)
 	(return-from skip-special-tag)))
     ;; maybe we are dealing with CDATA?
     (when (and (char= char #\[)
 	       (loop :for pattern :across "CDATA["
-		     :for char = (read-char stream nil nil)
-		     :when (null char) :do
+		     :for char = (read-char stream nil #\Null)
+		     :when (char= char #\Null) :do
 		     (error (parser-error "encountered unexpected eof in cdata"))
 		     :always (char= char pattern)))
       (read-cdata stream state (get-buffer state))
@@ -506,16 +551,17 @@
     ;; loop over chars, dealing with strings (skipping their content)
     ;; and counting opening and closing < and > chars
     (let ((taglevel 1)
-	  (string-delimiter))
+	  (string-delimiter #\Null))
+      (declare (type character string-delimiter))
       (loop
        (when (zerop taglevel) (return))
-       (setf char (read-char stream nil nil))
-       (when (null char)
+       (setf char (read-char stream nil #\Null))
+       (when (char= char #\Null)
 	 (error (parser-error "encountered unexpected eof for special (! or ?) tag" nil stream)))
-       (if string-delimiter
+       (if (char/= string-delimiter #\Null)
 	   ;; inside a string we only look for a closing string delimiter
 	   (when (char= char string-delimiter)
-	     (setf string-delimiter nil))
+	     (setf string-delimiter #\Null))
 	 ;; outside a string we count < and > and watch out for strings
 	 (cond ((or (char= char #\') (char= char #\")) (setf string-delimiter char))
 	       ((char= char #\<) (incf taglevel))
@@ -528,24 +574,31 @@
   identifier, returning the attributes as an assoc list, ending at
   either a '>' or a '/' which is peeked and also returned"
   (declare (special *namespaces*))
-  (let (char attributes)
+  (let ((char #\Null) attributes)
+    (declare (type character char))
     (loop
      ;; skip whitespace separating items
      (setf char (skip-whitespace stream))
      ;; start tag attributes ends with > or />
-     (when (and char (or (char= char #\>) (char= char #\/))) (return))
+     (when (or (char= char #\>) (char= char #\/)) (return))
      ;; read the attribute key
-     (let ((key (copy-seq (parse-identifier stream (get-mini-buffer state)))))
+     (let ((key (let ((string (parse-identifier stream (get-mini-buffer state))))
+                  (if *ignore-namespaces* 
+                      (funcall *attribute-name-parser* string)
+                      (copy-seq string)))))
        ;; skip separating whitespace
        (setf char (skip-whitespace stream))
        ;; require = sign (and consume it if present)
-       (if (and char (char= char #\=))
+       (if (char= char #\=)
 	   (read-char stream)
 	 (error (parser-error "expected =" nil stream)))
        ;; skip separating whitespace
        (skip-whitespace stream)
        ;; read the attribute value as a string
-       (push (cons key (copy-seq (parse-string stream state (get-buffer state))))
+       (push (cons key (let ((string (parse-string stream state (get-buffer state))))
+                         (if *ignore-namespaces* 
+                             (funcall *attribute-value-parser* key string)
+                             (copy-seq string))))
 	     attributes)))
     ;; return attributes peek char ending loop
     (values attributes char)))
@@ -554,10 +607,11 @@
   "Parse and return an XML element from stream, positioned after the opening '<'"
   (declare (special *namespaces*))
   ;; opening < has been read
-  (when (char= (peek-char nil stream nil nil) #\!)
+  (when (char= (peek-char nil stream nil #\Null) #\!)
     (skip-special-tag stream state)
     (return-from parse-xml-element))
-  (let (char buffer open-tag parent-seed has-children)
+  (let ((char #\Null) buffer open-tag parent-seed has-children)
+    (declare (type character char))
     (setf parent-seed (get-seed state))
     ;; read tag name (no whitespace between < and name ?)
     (setf open-tag (copy-seq (parse-identifier stream (get-mini-buffer state))))
@@ -565,16 +619,18 @@
     (multiple-value-bind (attributes peeked-char)
 	(parse-xml-element-attributes stream state)
       (let ((*namespaces* (extend-namespaces attributes *namespaces*)))
-        (setf open-tag (resolve-identifier open-tag *namespaces*)
-              attributes (loop :for (key . value) :in attributes
-                               :collect (cons (resolve-identifier key *namespaces* t) value)))
+        (setf open-tag (resolve-identifier open-tag *namespaces*))
+        (unless *ignore-namespaces*
+          (dolist (attribute attributes)
+            (setf (car attribute) (funcall *attribute-name-parser* (car attribute))
+                  (cdr attribute) (funcall *attribute-value-parser* (car attribute) (cdr attribute)))))
         (setf (get-seed state) (funcall (get-new-element-hook state)
                                         open-tag attributes (get-seed state)))
         (setf char peeked-char)
         (when (char= char #\/)
           ;; handle solitary tag of the form <tag .. />
           (read-char stream)
-          (setf char (read-char stream nil nil))
+          (setf char (read-char stream nil #\Null))
           (if (char= #\> char)
               (progn
                 (setf (get-seed state) (funcall (get-finish-element-hook state)
@@ -588,11 +644,12 @@
          ;; read whitespace into buffer
          (setf char (parse-whitespace stream buffer))
          ;; see what ended the whitespace scan
-         (cond ((null char) (error (parser-error "encountered unexpected eof handling ~a" (list open-tag))))
+         (cond ((char= char #\Null) (error (parser-error "encountered unexpected eof handling ~a"
+                                                         (list open-tag))))
                ((char= char #\<)
                 ;; consume the <
                 (read-char stream)
-                (if (char= (peek-char nil stream nil nil) #\/)
+                (if (char= (peek-char nil stream nil #\Null) #\/)
                     (progn
                       ;; handle the matching closing tag </tag> and done
                       ;; if we read whitespace as this (leaf) element's contents, it is significant
@@ -605,7 +662,7 @@
                         (unless (eq open-tag close-tag)
                           (error (parser-error "found <~a> not matched by </~a> but by <~a>"
                                                (list open-tag open-tag close-tag) stream)))
-                        (unless (char= (read-char stream nil nil) #\>)
+                        (unless (char= (read-char stream nil #\Null) #\>)
                           (error (parser-error "expected >" nil stream)))
                         (setf (get-seed state) (funcall (get-finish-element-hook state)
                                                         open-tag attributes parent-seed (get-seed state))))
@@ -626,12 +683,12 @@
   "Parse and return a toplevel XML element from stream, using parser state"
   (loop
    (let ((char (skip-whitespace stream)))
-     (when (null char) (return-from start-parse-xml))
+     (when (char= char #\Null) (return-from start-parse-xml))
      ;; skip whitespace until start tag
      (unless (char= char #\<)
        (error (parser-error "expected <" nil stream)))
      (read-char stream)			; consume peeked char
-     (setf char (peek-char nil stream nil nil))
+     (setf char (peek-char nil stream nil #\Null))
      (if (or (char= char #\!) (char= char #\?))
 	 ;; deal with special tags
 	 (skip-special-tag stream state)

@@ -31,4 +31,19 @@
                  (:file "sxml-dom" :depends-on ("dom"))
                  (:file "xml-struct-dom" :depends-on ("dom"))))))
 
+(defsystem :s-xml.test
+  :depends-on (:s-xml)
+  :components ((:module :test
+		:components ((:file "test-xml")
+ 			     (:file "test-xml-struct-dom")
+			     (:file "test-lxml-dom")
+ 			     (:file "test-sxml-dom")))))
+
+(defsystem :s-xml.examples
+  :depends-on (:s-xml)
+  :components ((:module :examples
+		:components ((:file "counter")
+			     (:file "echo")
+			     (:file "remove-markup")
+			     (:file "tracer")))))
 ;;;; eof
