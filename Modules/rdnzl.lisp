@@ -1,4 +1,4 @@
-(defparameter ccl::*rdnzl-version* "RDNZL-0.9.4")
+(defparameter ccl::*rdnzl-version* "RDNZL-0.13.3")
 (defparameter ccl::*rdnzl-path* 
     (concatenate 'string 
         ccl:*cormanlisp-directory*
