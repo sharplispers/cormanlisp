@@ -30,6 +30,7 @@
 		(setf (elt character-names-table (char-int ,char)) ,name)))
 
 (defcharname "NUL" 					(int-char 0))
+(defcharname "NULL" 				(int-char 0))
 (defcharname "CONTROL-A" 			(int-char 1))
 (defcharname "CONTROL-B" 			(int-char 2))
 (defcharname "CONTROL-C" 			(int-char 3))
