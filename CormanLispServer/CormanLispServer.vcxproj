@@ -80,7 +80,7 @@
       <SubSystem>Windows</SubSystem>
       <ImportLibrary>$(ProjectDir)\bin\CormanLispServer.lib</ImportLibrary>
       <DataExecutionPrevention>false</DataExecutionPrevention>
-      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
     </Link>
