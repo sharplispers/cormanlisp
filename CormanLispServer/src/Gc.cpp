@@ -3411,6 +3411,7 @@ void readHeap(FILE* is)
 
             // suspend all threads but the current one
             ThreadList.suspendAllOtherThreads();
+			GCCriticalSection.Enter();
 
             // input the header
             fread(&header, 1, sizeof(LispImageHeader), is);
@@ -3598,6 +3599,7 @@ void readHeap(FILE* is)
 		InterlockedIncrement(&ImageLoadsCount);
 
         // resume all suspended threads
+		GCCriticalSection.Leave();
         ThreadList.resumeAllOtherThreads();
         ThreadList.Unlock();
     }

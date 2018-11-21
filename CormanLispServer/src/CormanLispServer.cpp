@@ -604,7 +604,8 @@ extern "C" __declspec(dllexport) void BlessThread()
 		    //th->thread = OpenThread(THREAD_ALL_ACCESS, FALSE, th->threadID);
 		    th->type = ThreadRecord::BlessedThread;
 		    th->started = true;
-    		
+			th->image_loads_count = getImageLoadsCount();
+
 		    NumLispThreads++;
 		    ThreadList.insert(th);
 		    TlsSetValue(Thread_Index, th);
@@ -653,8 +654,11 @@ extern "C" __declspec(dllexport) void UnblessThread()
     {
 	    if (th)
 	    {
-		    popDynamicBinding(CURRENT_THREAD_ID);
-		    popDynamicBinding(CURRENT_THREAD_HANDLE);
+			if (th->image_loads_count == getImageLoadsCount())
+			{
+				popDynamicBinding(CURRENT_THREAD_ID);
+				popDynamicBinding(CURRENT_THREAD_HANDLE);
+			}
 		    CloseHandle(th->thread);
 
 		    // remove the thread record--this also deletes the ThreadRecord

@@ -30,6 +30,7 @@ struct ThreadRecord
 	PLEvent event;
 	int started;
 	int type;					// 0 = primary lisp, 1 = secondary lisp, 2 = blessed foreign
+	LONG image_loads_count;
 };
 
 class LispThreadQueue
