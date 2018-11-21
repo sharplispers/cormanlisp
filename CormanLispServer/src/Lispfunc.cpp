@@ -4468,7 +4468,7 @@ FunctEntry functTable[] =
 	{	"UPDATE-JUMP-TABLE",		UpdateJumpTable			},
     {   "%UNASSEMBLE",              (LispFunc)unassemble    },  // defined in Lisp via FFI
     {   "%LOADLIBRARY",             (LispFunc)LoadLibraryA  },  // defined in Lisp via FFI
-	{	"HARDWARE-GC",				Hardware_GC				},  // turn on or off hardware-assisted gc
+	{	"%HARDWARE-GC",				Hardware_GC				},  // turn on or off hardware-assisted gc
 
     // these are just here for Lisp reporting purposes (so the names in stack dumps are known)
     { "LispCall0",                  (LispFunc)LispCall0     },

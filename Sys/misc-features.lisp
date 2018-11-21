@@ -625,6 +625,18 @@
 		ccl::function-code-references
 		ccl::function-name))
 
+;; Hardware GC
+(defun ccl::hardware-gc-enabled-p ()
+    "Check if hardware GC is enabled."
+    (cl::%hardware-gc))
+
+(defun ccl::enable-hardware-gc (&optional (enabled? t))
+    "Enables or disables hardware GC depending on the value of ENABLED?."
+    (cl::%hardware-gc enabled?))
+
+(export '(ccl::hardware-gc-enabled-p
+        ccl::enable-hardware-gc))
+
 (in-package :cl)
 
 ;;; Redefine this hash function here to correctly handle strings with fill pointers
@@ -668,4 +680,5 @@
 	 (cl::resume-other-threads)))
 
 (export 'cl::%with-other-threads-suspended)
+
 
