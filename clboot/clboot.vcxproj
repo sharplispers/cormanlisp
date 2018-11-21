@@ -77,7 +77,7 @@
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>clboot.exe.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
