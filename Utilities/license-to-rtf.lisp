@@ -48,12 +48,30 @@
                                          ; ?)
                          pars)))
 
+(defun cleanup-hyperspec-terms (pars)
+  (mapcar #'(lambda (par)
+              (cond
+                ((string= par "------------------------------------------------------------------------ AUTHORSHIP INFORMATION ------------------------------------------------------------------------")
+                 "\\i AUTHORSHIP INFORMATION\\i0")
+                ((string= par "------------------------------------------------------------------------ IMPORTANT LEGAL NOTICES ------------------------------------------------------------------------")
+                 "\\i IMPORTANT LEGAL NOTICES\\i0")
+                (t par)))
+          pars))
+
 ;; generate RTF file from TXT file
-(defun generate-license-rtf (from to)
-  (write-rtf (read-text from) to))
+(defun generate-license-rtf (corman-license hyperspec-license to)
+  (let ((corman-pars (read-text corman-license))
+        (hyperspec-pars (read-text hyperspec-license)))
+    (write-rtf (concatenate 'list
+                            '("\\b 1. Corman Lisp terms of use:\\b0")
+                            corman-pars
+                            '("\\b 2. HyperSpec terms of use:\\b0")
+                            (cleanup-hyperspec-terms (remove-if #'null hyperspec-pars)))
+               to)))
 
 (generate-license-rtf
     (concatenate 'string *cormanlisp-directory* "LICENSE.txt")
+    (concatenate 'string *cormanlisp-directory* "HyperSpec-Legalese.text")
     (concatenate 'string *cormanlisp-directory* ".\\installer\\LICENSE.rtf"))
 
 
