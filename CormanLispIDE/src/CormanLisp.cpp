@@ -397,9 +397,9 @@ BOOL CCormanLispApp::InitInstance()
 	((CFrameWnd*)m_pMainWnd)->LoadFrame(IDR_MAINFRAME);
 	m_pMainWnd->ShowWindow(m_nCmdShow);
 
-	theApp.splashScreen = new CDialog();
-	theApp.splashScreen->Create(IDD_SPLASH);
-	theApp.startupTime = GetTickCount();
+	//theApp.splashScreen = new CDialog();
+	//theApp.splashScreen->Create(IDD_SPLASH);
+	//theApp.startupTime = GetTickCount();
 
 	// enable file manager drag/drop and DDE Execute open
 	m_pMainWnd->DragAcceptFiles();
