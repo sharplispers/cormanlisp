@@ -21,7 +21,6 @@
 CString getCormanLispDirectory();
 
 BEGIN_MESSAGE_MAP(AboutDialog, CDialog)
-	ON_COMMAND(ID_LEGAL_INFO,	OnLegalInfo)
 	ON_COMMAND(ID_CREDITS,		OnCreditsInfo)
 	ON_COMMAND(ID_CORMAN_NET,	OnCormanNet)
 END_MESSAGE_MAP()
@@ -68,23 +67,6 @@ BOOL AboutDialog::OnInitDialog()
 		((CButton*)item)->SetButtonStyle(BS_DEFPUSHBUTTON);
 	SetDefID(IDOK);
 	return FALSE;
-}
-
-void AboutDialog::OnLegalInfo()
-{
-	//LegalDialog legalDlg(IDD_LEGAL);
-	//int result = legalDlg.DoModal();
-	char CormanLispDirectory[MAX_PATH];
-
- 	DWORD chars = GetModuleFileName(0, CormanLispDirectory, sizeof(CormanLispDirectory));
-	int index = chars - 1;
-	while (index >= 0 && CormanLispDirectory[index] != '\\')
-		index--;
-	CormanLispDirectory[index] = 0;	// get rid of file name, just leave the path
-	if (chars > 0)
-		strcat_s(CormanLispDirectory, sizeof(CormanLispDirectory), "\\");
-	strcat_s(CormanLispDirectory, sizeof(CormanLispDirectory), "LICENSE.txt");
-	theApp.NavigateURL(CormanLispDirectory);
 }
 
 void AboutDialog::OnCreditsInfo()

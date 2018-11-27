@@ -9,7 +9,7 @@
       <UniqueIdentifier>{f0eacdc0-f9ea-4099-9212-a91b7a214344}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="RES">
       <UniqueIdentifier>{cbe399e0-4a35-4ded-bacc-93c776d113c9}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
@@ -68,9 +68,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="CormanLisp.rc">
-      <Filter>src</Filter>
-    </ResourceCompile>
+    <ResourceCompile Include="CormanLisp.rc" />
+    <ResourceCompile Include="Version.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\browser.h">
@@ -112,9 +111,6 @@
     <ClInclude Include="include\PreferencesDialog.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\SMDIChildWnd.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -139,82 +135,87 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="RES\background1.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\bitmap1.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\bmp00001.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\Browserfram.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\BrowserToolbar.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\Corman_2_2_splash.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\Corman_2_5_splash.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\Corman_2_splash.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\CormanLisp.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\CormanLisp.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\CormanLisp_2_5_small.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\CormanLisp_3_0_splash_499x312.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\CormanLisp_small.BMP">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\CormanLisp_smaller.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\embossed_logo.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\embossed_logo_2_5.BMP">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\feather--CL 3.0_small.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\ico00001.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="Res\icon1.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\idr_html.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\idr_lisp.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\idr_text.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\LispDoc.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\splash_tiny.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\TOOLBAR.BMP">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
     <None Include="RES\toolbar1.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>RES</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="RES\CormanLisp.exe.manifest">
+      <Filter>RES</Filter>
+    </Manifest>
   </ItemGroup>
 </Project>

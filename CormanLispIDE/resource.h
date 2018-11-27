@@ -1,12 +1,8 @@
-//		-------------------------------
-//		Copyright (c) Corman Technologies Inc.
-//		See LICENSE.txt for license information.
-//		-------------------------------
-
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by CormanLisp.rc
 //
+
 #define IDB_BITMAP2                     106
 #define IDB_SPLASH_301                  106
 #define IDD_DIALOG1                     128
@@ -15,19 +11,15 @@
 #define IDD_PREFERENCES                 131
 #define IDR_LISPSTATUS                  132
 #define IDD_VIEW_LISP_HEAP              133
-#define IDD_VIEW_REG_TOOLBAR            134
-#define IDD_VIEW_UNREG_TOOLBAR          135
 #define IDD_PAGE_SETUP_DIALOG           136
 #define IDD_ABOUTBOX                    137
 #define IDD_SPLASH                      138
-#define IDD_REG                         139
 #define IDD_CREDITS                     140
 #define IDD_GOTO_LINE                   141
 #define IDD_VIEW_LISPVARS               142
 #define IDC_SPLASH                      200
 #define IDB_CCLLOGO                     201
 #define IDB_CCLLOGO_SMALLER             202
-#define IDB_SPLASH_TINY                 203
 #define IDS_INVALID_MEASUREMENT         300
 #define IDS_MEASUREMENT_RANGE           301
 #define IDR_HTMLTYPE                    302
@@ -53,8 +45,6 @@
 #define IDR_LISPSOURCETYPE2             504
 #define IDR_TEXTTYPE                    505
 #define IDC_LIST1                       1000
-#define IDC_EDITNAME                    1003
-#define IDC_EDITORG                     1004
 #define IDC_EDITREGCODE                 1005
 #define IDC_REGVERSION                  1006
 #define IDC_DAYSREMAINING               1007
@@ -98,13 +88,11 @@
 #define IDC_BOX                         1304
 #define IDC_GOTO_LINE_NUMBER            1400
 #define IDC_URL_NAME                    1500
-#define IDC_REG_NAME                    1600
 #define ID_HELP_LICENSEAGREEMENT        33000
 #define ID_HELP_CREDITS                 33001
 #define ID_HELP_CORMANLISPCOM           33002
 #define ID_VIEW_LISP_HEAP               33003
 #define ID_WEB_BROWSE                   33004
-#define ID_LEGAL_INFO                   33005
 #define ID_CREDITS                      33006
 #define ID_CORMAN_NET                   33007
 #define ID_HINTBACKGROUNDCOLOR          33008

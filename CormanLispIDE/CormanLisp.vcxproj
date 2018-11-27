@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CormanLisp.rc" />
+    <ResourceCompile Include="Version.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\CoCormanLispClient.h" />
@@ -129,7 +130,6 @@
     <ClInclude Include="include\STDAFX.H" />
     <ClInclude Include="include\UtilFuncs.h" />
     <ClInclude Include="include\webbrowser.h" />
-    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="RES\background1.bmp" />
@@ -172,6 +172,9 @@
       <Project>{99bd3558-deee-4f99-913e-dac97a12926e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="RES\CormanLisp.exe.manifest" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

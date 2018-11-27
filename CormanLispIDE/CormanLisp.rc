@@ -1,7 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
-#include "../CormanLispServer/include/Version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -14,16 +13,19 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
-// Manifest resource
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "RES\\CormanLisp.exe.manifest"
+/////////////////////////////////////////////////////////////////////////////
+//
+// RT_MANIFEST
+//
+
+1                       RT_MANIFEST             "RES\\CormanLisp.exe.manifest"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -33,9 +35,13 @@ CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "RES\\CormanLisp.exe.manifest"
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "RES\\CormanLisp.ICO"
+
 IDR_TEXTTYPE            ICON                    "RES\\LispDoc.ICO"
+
 IDR_LISPSOURCETYPE1     ICON                    "res\\idr_text.ico"
+
 IDR_LISPSOURCETYPE2     ICON                    "res\\idr_lisp.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -43,20 +49,26 @@ IDR_LISPSOURCETYPE2     ICON                    "res\\idr_lisp.ico"
 //
 
 IDR_MAINFRAME           BITMAP                  "RES\\TOOLBAR.BMP"
+
 IDR_BROWSERFRAME        BITMAP                  "res\\BrowserToolbar.bmp"
+
 IDR_BROWSERFRAME1       BITMAP                  "res\\Browserfram.bmp"
+
 IDB_CCLLOGO             BITMAP                  "RES\\CormanLisp_small.BMP"
+
 IDB_CCLLOGO_SMALLER     BITMAP                  "RES\\CormanLisp_smaller.BMP"
+
 IDR_LISPSTATUS          BITMAP                  "res\\toolbar1.bmp"
-IDB_SPLASH_TINY         BITMAP                  "RES\\splash_tiny.bmp"
+
 IDB_SPLASH_301          BITMAP                  "RES\\feather--CL 3.0_small.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar
 //
 
-IDR_BROWSERFRAME TOOLBAR  19, 20
+IDR_BROWSERFRAME TOOLBAR 19, 20
 BEGIN
     BUTTON      IDC_URL_NAME
     BUTTON      ID_GO_BACK
@@ -67,7 +79,7 @@ BEGIN
     BUTTON      ID_GO_SEARCH
 END
 
-IDR_BROWSERFRAME1 TOOLBAR  16, 15
+IDR_BROWSERFRAME1 TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_FILE_NEW
     BUTTON      ID_FILE_OPEN
@@ -81,7 +93,7 @@ BEGIN
     BUTTON      ID_APP_ABOUT
 END
 
-IDR_LISPSTATUS TOOLBAR  30, 15
+IDR_LISPSTATUS TOOLBAR 30, 15
 BEGIN
     BUTTON      ID_LISPHEAP_0
     SEPARATOR
@@ -96,7 +108,7 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -121,7 +133,7 @@ BEGIN
     END
 END
 
-IDR_TEXTTYPE MENU 
+IDR_TEXTTYPE MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -163,7 +175,7 @@ BEGIN
         MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
         MENUITEM "&Heap Monitor",               ID_VIEW_LISP_HEAP
         MENUITEM "&Lisp Variables",             ID_VIEW_LISPVARIABLES
-		MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
     END
     POPUP "&Lisp"
     BEGIN
@@ -189,7 +201,7 @@ BEGIN
     END
 END
 
-IDR_LISPVIEW_CONTEXT MENU 
+IDR_LISPVIEW_CONTEXT MENU
 BEGIN
     POPUP "Context"
     BEGIN
@@ -203,7 +215,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     VK_F1,          ID_CONTEXT_HELP,        VIRTKEY, SHIFT, NOINVERT
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
@@ -232,7 +244,7 @@ END
 // Dialog
 //
 
-IDD_DIALOG1 DIALOG  0, 0, 192, 190
+IDD_DIALOG1 DIALOG 0, 0, 192, 190
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg"
@@ -253,36 +265,9 @@ IDD_SPLASH DIALOGEX 0, 0, 303, 153
 STYLE DS_SETFONT | DS_SETFOREGROUND | DS_3DLOOK | DS_CENTER | WS_POPUP | WS_VISIBLE
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    CONTROL         106,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE | SS_REALSIZEIMAGE | SS_SUNKEN | WS_BORDER,0,0,302,115
+    CONTROL         IDB_BITMAP2,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE | SS_REALSIZEIMAGE | SS_SUNKEN | WS_BORDER,0,0,302,115
     LTEXT           "Corman Lisp 3.0",IDC_STATIC,25,121,60,9
     LTEXT           "Copyright (c) Corman Technologies Inc. See LICENSE.txt for license information.",IDC_STATIC,89,121,203,8
-END
-
-IDD_REG DIALOGEX 0, 0, 365, 170
-STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Corman Lisp Registration"
-FONT 8, "MS Shell Dlg", 0, 0, 0x0
-BEGIN
-    DEFPUSHBUTTON   "Register Me",IDOK,250,154,50,14
-    CONTROL         201,IDC_STATIC,"Static",SS_BITMAP,7,7,153,138
-    LTEXT           "If you have a registration code please enter it below. If you would like information about registering your copy of Corman Lisp you may use either of the following:",IDC_STATIC,170,9,161,34
-    LTEXT           "Web:      www.cormanlisp.com",IDC_STATIC,170,44,157,8
-    LTEXT           "e-mail:     admin@cormanlisp.com",IDC_STATIC,170,55,157,8
-    LTEXT           "phone:    (707) 575-7800",IDC_STATIC,170,67,157,8
-    LTEXT           "address:  1060A Fourth St.",IDC_STATIC,170,77,157,8
-    LTEXT           "Santa Rosa, CA 95404   USA",IDC_STATIC,201,86,100,9
-    LTEXT           "Name:",IDC_STATIC,170,99,34,8
-    LTEXT           "Organization:",IDC_STATIC,170,112,41,8
-    //LTEXT           "Registration Code:",IDC_STATIC,170,125,60,8
-    DEFPUSHBUTTON   "Not Yet",IDCANCEL,308,154,50,14
-    EDITTEXT        IDC_EDITNAME,240,96,113,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDITORG,240,109,113,12,ES_AUTOHSCROLL
-    //EDITTEXT        IDC_EDITREGCODE,240,122,113,12,ES_AUTOHSCROLL
-    LTEXT           "Version:",IDC_STATIC,7,148,34,9
-    LTEXT           "CormanLisp 3.0",IDC_REGVERSION,102,148,56,10
-    //LTEXT           "Evaluation days remaining:",IDC_STATIC,7,160,85,8
-    //LTEXT           "0",IDC_DAYSREMAINING,101,160,51,8
-    PUSHBUTTON      "Legal Information",ID_LEGAL_INFO,161,154,64,14
 END
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 290, 198
@@ -291,15 +276,12 @@ CAPTION "About Corman Lisp..."
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,231,120,50,14
-    CONTROL         106,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE,7,0,273,89
+    CONTROL         IDB_BITMAP2,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE,7,0,273,89
     LTEXT           "User:",IDC_STATIC,115,156,34,8
-//    LTEXT           "Organization:",IDC_STATIC,115,165,41,8
     LTEXT           "Version:",IDC_STATIC,21,146,34,9
     LTEXT           "Corman Lisp 3.0",IDC_REGVERSION,116,146,164,10
     LTEXT           "Evaluation days remaining:",IDC_EVALMESSAGE,97,179,85,8
     LTEXT           "0",IDC_DAYSREMAINING,191,179,51,8
-//    LTEXT           "Static",IDC_ABOUTORG,163,165,98,8
-//    LTEXT           "Registered to:",IDC_STATIC,21,156,68,10
     LTEXT           "Static",IDC_ABOUTNAME,163,156,97,8
     CTEXT           "Corman Common Lisp",IDC_STATIC,45,99,118,9
     CTEXT           "Integrated Development Environment",IDC_STATIC,45,110,119,9
@@ -308,7 +290,7 @@ BEGIN
     PUSHBUTTON      "www.cormanlisp.com",ID_CORMAN_NET,197,98,84,14
 END
 
-IDD_LEGAL DIALOG  0, 0, 356, 196
+IDD_LEGAL DIALOG 0, 0, 356, 196
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Corman Lisp Legal Information"
 FONT 8, "MS Shell Dlg"
@@ -317,7 +299,7 @@ BEGIN
     EDITTEXT        IDC_LEGALTEXT,7,7,342,165,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL
 END
 
-IDD_CREDITS DIALOG  0, 0, 356, 196
+IDD_CREDITS DIALOG 0, 0, 356, 196
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Corman Lisp Credits"
 FONT 8, "MS Shell Dlg"
@@ -360,7 +342,7 @@ BEGIN
     CONTROL         "",ID_HIGHLIGHTTEXTCOLOR,"Button",BS_OWNERDRAW | WS_TABSTOP,310,144,11,12
     CONTROL         "",ID_OUTPUTTEXTCOLOR,"Button",BS_OWNERDRAW | WS_TABSTOP,310,159,11,12
     CONTROL         "",ID_HINTBACKGROUNDCOLOR,"Button",BS_OWNERDRAW | WS_TABSTOP,310,174,11,12
-    CONTROL         202,IDC_STATIC,"Static",SS_BITMAP,13,12,96,89
+    CONTROL         IDB_CCLLOGO_SMALLER,IDC_STATIC,"Static",SS_BITMAP,13,12,96,89
     GROUPBOX        "",IDC_STATIC,121,7,285,106
     CONTROL         "Replace Tabs With Spaces",IDC_REPLACE_TABS_WITH_SPACES,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,28,106,14
@@ -373,7 +355,7 @@ BEGIN
     CONTROL         "Auto Syntax Coloring",IDC_AUTO_COLORIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,284,55,81,10
 END
 
-IDD_GOTO_LINE DIALOG  0, 0, 162, 46
+IDD_GOTO_LINE DIALOG 0, 0, 162, 46
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Go To Line"
 FONT 8, "MS Shell Dlg"
@@ -395,23 +377,6 @@ BEGIN
     LTEXT           "Gen 0",IDC_STATIC,7,2,26,8
     LTEXT           "Gen 1",IDC_STATIC,41,2,26,8
     LTEXT           "Main",IDC_STATIC,86,2,23,8
-END
-
-IDD_VIEW_REG_TOOLBAR DIALOGEX 0, 0, 123, 19
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
-EXSTYLE WS_EX_TOOLWINDOW
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    LTEXT           "Registered to:",IDC_REG_NAME,6,5,109,8
-END
-
-IDD_VIEW_UNREG_TOOLBAR DIALOGEX 0, 0, 142, 19
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
-EXSTYLE WS_EX_TOOLWINDOW
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    LTEXT           "Evaluation Version",IDC_STATIC,6,5,69,8
-    DEFPUSHBUTTON   "Register Me",IDOK,85,3,50,14
 END
 
 IDD_VIEW_LISPVARS DIALOGEX 0, 0, 209, 19
@@ -456,7 +421,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_DIALOG1, DIALOG
     BEGIN
@@ -478,14 +443,6 @@ BEGIN
     BEGIN
         VERTGUIDE, 302
         BOTTOMMARGIN, 152
-    END
-
-    IDD_REG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 358
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 168
     END
 
     IDD_ABOUTBOX, DIALOG
@@ -531,9 +488,8 @@ BEGIN
         TOPMARGIN, 2
     END
 
-    IDD_VIEW_UNREG_TOOLBAR, DIALOG
+    IDD_VIEW_LISPVARS, DIALOG
     BEGIN
-        RIGHTMARGIN, 141
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -541,49 +497,10 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Version
-//
-
-VS_VERSION_INFO VERSIONINFO
- FILEVERSION VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, 0
- PRODUCTVERSION VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, 0
- FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x4L
- FILETYPE 0x1L
- FILESUBTYPE 0x0L
-BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040904b0"
-        BEGIN
-            VALUE "CompanyName", "Roger Corman"
-            VALUE "FileDescription", "CormanLisp"
-            VALUE "FileVersion", VERSION_STRING
-            VALUE "InternalName", "CormanLisp"
-            VALUE "LegalCopyright", "Copyright © Corman Technologies"
-            VALUE "OriginalFilename", "CormanLisp.exe"
-            VALUE "ProductName", "CormanLisp"
-            VALUE "ProductVersion", VERSION_STRING
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x409, 1200
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_INDICATOR_EXT        "EXT"
     ID_INDICATOR_CAPS       "CAP"
@@ -593,7 +510,7 @@ BEGIN
     ID_INDICATOR_REC        "REC"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_FINISHED_SEARCH     "Corman Lisp has finished searching the document."
     IDS_TITLE_FORMATBAR     "Formatting"
@@ -610,7 +527,7 @@ BEGIN
     IDS_INDICATOR_COLUMN_NUMBER "COL       "
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_NEW             "Create a new document"
     ID_FILE_OPEN            "Open an existing document"
@@ -621,12 +538,12 @@ BEGIN
     ID_FILE_PRINT           "Print the active document"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_DESKACCESSORY   "Opens the selected item"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright"
     ID_APP_EXIT             "Quit the application; prompts to save documents"
@@ -636,7 +553,7 @@ BEGIN
     ID_HELP                 "Display help for current task or command"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_MRU_FILE1       "Open this document"
     ID_FILE_MRU_FILE2       "Open this document"
@@ -644,14 +561,14 @@ BEGIN
     ID_FILE_MRU_FILE4       "Open this document"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_WINDOW_ARRANGE       "Arrange icons at the bottom of the window"
     ID_WINDOW_CASCADE       "Arrange windows so they overlap"
     ID_WINDOW_TILE_HORZ     "Arrange windows as non-overlapping tiles"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_EDIT_CLEAR           "Erase the selection"
     ID_EDIT_COPY            "Copy the selection and puts it on the Clipboard"
@@ -665,13 +582,13 @@ BEGIN
     ID_EDIT_REDO            "Redo the previous action"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_TOOLBAR         "Show or hide the toolbar"
     ID_VIEW_STATUS_BAR      "Show or hide the status bar"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCSIZE          "Change the window size"
     AFX_IDS_SCMOVE          "Change the window position"
@@ -681,21 +598,21 @@ BEGIN
     AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCRESTORE       "Restore the window to normal size"
     AFX_IDS_SCTASKLIST      "Activate Task List"
     AFX_IDS_MDICHILD        "Activate this window"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_APP_TITLE       "Corman Lisp"
     AFX_IDS_IDLEMESSAGE     "Ready  (Use <Shift>-Enter to Execute)"
     AFX_IDS_HELPMODEMESSAGE "Select an object on which to get Help"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "Corman Lisp"
     IDR_LISPSOURCETYPE1     "Read Corman Lisp credits"
@@ -703,18 +620,18 @@ BEGIN
     IDR_TEXTTYPE            "\nUntitled\nTEXT Document\nLisp Files (*.txt)\n.txt;\nTextFileType\nTEXT File Type\nTEXT\nText Files\n"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDR_HTMLTYPE            "Read Corman Lisp license agreement"
     IDR_HTMLTYPE2           "\nUntitled\nHTML Document\nHTML Files (*.htm)\n.htm\nHtmlFileType\nHTML File Type\nHTML\nHTML Files\n"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_HELP_CORMANLISPCOM   "Browse Corman Lisp web site"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_SELECTION       "Display the current selection in a list box"
     ID_EXECUTE_FILE         "Execute the Common Lisp source file"
@@ -724,12 +641,12 @@ BEGIN
     ID_GOTO_LINE            "Go to line number."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDD_PREFERENCES         "Open Editor preferences dialog."
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

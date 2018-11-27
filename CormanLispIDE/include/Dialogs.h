@@ -20,7 +20,6 @@ public:
 	AboutDialog(UINT nIDTemplate);
 	
 	BOOL OnInitDialog();
-	void OnLegalInfo();
 	void OnCreditsInfo();
 	void OnCormanNet();
 
