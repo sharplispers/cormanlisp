@@ -189,6 +189,7 @@ class CMainFrame : public CSMDIFrameWnd
 	LispVarsDialogBar m_lispVarsDialogBar;
 	int			m_currentLineNo;
 	int			m_currentColumnNo;
+	CDockBar* m_pOldDockBar;
 
 	//{{AFX_MSG(CMainFrame)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
@@ -198,9 +199,13 @@ class CMainFrame : public CSMDIFrameWnd
 	afx_msg void OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu);
 	afx_msg LRESULT OnUninitMenuPopup(WPARAM, LPARAM);
     afx_msg void OnMenuSelect(UINT nItemID, UINT nFlags, HMENU hSysMenu);
+	afx_msg void OnSizing(UINT in, LPRECT r);
 
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+
+	void DockToolbars(void);
+	void RedockToolbars(void);
 public:
 	void OnLispMenuItem(UINT nID);
     afx_msg LRESULT OnLispMenuItemByPosition(WPARAM, LPARAM);

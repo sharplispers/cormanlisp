@@ -1644,6 +1644,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CSMDIFrameWnd)
 	ON_WM_INITMENUPOPUP()
     ON_MESSAGE(WM_UNINITMENUPOPUP, CMainFrame::OnUninitMenuPopup)
     ON_WM_MENUSELECT()
+	ON_WM_SIZING()
 
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -1664,6 +1665,33 @@ static UINT indicators[] =
 	ID_INDICATOR_NUM,
 	ID_INDICATOR_SCRL
 };
+
+void CMainFrame::OnSizing(UINT in, LPRECT r)
+{
+	RedockToolbars();
+	CWnd::OnSizing(in, r);
+}
+
+void CMainFrame::DockToolbars(void)
+{
+	DockControlBar(&m_ToolBar);
+	DockControlBarLeftOf(&m_lispStatusDialogBar, &m_ToolBar);
+	DockControlBarLeftOf(&m_lispVarsDialogBar, &m_lispStatusDialogBar);
+}
+
+void CMainFrame::RedockToolbars(void)
+{
+	m_ToolBar.m_pDockBar = m_pOldDockBar;
+	m_lispStatusDialogBar.m_pDockBar = m_pOldDockBar;
+	m_lispStatusDialogBar.m_pDockBar = m_pOldDockBar;
+
+	DockToolbars();
+
+	// disable docking
+	m_ToolBar.m_pDockBar = NULL;
+	m_lispStatusDialogBar.m_pDockBar = NULL;
+	m_lispStatusDialogBar.m_pDockBar = NULL;
+}
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -1704,9 +1732,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_lispStatusDialogBar.EnableDocking(CBRS_ALIGN_ANY);
 	m_lispVarsDialogBar.EnableDocking(CBRS_ALIGN_ANY);
 	EnableDocking(CBRS_ALIGN_ANY);
-	DockControlBar(&m_ToolBar);
-	DockControlBarLeftOf(&m_lispStatusDialogBar, &m_ToolBar);
-	DockControlBarLeftOf(&m_lispVarsDialogBar, &m_lispStatusDialogBar);
+
+	// Make toolbars undockable
+	DockToolbars();
+	m_pOldDockBar = m_ToolBar.m_pDockBar;
+	RedockToolbars();
 
 	int res = CSMDIFrameWnd::OnCreate(lpCreateStruct);
 
