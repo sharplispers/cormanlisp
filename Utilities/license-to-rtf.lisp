@@ -15,20 +15,49 @@
 ;;;; provided with absolutely no warranty. See the COPYING and CREDITS
 ;;;; files for more information.
 
-(defun read-text (pathname)
-  (let ((pars (list nil)))
+(defun read-lines (pathname &optional reverse)
+  (let ((lines)
+        (oldpos))
     (with-open-file (f pathname :external-format :ascii)
-      (loop for line = (read-line f nil)
-            for text = (string-trim '(#\Space #\Tab) line)
-            while line
-            when (plusp (length text))
-            do (setf (car pars)
-                     (if (car pars)
-                         (concatenate 'string (car pars) " " text)
-                         text))
-            else
-            do (push nil pars)))
-    (remove-if #'null (nreverse pars))))
+      (do ((text (read-line f nil) (read-line f nil)))
+          ((null text))
+        (if reverse
+            (push text lines)
+            (if lines
+                (setf (cdr oldpos) (cons text nil)
+                      oldpos (cdr oldpos))
+                (setf oldpos
+                      (push text lines))))))
+    lines))
+
+(defun looks-like-numbered-list-member (str)
+  (multiple-value-bind (i p) (parse-integer str :junk-allowed t)
+    (and i (char= #\. (aref str p)))))
+    
+(defun read-text (pathname)
+  (let ((pars)
+        (lines (read-lines pathname)))
+    (dolist (l lines)
+      (let ((text (string-trim '(#\Space #\Tab #\Return) l)))
+        (cond
+          ((and (plusp (length text))
+                (null pars))
+           (push text pars))
+          ((plusp (length text))
+           (cond
+             ;; some heuristics to detect numbered lists 
+             ((and (car pars)
+                   (looks-like-numbered-list-member text))
+              (push text pars))
+             ((car pars)
+              (setf (car pars) (concatenate 'string (car pars) " " text)))
+             (t (setf (car pars) text))))
+          (t (when (car pars)
+               (push nil pars))))))
+    (nreverse (if (car pars)
+                  pars
+                  (cdr pars)))))
+
 
 (defun write-rtf (pars pathname)
   (with-open-file (f pathname :direction :output :external-format :ascii
@@ -69,7 +98,8 @@
                             '("\\b 2. HyperSpec terms of use:\\b0")
                             (cleanup-hyperspec-terms hyperspec-pars)
                             '("\\b 3. OpenSSL terms of use:\\b0")
-                            openssl-pars)
+                            openssl-pars
+                            '("\\b P.S. Certain code in the 'Modules' and 'Libraries' subdirectories carries different licensing terms. See the individual modules and libraries for details after the installation.\\b0"))
                to)))
 
 (generate-license-rtf
