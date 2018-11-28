@@ -88,7 +88,7 @@ void AboutDialog::OnCormanNet()
 	ei.nShow = SW_SHOWDEFAULT;
 	BOOL success = ShellExecuteEx(&ei);
 	*/
-	theApp.NavigateURL("http://www.cormanlisp.com");
+	theApp.ShellOpenURL("https://github.com/sharplispers/cormanlisp");
 }
 
 BEGIN_MESSAGE_MAP(LegalDialog, CDialog)

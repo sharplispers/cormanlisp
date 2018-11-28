@@ -78,10 +78,10 @@
     ;; remove old item 
     (win:remove-menu-item "&Help" 4)
     (win:create-menu-item 
-		(list :command "Corman Lisp &Forums..." 
-			(lambda (x)
-				(declare (ignore x)) 
-				(cl::display-url "www.artofprogramming.com")))
+		(list :command "Corman Lisp &Forum..." 
+			  (lambda (x)
+				  (declare (ignore x)) 
+				  (win::shell-execute "https://groups.google.com/d/forum/cormanlisp" "")))
 			"&Help" 
 		4))
 

@@ -1077,6 +1077,18 @@ void CCormanLispApp::OnBrowseCCLDoc()
 	NavigateURL(CormanLispDirectory);
 }
 
+void CCormanLispApp::ShellOpenURL(const char* url)
+{
+	SHELLEXECUTEINFOA ei;
+	memset(&ei, 0, sizeof(ei));
+	ei.cbSize = sizeof(ei);
+	ei.lpVerb = "open";
+	ei.lpFile = url;
+	ei.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ei.nShow = SW_SHOWDEFAULT;
+	BOOL success = ShellExecuteExA(&ei);
+}
+
 void CCormanLispApp::NavigateURL(const char* url)
 {
 	OnBrowse();
@@ -1125,7 +1137,7 @@ void CCormanLispApp::OnCredits()
 
 void CCormanLispApp::OnCormanLispCom()
 {
-	NavigateURL("http://www.cormanlisp.com");
+	ShellOpenURL("https://github.com/sharplispers/cormanlisp");
 }
 
 void CCormanLispApp::OnEditPreferences()

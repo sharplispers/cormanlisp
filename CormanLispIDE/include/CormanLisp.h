@@ -111,6 +111,7 @@ public:
 	void PrintTwips(TCHAR* buf, int nValue, int nDecimal);
 	bool waitingForDocumentToOpen();
 	void NavigateURL(const char* url);
+	void ShellOpenURL(const char* url);
 
 	CFont* getDefaultFont(HDC, long size);
 	CFont* getDefaultUnderlineFont(HDC, long size);
