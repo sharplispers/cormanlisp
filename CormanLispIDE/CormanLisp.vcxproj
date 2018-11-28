@@ -130,6 +130,7 @@
     <ClInclude Include="include\STDAFX.H" />
     <ClInclude Include="include\UtilFuncs.h" />
     <ClInclude Include="include\webbrowser.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="RES\background1.bmp" />

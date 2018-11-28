@@ -132,6 +132,9 @@
     <ClInclude Include="include\Dialogs.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="RES\background1.bmp">

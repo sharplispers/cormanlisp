@@ -109,10 +109,6 @@ CFont** CCormanLispApp::defaultFont = 0;
 CFont** CCormanLispApp::defaultUnderlineFont = 0;
 CFont** CCormanLispApp::courierFont = 0;
 
-CDialog* CCormanLispApp::splashScreen = 0;
-DWORD CCormanLispApp::startupTime = 0;
-DWORD CCormanLispApp::splashDisplayTimeMillis = 2 * 1000;	// 2 seconds
-
 UINT gLastMenuItem;
 HMENU gLastMenuHandle;
 
@@ -165,7 +161,7 @@ END_MESSAGE_MAP()
 CCormanLispApp::CCormanLispApp()
 	: m_pConnectionPoint(0), m_CormanLispClient(0), m_appIsClosing(false),
 	  m_worksheet(0), m_nUnits(0), m_lastDocOpened(0), m_explorer(0), m_browser(0),
-	  m_browserDoc(0), m_event(0), m_closeSplash(FALSE)
+	  m_browserDoc(0), m_event(0)
 {
 	m_fileToOpen[0] = 0;
 	m_urlToOpen[0] = 0;
@@ -396,10 +392,6 @@ BOOL CCormanLispApp::InitInstance()
 	m_pMainWnd = new CMainFrame;
 	((CFrameWnd*)m_pMainWnd)->LoadFrame(IDR_MAINFRAME);
 	m_pMainWnd->ShowWindow(m_nCmdShow);
-
-	//theApp.splashScreen = new CDialog();
-	//theApp.splashScreen->Create(IDD_SPLASH);
-	//theApp.startupTime = GetTickCount();
 
 	// enable file manager drag/drop and DDE Execute open
 	m_pMainWnd->DragAcceptFiles();
@@ -762,16 +754,6 @@ BOOL CCormanLispApp::OnIdle(LONG lCount)
 		if (CurrentView)
  			CurrentView->replaceSelection(m_replaceSelection);
 		m_replaceSelection = "";
-	}
-
-	// close splash screen if it is still up and startup time has
-	// elapsed
-	if (splashScreen &&
-		(m_closeSplash ||
-			((GetTickCount() - startupTime) > splashDisplayTimeMillis)))
-	{
-		delete splashScreen;
-		splashScreen = 0;
 	}
 
 	return CWinApp::OnIdle(lCount);
@@ -2910,9 +2892,6 @@ void delay(int ms)
 
 void CLispView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	// if the splash screen is up and escape is pressed, close the screen
-	if (CCormanLispApp::splashScreen && nChar == 27)
-		theApp.m_closeSplash = TRUE;
 	m_usingKeyboard = true;
 	mouseCueOff();
 	CRichEditCtrl& ed = GetRichEditCtrl();

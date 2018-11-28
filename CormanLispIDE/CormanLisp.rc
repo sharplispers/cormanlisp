@@ -60,8 +60,6 @@ IDB_CCLLOGO_SMALLER     BITMAP                  "RES\\CormanLisp_smaller.BMP"
 
 IDR_LISPSTATUS          BITMAP                  "res\\toolbar1.bmp"
 
-IDB_SPLASH_301          BITMAP                  "RES\\feather--CL 3.0_small.bmp"
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -270,24 +268,22 @@ BEGIN
     LTEXT           "Copyright (c) Corman Technologies Inc. See LICENSE.txt for license information.",IDC_STATIC,89,121,203,8
 END
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 290, 198
-STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOGEX 0, 0, 261, 107
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Corman Lisp..."
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,231,120,50,14
-    CONTROL         IDB_BITMAP2,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE,7,0,273,89
-    LTEXT           "User:",IDC_STATIC,115,156,34,8
-    LTEXT           "Version:",IDC_STATIC,21,146,34,9
-    LTEXT           "Corman Lisp 3.0",IDC_REGVERSION,116,146,164,10
-    LTEXT           "Evaluation days remaining:",IDC_EVALMESSAGE,97,179,85,8
-    LTEXT           "0",IDC_DAYSREMAINING,191,179,51,8
-    LTEXT           "Static",IDC_ABOUTNAME,163,156,97,8
-    CTEXT           "Corman Common Lisp",IDC_STATIC,45,99,118,9
-    CTEXT           "Integrated Development Environment",IDC_STATIC,45,110,119,9
-    CTEXT           "Copyright © Corman Technologies Inc.",IDC_STATIC,28,121,152,8
-    CTEXT           "See LICENSE.txt for license information.",IDC_STATIC,45,132,120,8
-    PUSHBUTTON      "www.cormanlisp.com",ID_CORMAN_NET,197,98,84,14
+    DEFPUSHBUTTON   "OK",IDOK,203,84,50,14
+    CONTROL         IDB_CCLLOGO_SMALLER,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE,3,6,100,94
+    LTEXT           "User:",IDC_STATIC,110,69,34,8
+    LTEXT           "Version:",IDC_STATIC,109,58,34,9
+    LTEXT           "Corman Lisp 3.0",IDC_REGVERSION,147,58,108,10
+    LTEXT           "Static",IDC_ABOUTNAME,147,69,107,8
+    CTEXT           "Corman Common Lisp",IDC_STATIC,105,11,149,9
+    CTEXT           "Integrated Development Environment",IDC_STATIC,105,21,150,9
+    CTEXT           "Copyright © Corman Technologies Inc.",IDC_STATIC,105,34,150,8
+    CTEXT           "See LICENSE.txt for license information.",IDC_STATIC,105,44,149,8
+    PUSHBUTTON      "Visit Project Homepage",ID_CORMAN_NET,107,84,84,14
 END
 
 IDD_LEGAL DIALOG 0, 0, 356, 196
@@ -447,8 +443,7 @@ BEGIN
 
     IDD_ABOUTBOX, DIALOG
     BEGIN
-        LEFTMARGIN, 7
-        BOTTOMMARGIN, 188
+        BOTTOMMARGIN, 106
     END
 
     IDD_LEGAL, DIALOG
@@ -493,6 +488,17 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////

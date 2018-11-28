@@ -172,16 +172,10 @@ public:
 	int m_defaultExecFilterIndex;	// default filter index for execute file command
 	long m_lastExpiredScreenTime;	// last time an expired message was displayed
 	BOOL m_isActive;
-	BOOL m_closeSplash;
 
 	static CFont** defaultFont;
 	static CFont** defaultUnderlineFont;
 	static CFont** courierFont;
-
-	static CDialog* splashScreen;
-	static DWORD startupTime;
-	static DWORD splashDisplayTimeMillis;	// amount of time (milliseconds)
-											// to display splash screen
 };
 
 extern CCormanLispApp theApp;

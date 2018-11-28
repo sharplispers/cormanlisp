@@ -33,8 +33,6 @@ AboutDialog::AboutDialog(UINT nIDTemplate)
 BOOL AboutDialog::OnInitDialog()
 {
 	CStatic* name = (CStatic*)GetDlgItem(IDC_ABOUTNAME);
-	CStatic* evalMessage = (CStatic*)GetDlgItem(IDC_EVALMESSAGE);
-	CStatic* daysRemaining = (CStatic*)GetDlgItem(IDC_DAYSREMAINING);
     CStatic* version = (CStatic*)GetDlgItem(IDC_REGVERSION);
 
 	
@@ -58,9 +56,6 @@ BOOL AboutDialog::OnInitDialog()
 	{
 
 	}
-
-	evalMessage->ShowWindow(SW_HIDE);
-	daysRemaining->ShowWindow(SW_HIDE);
 
 	CWnd* item = GetDlgItem(IDOK);
 	if (item)
