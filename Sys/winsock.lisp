@@ -1154,7 +1154,7 @@ int PASCAL FAR WSCEnumProtocols(
         (if (zerop (getnameinfo (addr-to-c addr) *addr-size* host-text NI_MAXHOST serv-text NI_MAXSERV
                                              (logior (if dottedp NI_NUMERICHOST 0) (if errorp NI_NAMEREQD 0))))
             (values (c-string-to-lisp-string host-text)
-                    (when portp (setq serv-text (c-string-to-lisp-string serv-text)) (unless (numberp (read-from-string serv-text)) serv-text)))
+                    (when portp (setq serv-text (c-string-to-lisp-string serv-text)) (unless (numberp (parse-integer serv-text :junk-allowed t)) serv-text)))
             ; no error as in Vista and later but lets user know of failure by returning nil as the second value rather than numeric port string
             (let ((error (WSAGetLastError)))
                 (if (and portp (eq WSANO_DATA error))
