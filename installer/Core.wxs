@@ -89,6 +89,11 @@
               Source=".\libcrypto-1_1.dll"
               KeyPath="yes" />
       </Component>
+      <Component Id="cmp_LICENSE.OpenSSL.txt" Guid="{0ADFD243-A7C3-47F4-98DF-97EC1A0DC5B4}">
+        <File Id="OpenSSL_License"
+              Source=".\LICENSE.OpenSSL.txt"
+              KeyPath="yes" />
+      </Component>
       <!-- set environmental variable -->
       <Component Id="SetEnv_CORMANLISP_HOME"
                  Guid="{307EA98D-C472-4D90-9FD7-A27018E87263}"
@@ -119,6 +124,7 @@
       <ComponentRef Id="cmp_RDNZL.dll" />
       <ComponentRef Id="cmp_libssl_1_1.dll" />
       <ComponentRef Id="cmp_libcrypto_1_1.dll" />
+      <ComponentRef Id="cmp_LICENSE.OpenSSL.txt" />
     </ComponentGroup>
   </Fragment>
 </Wix>

@@ -28,7 +28,7 @@
                          text))
             else
             do (push nil pars)))
-    (nreverse pars)))
+    (remove-if #'null (nreverse pars))))
 
 (defun write-rtf (pars pathname)
   (with-open-file (f pathname :direction :output :external-format :ascii
@@ -59,19 +59,23 @@
           pars))
 
 ;; generate RTF file from TXT file
-(defun generate-license-rtf (corman-license hyperspec-license to)
+(defun generate-license-rtf (corman-license hyperspec-license openssl-license to)
   (let ((corman-pars (read-text corman-license))
-        (hyperspec-pars (read-text hyperspec-license)))
+        (hyperspec-pars (read-text hyperspec-license))
+        (openssl-pars (read-text openssl-license)))
     (write-rtf (concatenate 'list
                             '("\\b 1. Corman Lisp terms of use:\\b0")
                             corman-pars
                             '("\\b 2. HyperSpec terms of use:\\b0")
-                            (cleanup-hyperspec-terms (remove-if #'null hyperspec-pars)))
+                            (cleanup-hyperspec-terms hyperspec-pars)
+                            '("\\b 3. OpenSSL terms of use:\\b0")
+                            openssl-pars)
                to)))
 
 (generate-license-rtf
     (concatenate 'string *cormanlisp-directory* "LICENSE.txt")
     (concatenate 'string *cormanlisp-directory* "HyperSpec-Legalese.text")
+    (concatenate 'string *cormanlisp-directory* "LICENSE.OpenSSL.txt")
     (concatenate 'string *cormanlisp-directory* ".\\installer\\LICENSE.rtf"))
 
 
