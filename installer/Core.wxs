@@ -69,6 +69,12 @@
               Source=".\LICENSE.txt"
               KeyPath="yes" />
       </Component>
+      <Component Id="cmp_DiStormLicense" Guid="{1CA40AA9-358E-4F32-A05A-319B3ADD72CA}">
+        <File Id="DistormLicense.txt"
+              Source=".\CormanLispServer\distorm\COPYING"
+              Name="LICENSE.diStorm.txt"
+              KeyPath="yes" />
+      </Component>
       <!-- RDNZL Dynamic Library -->
       <Component Id="cmp_RDNZL.dll"
                  Guid="{6D17A89E-C877-4DEC-970C-CAC6D41C9261}">
@@ -120,6 +126,7 @@
       <ComponentRef Id="cmp_init.lisp" />
       <ComponentRef Id="cmp_makeimg.bat" />
       <ComponentRef Id="cmp_LICENSE.txt" />
+      <ComponentRef Id="cmp_DiStormLicense" />
       
       <ComponentRef Id="cmp_RDNZL.dll" />
       <ComponentRef Id="cmp_libssl_1_1.dll" />

@@ -34,9 +34,8 @@
   (multiple-value-bind (i p) (parse-integer str :junk-allowed t)
     (and i (char= #\. (aref str p)))))
     
-(defun read-text (pathname)
-  (let ((pars)
-        (lines (read-lines pathname)))
+(defun lines-to-paragraphs (lines)
+  (let ((pars))
     (dolist (l lines)
       (let ((text (string-trim '(#\Space #\Tab #\Return) l)))
         (cond
@@ -88,10 +87,11 @@
           pars))
 
 ;; generate RTF file from TXT file
-(defun generate-license-rtf (corman-license hyperspec-license openssl-license to)
-  (let ((corman-pars (read-text corman-license))
-        (hyperspec-pars (read-text hyperspec-license))
-        (openssl-pars (read-text openssl-license)))
+(defun generate-license-rtf (corman-license hyperspec-license openssl-license distorm-license to)
+  (let ((corman-pars (lines-to-paragraphs (read-lines corman-license)))
+        (hyperspec-pars (lines-to-paragraphs (read-lines hyperspec-license)))
+        (openssl-pars (lines-to-paragraphs (read-lines openssl-license)))
+        (distorm-pars (lines-to-paragraphs (cons "diStorm. " (cdr (read-lines distorm-license))))))
     (write-rtf (concatenate 'list
                             '("\\b 1. Corman Lisp terms of use:\\b0")
                             corman-pars
@@ -99,6 +99,8 @@
                             (cleanup-hyperspec-terms hyperspec-pars)
                             '("\\b 3. OpenSSL terms of use:\\b0")
                             openssl-pars
+                            '("\\b 4. diStorm terms of use:\\b0")
+                            distorm-pars
                             '("\\b P.S. Certain code in the 'Modules' and 'Libraries' subdirectories carries different licensing terms. See the individual modules and libraries for details after the installation.\\b0"))
                to)))
 
@@ -106,6 +108,7 @@
     (concatenate 'string *cormanlisp-directory* "LICENSE.txt")
     (concatenate 'string *cormanlisp-directory* "HyperSpec-Legalese.text")
     (concatenate 'string *cormanlisp-directory* "LICENSE.OpenSSL.txt")
+    (concatenate 'string *cormanlisp-directory* "CormanLispServer\\distorm\\COPYING")
     (concatenate 'string *cormanlisp-directory* ".\\installer\\LICENSE.rtf"))
 
 
