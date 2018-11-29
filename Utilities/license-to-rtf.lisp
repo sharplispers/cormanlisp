@@ -126,12 +126,13 @@
   (nreverse copyright-lines))
 
 ;; generate RTF file from TXT files
-(defun generate-license-rtf (corman-license hyperspec-license openssl-license distorm-license zlib-license to)
+(defun generate-license-rtf (corman-license hyperspec-license openssl-license distorm-license zlib-license scmindent-license to)
   (let ((corman-pars (lines-to-paragraphs (read-lines corman-license)))
         (hyperspec-pars (lines-to-paragraphs (read-lines hyperspec-license)))
         (openssl-pars (lines-to-paragraphs (read-lines openssl-license)))
         (distorm-pars (lines-to-paragraphs (read-lines distorm-license)))
-        (zlib-pars (lines-to-paragraphs (find-zlib-license (read-lines zlib-license)))))
+        (zlib-pars (lines-to-paragraphs (find-zlib-license (read-lines zlib-license))))
+        (scmindent-pars (lines-to-paragraphs (read-lines scmindent-license))))
     (write-rtf (concatenate 'list
                             '("\\b 1. Corman Lisp terms of use:\\b0")
                             corman-pars
@@ -139,19 +140,24 @@
                             zlib-pars
                             '("\\b 3. diStorm terms of use:\\b0")
                             distorm-pars
-                            '("\\b 4. HyperSpec terms of use:\\b0")
+                            '("\\b 4. scmindent terms of use:\\b0")
+                            scmindent-pars
+                            '("\\b 5. HyperSpec terms of use:\\b0")
                             (cleanup-hyperspec-terms hyperspec-pars)
-                            '("\\b 5. OpenSSL terms of use:\\b0")
+                            '("\\b 6. OpenSSL terms of use:\\b0")
                             openssl-pars
                             '("\\b P.S. Certain code in the 'Modules' and 'Libraries' subdirectories carries different licensing terms. See the individual modules and libraries for details after the installation.\\b0"))
                to)))
 
+
 (generate-license-rtf
-    (concatenate 'string *cormanlisp-directory* "LICENSE.txt")
-    (concatenate 'string *cormanlisp-directory* "HyperSpec-Legalese.text")
-    (concatenate 'string *cormanlisp-directory* "LICENSE.OpenSSL.txt")
-    (concatenate 'string *cormanlisp-directory* "CormanLispServer\\distorm\\COPYING")
-    (concatenate 'string *cormanlisp-directory* "zlib\\README")
-    (concatenate 'string *cormanlisp-directory* ".\\installer\\LICENSE.rtf"))
+  (concatenate 'string *cormanlisp-directory* "LICENSE.txt")
+  (concatenate 'string *cormanlisp-directory* "HyperSpec-Legalese.text")
+  (concatenate 'string *cormanlisp-directory* "LICENSE.OpenSSL.txt")
+  (concatenate 'string *cormanlisp-directory* "CormanLispServer\\distorm\\COPYING")
+  (concatenate 'string *cormanlisp-directory* "zlib\\README")
+  (concatenate 'string *cormanlisp-directory* "Sys\\scmindent\\COPYING")
+  (concatenate 'string *cormanlisp-directory* "installer\\LICENSE.rtf"))
+
 
 

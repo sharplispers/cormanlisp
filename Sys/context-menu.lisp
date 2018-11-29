@@ -1,4 +1,4 @@
-;;;;	-------------------------------
+;;;	-------------------------------
 ;;;;	Copyright (c) Corman Technologies Inc.
 ;;;;	See LICENSE.txt for license information.
 ;;;;	-------------------------------
@@ -6,6 +6,7 @@
 ;;;;	File:		context-menu.lisp
 ;;;;	Contents:	Handles IDE context menu.
 ;;;;	History:	9/22/03  RGC  Added Make Uppercase, Make Lowercase options.
+;;;;;              11/29/18  Artem Boldariev  Added indention menu option.
 ;;;;
 
 (in-package :win32)
@@ -169,6 +170,29 @@ WINUSERAPI BOOL WINAPI AttachThreadInput(DWORD idAttach, DWORD idAttachTo, BOOL 
     (push #'(lambda () (pretty-print-selection selected-form)) func-list)
     func-list)
 
+(defun add-indent-option (menu func-list selected-form selection)
+  (declare (ignore selected-form))
+  (win::AppendMenu menu
+                   (logior win::MF_ENABLED win::MF_STRING)
+                   (+ 1 (length func-list))
+                   (ct:create-c-string (format nil "Indent Selection")))
+  (push #'(lambda ()
+           (cl::editor-replace-selection
+             ;; for some strange reasons we are getting string with some junk at the end. TODO.
+             (let ((indented-line (string-right-trim
+                                    '(#\Space #\Tab #\Return)
+                                    (ide::%indent-string
+                                      (ide::%prepare-string-for-indention selection)))))
+               (cond
+                 ;; stupid heuristics: do not append newline when reformatting a form from within IDE
+                 ((and (>= (length indented-line) 2)
+                       (char= #\Newline (aref indented-line (1- (length indented-line))))
+                       (char/= #\Newline (aref indented-line (- (length indented-line) 2))))
+                  (string-right-trim '(#\Newline) indented-line))
+                 (t indented-line)))))
+        func-list)
+  func-list)
+
 ;; eps,
 ;; adding macroexpand to context menu
 ;; same comments as above.
@@ -282,6 +306,7 @@ WINUSERAPI BOOL WINAPI AttachThreadInput(DWORD idAttach, DWORD idAttachTo, BOOL 
             (return-from ccl::ide-context-menu))
         (multiple-value-setq (selected-form err)
 			(ignore-errors (read-from-string selection)))
+        (setf func-list (add-indent-option menu func-list selected-form selection))
         (when (not (typep err 'error))
             (setf alt-symbols (potential-symbols selection))
             (setf func-list (add-documentation-option menu func-list selected-form))

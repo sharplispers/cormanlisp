@@ -324,10 +324,25 @@
       <Filter>Sys</Filter>
     </None>
     <None Include="Makefile" />
+    <None Include="..\Sys\code-formatter.lisp">
+      <Filter>Sys</Filter>
+    </None>
+    <None Include="..\Sys\scmindent\COPYING">
+      <Filter>Sys\scmindent</Filter>
+    </None>
+    <None Include="..\Sys\scmindent\lispindent.lisp">
+      <Filter>Sys\scmindent</Filter>
+    </None>
+    <None Include="..\Sys\scmindent\README.adoc">
+      <Filter>Sys\scmindent</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Sys">
       <UniqueIdentifier>{529b484c-5604-4a7d-9e8d-577ebef0dcd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sys\scmindent">
+      <UniqueIdentifier>{f80f0d4d-65ea-4e50-ba27-d83f2ed66e2e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

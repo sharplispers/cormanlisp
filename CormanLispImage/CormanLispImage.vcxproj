@@ -23,6 +23,7 @@
     <None Include="..\Sys\clmacros.lisp" />
     <None Include="..\Sys\clos-eql-patch.lisp" />
     <None Include="..\Sys\clos.lisp" />
+    <None Include="..\Sys\code-formatter.lisp" />
     <None Include="..\Sys\coerce.lisp" />
     <None Include="..\Sys\collect-literals.lisp" />
     <None Include="..\Sys\com.lisp" />
@@ -85,6 +86,9 @@
     <None Include="..\Sys\registry.lisp" />
     <None Include="..\Sys\require.lisp" />
     <None Include="..\Sys\save-application.lisp" />
+    <None Include="..\Sys\scmindent\COPYING" />
+    <None Include="..\Sys\scmindent\lispindent.lisp" />
+    <None Include="..\Sys\scmindent\README.adoc" />
     <None Include="..\Sys\sequence.lisp" />
     <None Include="..\Sys\sequences.lisp" />
     <None Include="..\Sys\setf-expander.lisp" />

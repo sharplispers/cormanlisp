@@ -133,6 +133,8 @@ typedef void (*MenuSelectType)(HMENU hMenu, UINT nItemID, UINT nFlags);
 MenuSelectType MenuSelectPtr = 0;
 typedef void (*VersionCaptionType)(char* buf);
 VersionCaptionType VersionCaptionPtr = 0;
+typedef const char *(*IndentNextLineType)(const char *);
+static IndentNextLineType IndentNextLinePtr = 0;
 
 // image loads count
 static long ImageLoadsCount = 0;
@@ -2895,33 +2897,27 @@ CLispView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 #define MaxScanLength 0x10000		// 64k
 
-long getOpenLeftParenCount(CRichEditCtrl& ed, long pos)
+const char *getLeftMostOpeningParen(const char *context)
 {
-	int firstPos = max(pos - MaxScanLength, 0);
-	char str[MaxScanLength + 1];
-	long numChars = getTextRange(ed, str, firstPos, pos);
+	size_t len = strlen(context);
 
 	// go back looking for start of expression
-	int leftParenCount = 0;
-	int index = pos - 1;
-	while (index >= firstPos)
+	size_t index = len - 1;
+	while (index > 0)
 	{
-		if (str[index - firstPos] == ')')
-			leftParenCount++;
-		else
-		if (str[index - firstPos] == '(')
+		const char *p = &context[index];
+		if (*p == '(')
 		{
-			leftParenCount--;
-			if (index > firstPos &&
-					(str[index - firstPos - 1] == ASCII_NEWLINE
-						|| str[index - firstPos - 1] == ASCII_CR))
-				break;
+
+			if (index > 0 && (p[-1] == ASCII_NEWLINE || p[-1] == ASCII_CR))
+			{
+				return p;
+			}
 		}
 		index--;
 	}
-	if (leftParenCount > 0)
-		leftParenCount = 0;
-	return -leftParenCount;
+
+	return NULL;
 }
 
 #define MaxTab 80
@@ -2986,7 +2982,6 @@ void CLispView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	if (nChar == 13 && start == end)
 	{
 		// normal Enter was pressed
-		long leftParenCount = getOpenLeftParenCount(ed, start);
 		LispHighlightOff();
 		CHARFORMAT format = {sizeof(CHARFORMAT)};
 		format.dwMask = CFM_COLOR | CFM_UNDERLINE;
@@ -2996,25 +2991,19 @@ void CLispView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 		CRichEditView::OnChar(nChar, nRepCnt, nFlags);
 
-		if (theApp.preferences.autoIndent)
+		UpdateDirectCallPointers();
+		if (IndentNextLinePtr)
 		{
-			char* buf = new char[(leftParenCount * theApp.preferences.tab) + 1];
-			int pos = 0;
-			for (int i = 0; i < leftParenCount; i++)
+			char context[MaxScanLength + 1] = { 0 };
+			int firstPos = max(start - MaxScanLength, 0);
+			long numChars = getTextRange(ed, context, firstPos, start);
+			const char *start_of_exp = getLeftMostOpeningParen(&context[0]);
+			const char *indented = IndentNextLinePtr(start_of_exp ? start_of_exp : &context[0]); // the string is allocated using HeapAlloc(GetProcessHeap(), ...)
 			{
-				if (theApp.preferences.replaceTabsWithSpaces)
-				{
-					for (int j = 0; j < theApp.preferences.tab; j++)
-						buf[pos++] = ASCII_SPACE;
-				}
-				else
-					buf[pos++] = ASCII_TAB;
+				ed.ReplaceSel(indented, TRUE);
+				HeapFree(GetProcessHeap(), 0, (void*)indented); // free the string
 			}
-			buf[pos] = 0;
-			ed.ReplaceSel(buf, TRUE);
-			delete [] buf;
 		}
-		adjustLispHighlight();
 	}
 	else
 	if (nChar == ASCII_TAB && start != end)		// TAB
@@ -4077,6 +4066,11 @@ void UpdateDirectCallPointers()
 		pCormanLispDirectCall->GetFunctionAddress(L"VERSION_CAPTION", L"CCL", &funcptr);
 		if (funcptr)
 			VersionCaptionPtr = (VersionCaptionType)funcptr;
+
+		IndentNextLinePtr = NULL;
+		pCormanLispDirectCall->GetFunctionAddress(L"%INDENT-NEXT-LINE", L"IDE", &funcptr);
+		if (funcptr)
+			IndentNextLinePtr = (IndentNextLineType)funcptr;
 	}
 }
 

@@ -7,7 +7,7 @@
 default: ..\CormanLisp.img
 
 # we depend on CormanLispServer.dll because it is good idea to rebuild image after changes in the Lisp kernel
-..\CormanLisp.img: ..\CormanLispServer.dll ../Sys/*.lisp
+..\CormanLisp.img: ..\CormanLispServer.dll ../Sys/*.lisp ../Sys/scmindent/*.lisp
 	..\makeimg.bat
 
 clean:
