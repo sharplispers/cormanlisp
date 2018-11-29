@@ -18,14 +18,14 @@ del %InstallerName%
 del %GeneratedWXSFiles%
 del %InstallerObjectFiles%
 
-rem convert TXT license to RTF
-clconsole.exe -execute Utilities\license-to-rtf.lisp
-
 rem Unpack HyperSpec
 rd /s /q HyperSpec
 del HyperSpec-Legalese.text
 del HyperSpec-README.text
 clconsole.exe -execute Utilities\install-hyperspec.lisp
+
+rem convert TXT license to RTF
+clconsole.exe -execute Utilities\license-to-rtf.lisp
 
 rem Generate file with build version information
 del installer\Version.wxi
