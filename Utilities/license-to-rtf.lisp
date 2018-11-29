@@ -33,11 +33,42 @@
 (defun looks-like-numbered-list-member (str)
   (multiple-value-bind (i p) (parse-integer str :junk-allowed t)
     (and i (char= #\. (aref str p)))))
+
+(defun cleanup-string (str)
+  (let ((result (make-array 0 :element-type 'character :adjustable t :fill-pointer 0))
+        (str (string-trim '(#\Space #\Tab #\Return) str)))
+    (dotimes (i (length str))
+      (let ((c (aref str i)))
+        (cond
+          ((char= c #\{)
+           (vector-push-extend #\\ result)
+           (vector-push-extend #\' result)
+           (vector-push-extend #\7 result)
+           (vector-push-extend #\b result))
+          ((char= c #\})
+           (vector-push-extend #\\ result)
+           (vector-push-extend #\' result)
+           (vector-push-extend #\7 result)
+           (vector-push-extend #\d result))
+          ((char= c #\\)
+           (vector-push-extend #\\ result)
+           (vector-push-extend #\' result)
+           (vector-push-extend #\5 result)
+           (vector-push-extend #\c result))
+          ((> (char-code c) 127)
+           (vector-push-extend #\\ result)
+           (vector-push-extend #\' result)
+           (let ((code-text (format nil "~A" (char-code c))))
+             (dotimes (i (length code-text))
+               (vector-push-extend (aref code-text i) result))))
+          (t (vector-push-extend c result)))))
+    result))
+
     
 (defun lines-to-paragraphs (lines)
   (let ((pars))
     (dolist (l lines)
-      (let ((text (string-trim '(#\Space #\Tab #\Return) l)))
+      (let ((text (cleanup-string l)))
         (cond
           ((and (plusp (length text))
                 (null pars))
@@ -86,21 +117,32 @@
                 (t par)))
           pars))
 
-;; generate RTF file from TXT file
-(defun generate-license-rtf (corman-license hyperspec-license openssl-license distorm-license to)
+(defun find-zlib-license (lines &aux (copyright-lines nil) (found-copyright nil))
+  (dolist (l lines)
+    (let ((text (cleanup-string l)))
+      (if found-copyright
+          (push text copyright-lines)
+          (setf found-copyright (string= "Copyright notice:" text)))))
+  (nreverse copyright-lines))
+
+;; generate RTF file from TXT files
+(defun generate-license-rtf (corman-license hyperspec-license openssl-license distorm-license zlib-license to)
   (let ((corman-pars (lines-to-paragraphs (read-lines corman-license)))
         (hyperspec-pars (lines-to-paragraphs (read-lines hyperspec-license)))
         (openssl-pars (lines-to-paragraphs (read-lines openssl-license)))
-        (distorm-pars (lines-to-paragraphs (cons "diStorm. " (cdr (read-lines distorm-license))))))
+        (distorm-pars (lines-to-paragraphs (read-lines distorm-license)))
+        (zlib-pars (lines-to-paragraphs (find-zlib-license (read-lines zlib-license)))))
     (write-rtf (concatenate 'list
                             '("\\b 1. Corman Lisp terms of use:\\b0")
                             corman-pars
-                            '("\\b 2. HyperSpec terms of use:\\b0")
-                            (cleanup-hyperspec-terms hyperspec-pars)
-                            '("\\b 3. OpenSSL terms of use:\\b0")
-                            openssl-pars
-                            '("\\b 4. diStorm terms of use:\\b0")
+                            '("\\b 2. ZLib terms of use:\\b0")
+                            zlib-pars
+                            '("\\b 3. diStorm terms of use:\\b0")
                             distorm-pars
+                            '("\\b 4. HyperSpec terms of use:\\b0")
+                            (cleanup-hyperspec-terms hyperspec-pars)
+                            '("\\b 5. OpenSSL terms of use:\\b0")
+                            openssl-pars
                             '("\\b P.S. Certain code in the 'Modules' and 'Libraries' subdirectories carries different licensing terms. See the individual modules and libraries for details after the installation.\\b0"))
                to)))
 
@@ -109,6 +151,7 @@
     (concatenate 'string *cormanlisp-directory* "HyperSpec-Legalese.text")
     (concatenate 'string *cormanlisp-directory* "LICENSE.OpenSSL.txt")
     (concatenate 'string *cormanlisp-directory* "CormanLispServer\\distorm\\COPYING")
+    (concatenate 'string *cormanlisp-directory* "zlib\\README")
     (concatenate 'string *cormanlisp-directory* ".\\installer\\LICENSE.rtf"))
 
 
