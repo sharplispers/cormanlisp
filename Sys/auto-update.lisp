@@ -16,6 +16,7 @@
         *patch-root-directory*
         *patch-server*
         compile-cormanlisp-image
+        load-default-image
         *auto-update-level*))
 
 (defparameter *cormanlisp-patch-level* (cormanlisp-patch-level))
@@ -74,6 +75,14 @@
   ;;(win:shell-execute (namestring (merge-pathnames "makeimg.bat" *cormanlisp-directory*)) "")
   (win:message-box-ok "A console process has been launched which is recompiling the CormanLisp.img file." "Information")
   t)
+
+;; utility function to load default image
+;; (handy for reloading default Corman Lisp image after rebuilding)
+(defun load-default-image ()
+  "Load default Corman Lisp image"
+  (load-image (concatenate 'string
+                           *cormanlisp-directory*
+                           "CormanLisp.img")))
 
 (defun install-patch (patch)
     (ensure-directories-exist (local-patches-backup-directory (cormanlisp-patch-level patch)))
