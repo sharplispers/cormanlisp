@@ -59,11 +59,6 @@
               Source=".\init.lisp"
               KeyPath="yes" />
       </Component>
-      <Component Id="cmp_makeimg.bat" Guid="{C3D2254E-DC8F-4320-84B6-17027A5C8AE9}">
-        <File Id="MakeImgBat"
-              Source=".\makeimg.bat"
-              KeyPath="yes" />
-      </Component>
       <Component Id="cmp_LICENSE.txt" Guid="{FBDE86B5-980A-4EC4-BB1A-3C0188C6DB9A}">
         <File Id="CormanLispLicense"
               Source=".\LICENSE.txt"
@@ -124,7 +119,6 @@
       <ComponentRef Id="cmp_clbootapp.exe" />
       <ComponentRef Id="cmp_dlltemplate.dll" />
       <ComponentRef Id="cmp_init.lisp" />
-      <ComponentRef Id="cmp_makeimg.bat" />
       <ComponentRef Id="cmp_LICENSE.txt" />
       <ComponentRef Id="cmp_DiStormLicense" />
       
