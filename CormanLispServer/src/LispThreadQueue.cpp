@@ -19,7 +19,7 @@ CriticalSection TQCriticalSection;
 
 ThreadRecord::ThreadRecord() 
 :  event(FALSE, TRUE), next(0), QV_rec(0), 
-   thread(0), threadID(0), stackStart(0), started(0), type(-1), image_loads_count(0)
+   thread(0), threadID(0), stackStart(0), started(0), type(-1), image_loads_count(getImageLoadsCount())
 {
 }
 
