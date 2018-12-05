@@ -119,13 +119,12 @@ bool UserInfo::FillUserInfo(UserInfo &ui)
 		if (user_profile_status)
 		{
 			// get buffer size
-			char tmp = '\0';
-			// It is strange, but at least on Windows 10 one have to specify some dummy pointer as the path parameter
-			// for GetUserProfileDirectoryA. MSDN says nothing about it.
-			GetUserProfileDirectoryA(user_token, &tmp, &user_profile_buffer_size);
+			GetUserProfileDirectoryA(user_token, NULL, &user_profile_buffer_size);
+			// At least on Windows 10 LTSC 2019 (RS5) the above call always fails.
+			// Let's try to allocate reasonably large buffer and try to get the path to the profile anyway.
 			if (user_profile_buffer_size == 0)
 			{
-				user_profile_status = false;
+				user_profile_buffer_size = MAX_PATH + 1; // '\0'
 			}
 
 			// get path
