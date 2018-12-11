@@ -1,4 +1,8 @@
 @echo off
+rem This file is distributed under the terms of CC0 license (Public Domain).
+rem See the 'installer/UNLICENSE.txt' file for the additional details.
+
+
 rem configuration Variables
 set InstallerName=CormanLispInstaller.msi
 
