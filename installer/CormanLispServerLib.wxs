@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+Created by Artem Boldariev <artem.boldarev@gmail.com>, 2018.
+This file is distributed under the terms of CC0 license (Public Domain).
+
+See the 'LICENSE.txt' file for the additional details.
+-->
+<?include Config.wxi ?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
     <DirectoryRef Id="INSTALLDIR">
       <!-- debug data files -->
       <Component Id="cmp_CormanLispServer.lib"
-                 Guid="{99244EB1-45F8-4F5C-9E02-9AC9EC455BF6}">
+                 Win64="$(var.Win64)"
+                 Guid="*">
         <File Id="CormanLispServer.lib"
               Source=".\CormanLispServer\bin\CormanLispServer.lib"
               KeyPath="yes" />
       </Component>
       <Component Id="cmp_CormanLispServer.exp"
-                 Guid="{B5F13B6E-2BBD-4532-8B94-617E132E2BA4}">
+                 Win64="$(var.Win64)"
+                 Guid="*">
         <File Id="CormanLispServer.exp"
               Source=".\CormanLispServer\bin\CormanLispServer.exp"
               KeyPath="yes" />

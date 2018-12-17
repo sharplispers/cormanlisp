@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+Created by Artem Boldariev <artem.boldarev@gmail.com>, 2018.
+This file is distributed under the terms of CC0 license (Public Domain).
+
+See the 'LICENSE.txt' file for the additional details.
+-->
 <?include Version.wxi?>
 <Include>
   <!--
@@ -46,6 +52,7 @@
       Supported architecture
   -->
   <?define Platform="x86" ?>
+  <?define Win64="no" ?>
   <!--
       Upgrade code HAS to be the same for all updates.
       Once you've chosen it don't change it.
@@ -57,7 +64,16 @@
   -->
   <?define GuiProcessName="CormanLisp.exe" ?>
   <?define ConsoleProcessName="clconsole.exe" ?>
-
+  <!--
+      MSIFASTINSTALL property value is used to speed up the installation.
+      It is supported starting from Windows Installer 5.0.
+      It is a bit mask of the following values (default - 0):
+      1 - No system restore point is saved for this installation.
+      2 - Perform only File Costing and skip checking other costs.
+      4 - Reduce the frequency of progress messages.
+  -->
+  <?define MSIFASTINSTALL=5 ?>
+  
   <!-- Paths to directories -->
   <?define SysDirectoryPath=".\Sys" ?>
   <?define LibrariesDirectoryPath=".\Libraries" ?>

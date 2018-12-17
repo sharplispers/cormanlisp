@@ -46,7 +46,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="include.xsl">
+    <Xml Include="heat-postprocess.xsl">
       <Filter>installer</Filter>
     </Xml>
     <Xml Include="CormanLispServerLib.wxs">

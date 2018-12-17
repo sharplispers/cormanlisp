@@ -1,59 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+Created by Artem Boldariev <artem.boldarev@gmail.com>, 2018.
+This file is distributed under the terms of CC0 license (Public Domain).
+
+See the 'LICENSE.txt' file for the additional details.
+-->
+<?include Config.wxi?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
     <DirectoryRef Id="INSTALLDIR">
       <!-- debug data files -->
       <Component Id="cmp_clboot.pdb"
-                 Guid="{B266B14F-91A8-42EA-9CF0-BCDA5FA9E031}">
+                 Win64="$(var.Win64)"
+                 Guid="*">
         <File Id="clboot.pdb"
               Source=".\clboot.pdb"
               KeyPath="yes" />
       </Component>
       <Component Id="cmp_clbootapp.pdb"
-                 Guid="{3278AC88-2B41-4559-B16F-36D41F35F052}">
+                 Win64="$(var.Win64)"
+                 Guid="*">
         <File Id="clbootapp.pdb"
               Source=".\clbootapp.pdb"
               KeyPath="yes" />
       </Component>
       <Component Id="cmp_clconsole.pdb"
-                 Guid="{3674C9E3-BD82-4E74-8AC0-9D200CC65BC9}">
+                 Win64="$(var.Win64)"
+                 Guid="*">
         <File Id="clconsole.pdb"
               Source=".\clconsole.pdb"
               KeyPath="yes" />
       </Component>
       <Component Id="cmp_clconsoleapp.pdb"
-                 Guid="{3150BBC2-05D6-42B9-93B5-EEB331EC08E0}">
+                 Win64="$(var.Win64)"
+                 Guid="*">
         <File Id="clconsoleapp.pdb"
               Source=".\clconsoleapp.pdb"
               KeyPath="yes" />
       </Component>
       <Component Id="cmp_CormanLisp.pdb"
-                 Guid="{45F9A92C-F632-4657-A5C9-919E5A2AD214}">
+                 Win64="$(var.Win64)"
+                 Guid="*">
         <File Id="CormanLisp.pdb"
               Source=".\CormanLisp.pdb"
               KeyPath="yes" />
       </Component>
       <Component Id="cmp_CormanLispServer.pdb"
-                 Guid="{0AA7706E-EFCB-4C2B-86F7-47F2C739F84E}">
+                 Win64="$(var.Win64)"
+                 Guid="*">
         <File Id="CormanLispServer.pdb"
               Source=".\CormanLispServer.pdb"
               KeyPath="yes" />
       </Component>
       <Component Id="cmp_dlltemplate.pdb"
-                 Guid="{64F7D041-B92B-4CC1-9902-D9F7ABF88F0C}">
+                 Win64="$(var.Win64)"
+                 Guid="*">
         <File Id="dlltemplate.pdb"
               Source=".\dlltemplate.pdb"
               KeyPath="yes" />
       </Component>
       <!-- OpenSSL -->
       <Component Id="cmp_libssl_1_1.pdb"
-                 Guid="{BCAB325F-34B1-4B2A-B09E-4A4731BB5499}">
+                 Win64="$(var.Win64)"
+                 Guid="*">
         <File Id="libssl_1_1.pdb"
               Source=".\libssl-1_1.pdb"
               KeyPath="yes" />
       </Component>
       <Component Id="cmp_libcrypto_1_1.pdb"
-                 Guid="{925AA839-4230-4118-8A99-1196DD59E114}">
+                 Win64="$(var.Win64)"
+                 Guid="*">
         <File Id="libcrypto_1_1.pdb"
               Source=".\libcrypto-1_1.pdb"
               KeyPath="yes" />

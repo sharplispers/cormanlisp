@@ -1,70 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+Created by Artem Boldariev <artem.boldarev@gmail.com>, 2018.
+This file is distributed under the terms of CC0 license (Public Domain).
+
+See the 'LICENSE.txt' file for the additional details.
+-->
+<?include Config.wxi?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <?include Config.wxi?>
   <Fragment>
     <DirectoryRef Id="INSTALLDIR">
-      <!-- Write Installation Path to registry -->
-      <Component Id="RegValueProductInstallPath" Guid="{CE589DBA-5C00-419F-AF9E-4E9365260957}">
-        <RegistryValue Id="RegValueInstallPath"
-                       Root="HKLM"
-                       Key="Software\$(var.ManufacturerName)\$(var.ProductName)"
-                       Name="Path"
-                       Value="[INSTALLDIR]"
-                       Type="string"
-                       KeyPath="yes"/>
-      </Component>
       <!-- Core product files -->
-      <Component Id="cmp_CormanLisp.exe" Guid="{654B4BD7-F39D-42F9-ADD3-D51D05E3D205}">
+      <Component Id="cmp_CormanLisp.exe" Guid="*" Win64="$(var.Win64)">
         <File Id="CormanLisp_IDE_Executable"
               Source=".\CormanLisp.exe"
               KeyPath="yes" />
       </Component>
-      <Component Id="cmp_clconsole.exe" Guid="{978D45C9-44BB-4FF1-BACB-D658584305DD}">
+      <Component Id="cmp_clconsole.exe" Guid="*" Win64="$(var.Win64)">
         <File Id="CormanLisp_Console_Executable"
               Source=".\clconsole.exe"
               KeyPath="yes" />
       </Component>
-      <Component Id="cmp_CormanLisp.img" Guid="{A88FFCFE-AFEB-4C36-B99F-43C53641AE52}">
+      <Component Id="cmp_CormanLisp.img" Guid="*" Win64="$(var.Win64)">
         <File Id="CormanLisp_Image"
               Source=".\CormanLisp.img"
               KeyPath="yes" />
       </Component>
-      <Component Id="cmp_CormanLispServer.dll" Guid="{D86D9F14-C8B0-451F-A579-18857D43750F}">
+      <Component Id="cmp_CormanLispServer.dll" Guid="*" Win64="$(var.Win64)">
         <File Id="CormanLispServer"
               Source=".\CormanLispServer.dll"
               KeyPath="yes" />
       </Component>
-      <Component Id="cmp_clconsoleapp.exe" Guid="{BBE2237C-81AC-49C9-99E7-987159280F57}">
+      <Component Id="cmp_clconsoleapp.exe" Guid="*" Win64="$(var.Win64)">
         <File Id="CormanLispConsoleTemplate"
               Source=".\clconsoleapp.exe"
               KeyPath="yes" />
       </Component>
-      <Component Id="cmp_clboot.exe" Guid="{898B9CF8-DEEC-4295-9C8F-F632684C214B}">
+      <Component Id="cmp_clboot.exe" Guid="*" Win64="$(var.Win64)">
         <File Id="CormanLispGUITemplate"
               Source=".\clboot.exe"
               KeyPath="yes" />
       </Component>
-      <Component Id="cmp_clbootapp.exe" Guid="{42921841-8B25-420C-A86D-3F45F7F365D1}">
+      <Component Id="cmp_clbootapp.exe" Guid="*" Win64="$(var.Win64)">
         <File Id="CormanLispGUITemplateStatic"
               Source=".\clbootapp.exe"
               KeyPath="yes" />
       </Component>
-      <Component Id="cmp_dlltemplate.dll" Guid="{DB18E529-43C8-4F04-ADC6-D7C97DB34D66}">
+      <Component Id="cmp_dlltemplate.dll" Guid="*" Win64="$(var.Win64)">
         <File Id="CormanLispDLLTemplateStatic"
               Source=".\dlltemplate.dll"
               KeyPath="yes" />
       </Component>
-      <Component Id="cmp_init.lisp" Guid="{164DD982-2ADF-4133-A7A4-10BD56059D71}">
+      <Component Id="cmp_init.lisp" Guid="*" Win64="$(var.Win64)">
         <File Id="CormanLispCoreInit"
               Source=".\init.lisp"
               KeyPath="yes" />
       </Component>
-      <Component Id="cmp_LICENSE.txt" Guid="{FBDE86B5-980A-4EC4-BB1A-3C0188C6DB9A}">
+      <Component Id="cmp_LICENSE.txt" Guid="*" Win64="$(var.Win64)">
         <File Id="CormanLispLicense"
               Source=".\LICENSE.txt"
               KeyPath="yes" />
       </Component>
-      <Component Id="cmp_DiStormLicense" Guid="{1CA40AA9-358E-4F32-A05A-319B3ADD72CA}">
+      <Component Id="cmp_DiStormLicense" Guid="*" Win64="$(var.Win64)">
         <File Id="DistormLicense.txt"
               Source=".\CormanLispServer\distorm\COPYING"
               Name="LICENSE.diStorm.txt"
@@ -72,44 +68,52 @@
       </Component>
       <!-- RDNZL Dynamic Library -->
       <Component Id="cmp_RDNZL.dll"
-                 Guid="{6D17A89E-C877-4DEC-970C-CAC6D41C9261}">
+                 Guid="*"
+                 Win64="$(var.Win64)">
         <File Id="RDNZL.dll"
               Source=".\RDNZL.dll"
               KeyPath="yes" />
       </Component>
       <!-- OpenSSL -->
       <Component Id="cmp_libssl_1_1.dll"
-                 Guid="{46223E22-04FA-44AF-A2FC-046B240FC730}">
+                 Guid="*"
+                 Win64="$(var.Win64)">
         <File Id="libssl_1_1.dll"
               Source=".\libssl-1_1.dll"
               KeyPath="yes" />
       </Component>
       <Component Id="cmp_libcrypto_1_1.dll"
-                 Guid="{CF2442F9-BB57-41B4-BA0D-DE5147EF21B5}">
+                 Guid="*"
+                 Win64="$(var.Win64)">
         <File Id="libcrypto_1_1.dll"
               Source=".\libcrypto-1_1.dll"
               KeyPath="yes" />
       </Component>
-      <Component Id="cmp_LICENSE.OpenSSL.txt" Guid="{0ADFD243-A7C3-47F4-98DF-97EC1A0DC5B4}">
+      <Component Id="cmp_LICENSE.OpenSSL.txt" Guid="*" Win64="$(var.Win64)">
         <File Id="OpenSSL_License"
               Source=".\LICENSE.OpenSSL.txt"
               KeyPath="yes" />
       </Component>
       <!-- set environmental variable -->
       <Component Id="SetEnv_CORMANLISP_HOME"
-                 Guid="{307EA98D-C472-4D90-9FD7-A27018E87263}"
-                 KeyPath="yes">
+                 Guid="*"
+                 Win64="$(var.Win64)">
         <Environment Id="Env_CORMANLISP_HOME"
                      Name="CORMANLISP_HOME"
                      Value="[INSTALLDIR]"
                      Action="set"
                      System="yes" />
+        <RegistryValue Action="write"
+                       Type="integer"
+                       Root="HKLM"
+                       Key="Software\$(var.ManufacturerName)\$(var.ProductName)"
+                       Name="EnvCreatedCORMANLISP_HOME"
+                       Value="1"
+                       KeyPath="yes"/>
       </Component>
     </DirectoryRef>
     <!-- Product Base description -->
     <ComponentGroup Id="ProductBase">
-      <ComponentRef Id="RegValueProductInstallPath" />
-      
       <ComponentRef Id="cmp_CormanLisp.exe" />
       <ComponentRef Id="cmp_clconsole.exe" />
       <ComponentRef Id="cmp_CormanLisp.img" />
