@@ -1,6 +1,8 @@
 @echo off
+rem Created by Artem Boldariev <artem.boldarev@gmail.com>, 2018.
+rem
 rem This file is distributed under the terms of CC0 license (Public Domain).
-rem See the 'installer/UNLICENSE.txt' file for the additional details.
+rem See the 'installer/LICENSE.txt' file for the additional details.
 
 
 rem configuration Variables
@@ -10,7 +12,7 @@ set GeneratedWXSFiles=.\installer\Sys.wxs .\installer\Libraries.wxs .\installer\
 set InstallerFiles= %GeneratedWXSFiles% .\installer\CormanLispServerLib.wxs .\installer\HyperSpecLegalese.wxs .\installer\Features.wxs .\installer\DebugData.wxs .\installer\AddToPath.wxs .\installer\Shortcuts.wxs .\installer\Core.wxs .\installer\Main.wxs
 set InstallerObjectFiles= .\installer\Sys.wixobj .\installer\Libraries.wixobj .\installer\Modules.wixobj .\installer\Documentation.wixobj .\installer\Headers.wixobj .\installer\CormanLispServerLib.wixobj .\installer\Examples.wixobj .\installer\HyperSpec.wixobj .\installer\HyperSpecLegalese.wixobj .\installer\Features.wixobj  .\installer\DebugData.wixobj .\installer\AddToPath.wixobj .\installer\Shortcuts.wixobj .\installer\Core.wixobj .\installer\Main.wixobj
 
-set HeatOptions=-gg -scom -sreg -sfrag -ke -dr INSTALLDIR  -t .\installer\include.xsl
+set HeatOptions=-gg -scom -sreg -sfrag -ke -dr INSTALLDIR  -t .\installer\heat-postprocess.xsl
 set WixExtensions=-ext WixUIExtension -ext WixUtilExtension
 
 rem set old current directory
@@ -56,7 +58,7 @@ rem Corman Lisp extra
 
 rem build the installer
 "%WIX%\bin\candle" %WiXExtensions% -out .\installer\ %InstallerFiles%
-"%WIX%\bin\light" %WiXExtensions% -sw1076 -dcl:high -cultures:en-US %InstallerObjectFiles% -out %InstallerName%
+"%WIX%\bin\light" %WiXExtensions% -sw1076 -sice:ICE57 -dcl:high -cultures:en-US %InstallerObjectFiles% -out %InstallerName%
 
 rem change current directory
 cd "%OldDir%"

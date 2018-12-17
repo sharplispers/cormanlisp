@@ -52,7 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CormanLispServerLib.wxs" />
-    <Xml Include="include.xsl" />
+    <Xml Include="heat-postprocess.xsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

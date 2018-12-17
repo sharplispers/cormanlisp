@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
+Created by Artem Boldariev <artem.boldarev@gmail.com>, 2018.
+This file is distributed under the terms of CC0 license (Public Domain).
+
+See the 'LICENSE.txt' file for the additional details.
+-->
+
+<!--
 Helpful WEB-pages about WiX:
     http://weblogs.sqlteam.com/mladenp/archive/2010/02/17/WiX-3-Tutorial-Understanding-main-WXS-and-WXI-file.aspx
     http://p-nand-q.com/programming/windows/wix/files.html
     https://github.com/sbcl/sbcl/blob/master/tools-for-build/wxs.lisp
+    https://helgeklein.com/blog/2014/09/real-world-example-wix-msi-application-installer/
+    https://blogs.technet.microsoft.com/alexshev/2008/02/10/from-msi-to-wix/
 
 Using 'dark.exe' *.msi decompiler seems to be the most efficient way to learn about WiX. Decompiling SBCL's installer and 7-zip's installer revealed a lot of useful information.
 -->
+
+<!-- installer configuration -->
+<?include Config.wxi ?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-
-  <!-- installer configuration -->
-  <?include Config.wxi ?>
-
   <Product Id="*"
            Name="$(var.ProductName) $(var.VersionNumber)"
            Language="$(var.Language)"
@@ -54,13 +62,13 @@ Using 'dark.exe' *.msi decompiler seems to be the most efficient way to learn ab
                       Property="OLDER_VERSION_FOUND" />
     </Upgrade>
 
-    <!-- Install only on Windows XP SP2 or newer -->
-    <Condition Message="Your operating system version is not supported. Windows XP SP2 or newer is required.">
-      <![CDATA[Installed OR (((VersionNT > 501) OR ((VersionNT = 501) AND (ServicePackLevel >= 2))) AND MsiNTProductType = 1)]]>
+    <!-- Install only on Windows XP SP3 or newer -->
+    <Condition Message="Your operating system version is not supported. Windows XP SP3 or newer is required.">
+      <![CDATA[Installed OR (((VersionNT > 501) OR ((VersionNT = 501) AND (ServicePackLevel >= 3))) AND MsiNTProductType = 1)]]>
     </Condition>
 
     <!-- Installation sequence description -->
-    <CustomAction Id="NewerVersionFound" Error="Newer version is installed!" />
+    <CustomAction Id="NewerVersionFound" Error="A newer version of $(var.ProductName) is installed." />
     <InstallExecuteSequence>
       <!-- Check for newer versions with FindRelatedProducts and execute the custom action after it -->
       <Custom Action="NewerVersionFound" After="FindRelatedProducts">
@@ -110,7 +118,24 @@ Using 'dark.exe' *.msi decompiler seems to be the most efficient way to learn ab
         <Directory Id="DesktopDir">
         </Directory>
       </Directory>
+      <!-- Quick Launch Directory -->
+      <!-- <Directory Id="AppDataFolder"> -->
+      <!--   <Directory Id="Microsoft" Name="Microsoft"> -->
+      <!--     <Directory Id="InternetExplorer" Name="Internet Explorer"> -->
+      <!--       <Directory Id="QuickLaunchDir" Name="Quick Launch" /> -->
+      <!--     </Directory> -->
+      <!--   </Directory> -->
+      <!-- </Directory> -->
       <!-- Program installation directory structure -->
+      <?if $(var.Win64) = "yes" ?>
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLLOCATION"
+                   Name="$(var.ProductName)">
+          <Directory Id="INSTALLDIR">
+          </Directory>
+        </Directory>
+      </Directory>
+      <?else?>
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLLOCATION"
                    Name="$(var.ProductName)">
@@ -118,8 +143,8 @@ Using 'dark.exe' *.msi decompiler seems to be the most efficient way to learn ab
           </Directory>
         </Directory>
       </Directory>
-
-      <!-- Conditionally include Visual Studio C++ Runtime Files -->
+      <?endif?>
+      <!-- conditionally include Visual Studio C++ Runtime Files -->
       <?ifdef VCRedist ?>
       <Merge Id="VCRedist_CRT" SourceFile="$(env.programfiles)\Common Files\Merge Modules\Microsoft_VC$(var.VCRedist)_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
       <?if $(var.VCRedist_MFC) = "yes" ?>
@@ -142,11 +167,66 @@ Using 'dark.exe' *.msi decompiler seems to be the most efficient way to learn ab
                       Root="HKLM"
                       Key="Software\$(var.ManufacturerName)\$(var.ProductName)"
                       Name="Path"
+                      Win64="$(var.Win64)"
                       />
     </Property>
+
+    <?ifdef MSIFASTINSTALL?>
+    <Property Id="MSIFASTINSTALL">$(var.MSIFASTINSTALL)</Property>
+    <?endif?>
+
+    <!-- Save and restore INSTALLDIR -->
     
+    <!-- 
+         Save the command line value INSTALLDIR and restore it later in the sequence or
+         it will be overwritten by the value saved to the registry during an upgrade.
+         http://robmensching.com/blog/posts/2010/5/2/the-wix-toolsets-remember-property-pattern/
+    -->
+    <CustomAction Id="SaveCmdLineValueINSTALLDIR"
+                  Property="CMDLINE_INSTALLDIR"
+                  Value="[INSTALLDIR]"
+                  Execute="firstSequence" />
+    <CustomAction Id="SetFromCmdLineValueINSTALLDIR"
+                  Property="INSTALLDIR"
+                  Value="[CMDLINE_INSTALLDIR]"
+                  Execute="firstSequence" />
+    <InstallUISequence>
+      <Custom Action="SaveCmdLineValueINSTALLDIR" Before="AppSearch" />
+      <Custom Action="SetFromCmdLineValueINSTALLDIR" After="AppSearch">
+        CMDLINE_INSTALLDIR
+      </Custom>
+    </InstallUISequence>
+    <InstallExecuteSequence>
+      <Custom Action="SaveCmdLineValueINSTALLDIR" Before="AppSearch" />
+      <Custom Action="SetFromCmdLineValueINSTALLDIR" After="AppSearch">
+        CMDLINE_INSTALLDIR
+      </Custom>
+    </InstallExecuteSequence>
+
+    <!-- Write Installation Path to registry -->
+    <DirectoryRef Id="INSTALLDIR">
+      <Component Id="RegValueProductInstallPath" Guid="*" Win64="$(var.Win64)">
+        <RegistryValue Id="RegValueInstallPath"
+                       Root="HKLM"
+                       Key="Software\$(var.ManufacturerName)\$(var.ProductName)"
+                       Name="Path"
+                       Value="[INSTALLDIR]"
+                       Type="string"
+                       KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
     <!-- Features -->
-    <FeatureGroupRef Id="ProductFeatures" />
+    <Feature Id="RootFeature"
+             ConfigurableDirectory="INSTALLDIR"
+             Title="$(var.ProductName)"
+             Display="expand"
+             Absent="disallow"
+             Level="1"
+             AllowAdvertise="no">
+      <ComponentRef Id="RegValueProductInstallPath" />
+      <FeatureGroupRef Id="ProductFeatures" />
+    </Feature>
   </Product>
 </Wix>
 
