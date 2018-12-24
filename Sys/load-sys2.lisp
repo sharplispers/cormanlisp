@@ -86,7 +86,7 @@
   (with-input-from-string (in "") ;; to not let it hang, as it calls INDENT-LINES
     (let ((*standard-input* in))
       (load-file (concatenate 'string ccl::*cormanlisp-directory* "Sys\\scmindent\\lispindent.lisp")))))     
-(load-file "sys/code-formatter.lisp")
+(load-file "sys/code-indenter.lisp")
 (load-file "sys/context-menu.lisp")
 (load-file "sys/setf-expander.lisp")
 (load-file "sys/sockets.lisp")
