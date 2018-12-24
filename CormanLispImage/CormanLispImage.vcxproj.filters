@@ -324,7 +324,7 @@
       <Filter>Sys</Filter>
     </None>
     <None Include="Makefile" />
-    <None Include="..\Sys\code-formatter.lisp">
+    <None Include="..\Sys\code-indenter.lisp">
       <Filter>Sys</Filter>
     </None>
     <None Include="..\Sys\scmindent\COPYING">

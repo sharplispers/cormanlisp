@@ -23,7 +23,7 @@
     <None Include="..\Sys\clmacros.lisp" />
     <None Include="..\Sys\clos-eql-patch.lisp" />
     <None Include="..\Sys\clos.lisp" />
-    <None Include="..\Sys\code-formatter.lisp" />
+    <None Include="..\Sys\code-indenter.lisp" />
     <None Include="..\Sys\coerce.lisp" />
     <None Include="..\Sys\collect-literals.lisp" />
     <None Include="..\Sys\com.lisp" />
