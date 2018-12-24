@@ -2,8 +2,6 @@ Corman Lisp 3.1 Release Notes
 December. XX, 2018
 
 It is the first community release intended for real use.
-To see the list of contributors, please, visit the following page:
-https://github.com/sharplispers/cormanlisp/graphs/contributors
 
 The main objectives of this release are:
 * to make the system usable on the modern versions of the Windows operating system, especially the 64-bit ones;
@@ -49,6 +47,8 @@ One can find :DATAGRAM-SOCKETS keyword in *FEATURES* when this functionality is 
 
 - New MSI-based installer authored with WiX 3.x.
 
+- Installer creates %CORMANLISP_HOME% environmental variable which contains Corman Lisp installation directory (to make it easier to integrate it into the other projects).
+
 - Visual Studio 2015 is used to build the project.
 
 - The Visual Studio solution was reorganised to make it easier to build the project and contribute.
@@ -80,4 +80,14 @@ What is missing (planned for the next releases):
 
 New examples:
 - Minesweepers AI and GUI demo (examples/minesweepers.lisp).
+
+Credits:
+Release 3.1 includes new contributions from the following people (in alphabetical order):
+        Artem Boldariev (arbv@Github)
+        Chun Tian (binghe@Github)
+        Luis Cervantes (Luis-Cervantes@Github)
+        Zachary Beane (xach@Github)
+
+To see the full list of contributors, please, visit the following page:
+https://github.com/sharplispers/cormanlisp/graphs/contributors
 

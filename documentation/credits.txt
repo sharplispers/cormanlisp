@@ -1,12 +1,15 @@
-Corman Lisp Credits (updated Sept. 12, 2006)
+Corman Lisp Credits (updated December. 24, 2018)
 ------------------------------------------------
-Release 3.0 includes new contributed work and assistance by 
-a number of people, including:
 
-Edi Weitz
-Espen Wiborg
+Release 3.1 includes new contributions from the following people (in alphabetical order):
+
+Artem Boldariev (arbv@Github)
+Chun Tian (binghe@Github)
+Luis Cervantes (Luis-Cervantes@Github)
+Zachary Beane (xach@Github)
 
 Contributors to previous versions included:
+
 Vassili Bykov
 Frank Adrian
 Karsten Poeck
@@ -14,6 +17,8 @@ Chris Double
 Dave Richards
 Tim Kerchmar
 John Pallister
+Edi Weitz
+Espen Wiborg
 
 The Corman Lisp compiler, run-time system,
 IDE and most associated components and have been developed 
