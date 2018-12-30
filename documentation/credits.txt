@@ -1,4 +1,4 @@
-Corman Lisp Credits (updated December. 24, 2018)
+Corman Lisp Credits (updated December. 30, 2018)
 ------------------------------------------------
 
 Release 3.1 includes new contributions from the following people (in alphabetical order):
@@ -6,6 +6,8 @@ Release 3.1 includes new contributions from the following people (in alphabetica
 Artem Boldariev (arbv@Github)
 Chun Tian (binghe@Github)
 Luis Cervantes (Luis-Cervantes@Github)
+Max Chumak
+Roger Corman (rgcorman@Github)
 Zachary Beane (xach@Github)
 
 Contributors to previous versions included:
