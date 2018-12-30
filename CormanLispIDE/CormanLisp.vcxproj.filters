@@ -13,6 +13,9 @@
       <UniqueIdentifier>{cbe399e0-4a35-4ded-bacc-93c776d113c9}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="RES\new_logo">
+      <UniqueIdentifier>{aca49e25-0310-4d65-a786-cde648a6b8bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\browser.cpp">
@@ -215,10 +218,39 @@
     <None Include="RES\toolbar1.bmp">
       <Filter>RES</Filter>
     </None>
+    <None Include="RES\new_logo\Corman_Logo_no_text.svg">
+      <Filter>RES\new_logo</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="RES\CormanLisp.exe.manifest">
       <Filter>RES</Filter>
     </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="RES\new_logo\Corman_16x16_no_text.png">
+      <Filter>RES\new_logo</Filter>
+    </Image>
+    <Image Include="RES\new_logo\Corman_32x32_no_text.png">
+      <Filter>RES\new_logo</Filter>
+    </Image>
+    <Image Include="RES\new_logo\Corman_48x48_no_text.png">
+      <Filter>RES\new_logo</Filter>
+    </Image>
+    <Image Include="RES\new_logo\Corman_256x256_with_text.png">
+      <Filter>RES\new_logo</Filter>
+    </Image>
+    <Image Include="RES\new_logo\Corman_500x500_with_text.png">
+      <Filter>RES\new_logo</Filter>
+    </Image>
+    <Image Include="RES\CormanLisp_old.ICO">
+      <Filter>RES</Filter>
+    </Image>
+    <Image Include="RES\CormanLisp_small_old.BMP">
+      <Filter>RES</Filter>
+    </Image>
+    <Image Include="RES\CormanLisp_smaller_old.bmp">
+      <Filter>RES</Filter>
+    </Image>
   </ItemGroup>
 </Project>
