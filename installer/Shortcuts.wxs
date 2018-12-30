@@ -11,7 +11,8 @@
         <Shortcut Id="CormanLispIDE.lnk"
                   Directory="ProgramMenuDir"
                   Name="$(var.ProductName) IDE.lnk"
-                  Target="[INSTALLDIR]\CormanLisp.exe"/>
+                  Target="[INSTALLDIR]\CormanLisp.exe"
+                  Icon="CormanLispIcon.ico"/>
         <!-- Alternative: Target="[#CormanLisp_Console_Executable]"/> -->
         <Shortcut Id="CormanLispREPL.lnk"
                   Directory="ProgramMenuDir"
@@ -41,7 +42,8 @@
         <Shortcut Id="CormanLispDesktopIDEDesktop.lnk"
                   Directory="DesktopDir"
                   Name="$(var.ProductName) IDE.lnk"
-                  Target="[INSTALLDIR]\CormanLisp.exe"/>
+                  Target="[INSTALLDIR]\CormanLisp.exe"
+                  Icon="CormanLispIcon.ico"/>
         <Shortcut Id="CormanLispREPLDesktop.lnk"
                   Directory="DesktopDir"
                   Name="$(var.ProductName) REPL.lnk"
