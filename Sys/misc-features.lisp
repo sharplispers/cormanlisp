@@ -68,35 +68,43 @@
 ;;;	Common Lisp Y-OR-N-P function
 ;;;
 (defun y-or-n-p (&optional format-string &rest arguments)
-	(let ((stream *query-io*))
-		(if format-string
-			(progn
-				(fresh-line stream)
-				(apply #'format stream format-string arguments)))
-		(format stream "(Y/N)~%")
-		(do ((response-char))
-			(nil nil)			
-			(setq response-char (char-upcase (read-char stream)))
-			(cond
-				((not (graphic-char-p response-char))) 
-				((eq response-char #\Y) (return-from y-or-n-p t))
-				((eq response-char #\N) (return-from y-or-n-p nil))
-				(t (format stream "(Y/N)~%"))))))
+  (let ((stream *query-io*))
+    (if format-string
+        (progn
+          (fresh-line stream)
+          (apply #'format stream format-string arguments)))
+    (format stream "(Y/N)~%")
+    (do ((response-char))
+        (nil nil)
+      (setq response-char (char-upcase (read-char stream)))
+      ;; remove newline character when reading from console input
+      (let ((ch (peek-char nil stream nil 'Eof nil)))
+        (when (char= ch #\Newline)
+          (read-char stream nil nil nil)))
+      (cond
+        ((not (graphic-char-p response-char)))
+        ((eq response-char #\Y) (return-from y-or-n-p t))
+        ((eq response-char #\N) (return-from y-or-n-p nil))
+        (t (format stream "(Y/N)~%"))))))
 
 (defun yes-or-no-p (&optional format-string &rest arguments)
-	(let ((stream *query-io*))
-		(if format-string
-			(progn
-				(fresh-line stream)
-				(apply #'format stream format-string arguments)))
-		(format stream "(Yes/No)~%")
-		(do ((response))
-			(nil nil)			
-			(setq response (read stream))
-			(cond
-				((string-equal response "YES")(return-from yes-or-no-p t))
-				((string-equal response "NO") (return-from yes-or-no-p nil))
-				(t (format stream "(Yes/No)~%"))))))
+  (let ((stream *query-io*))
+    (if format-string
+        (progn
+          (fresh-line stream)
+          (apply #'format stream format-string arguments)))
+    (format stream "(Yes/No)~%")
+    (do ((response))
+        (nil nil)
+      ;; remove newline character when reading from console input
+      (setq response (read stream))
+      (let ((ch (peek-char nil stream nil 'Eof nil)))
+        (when (char= ch #\Newline)
+          (read-char stream nil nil nil)))
+      (cond
+        ((string-equal response "YES")(return-from yes-or-no-p t))
+        ((string-equal response "NO") (return-from yes-or-no-p nil))
+        (t (format stream "(Yes/No)~%"))))))
 
 ;;;
 ;;;	Corman Lisp WEAK-POINTER-OBJ function.
