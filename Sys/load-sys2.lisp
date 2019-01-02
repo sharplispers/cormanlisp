@@ -85,7 +85,9 @@
 (let ((*package* (find-package :ide)))
   (with-input-from-string (in "") ;; to not let it hang, as it calls INDENT-LINES
     (let ((*standard-input* in))
-      (load-file (concatenate 'string ccl::*cormanlisp-directory* "Sys\\scmindent\\lispindent.lisp")))))     
+      (load-file (concatenate 'string ccl::*cormanlisp-directory* "Sys\\scmindent\\lispindent.lisp"))))
+  ;; use Common Lisp style indenting for the IF form
+  (setf (cdr (assoc "IF" ide::*lisp-keywords* :test #'string-equal)) -1))
 (load-file "sys/code-indenter.lisp")
 (load-file "sys/context-menu.lisp")
 (load-file "sys/setf-expander.lisp")
