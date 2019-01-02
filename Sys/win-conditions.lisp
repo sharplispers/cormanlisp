@@ -92,60 +92,67 @@
    
 ;;; Redefine top-level to use conditions.
 (defun top-level ()
-	(write (copyright-notice) :escape nil)
-	(terpri *standard-output*)
-	(force-output)
-	(let ((init-path (parse-namestring (concatenate 'string (cl::cormanlisp-directory) "init.lisp")))
-		  (user-init-path (merge-pathnames "corman-init.lisp" (user-homedir-pathname))))
-	    (if (and (not *loading-kernel*)
-			   (probe-file init-path))
-			(load init-path))
-		(if (and (not *loading-kernel*)
-				 (probe-file user-init-path))
-			(load user-init-path)))
-	(do (expr result (stack-overflow nil))
-		(nil)
-		(restart-case
-			(progn
-				(block eval-expression
-					(handler-bind 
-						((win:stack-overflow 
-								(lambda (condition) 
-									(format *error-output* "~A~%" condition)
-									(force-output *error-output*)
-									(setf stack-overflow t)
-									(return-from eval-expression condition))))
-						(progn
-							(setq *read-level* 0)
-							(write *top-level-prompt* :escape nil) 
-							(setq expr (read *standard-input* nil 'Eof nil))
-							(if (eq expr 'quit)
-								(return 'quit))
-							(if (eq expr 'Eof)
-								(return 'Eof))
-                            
-                            ;; add support for top-level shortcuts
-                            (if (symbolp expr) 
-                                (let ((expansion (find-toplevel-shortcut expr)))
-                                    (if expansion (setf expr expansion))))
-                            
-							(setq - expr)
-							(editor-set-message "Working...")
-							(unwind-protect
-								(setq result (multiple-value-list (eval expr)))
-								(editor-set-default-message))					
-							(update-toplevel-globals expr result)
-							(if (null result) 
-								(force-output)
-								(dolist (i result)
-									(write i)
-									(terpri)
-									(force-output))))))
-				(if stack-overflow (protect-stack)))
-			(abort () :report "Abort to top level." 
-				(format *standard-output* "~%;;; Returning to top level loop.~%")
-				(go next)))
-		next))
+  (write (copyright-notice) :escape nil)
+  (terpri *standard-output*)
+  (force-output)
+  (let ((init-path (parse-namestring (concatenate 'string (cl::cormanlisp-directory) "init.lisp")))
+        (user-init-path (merge-pathnames "corman-init.lisp" (user-homedir-pathname))))
+    (if (and (not *loading-kernel*)
+             (probe-file init-path))
+        (load init-path))
+    (if (and (not *loading-kernel*)
+             (probe-file user-init-path))
+        (load user-init-path)))
+  (do (expr result (stack-overflow nil))
+      (nil)
+    (restart-case
+      (progn
+        (block eval-expression
+          (handler-bind
+            ((win:stack-overflow
+               (lambda (condition)
+                 (format *error-output* "~A~%" condition)
+                 (force-output *error-output*)
+                 (setf stack-overflow t)
+                 (return-from eval-expression condition))))
+            (progn
+              (setq *read-level* 0)
+              (write *top-level-prompt* :escape nil)
+              (setq expr (read *standard-input* nil 'Eof nil))
+              (if (eq expr 'quit)
+                  (return 'quit))
+              (if (eq expr 'Eof)
+                  (return 'Eof))
+              
+              ;; add support for top-level shortcuts
+              (if (symbolp expr)
+                  (let ((expansion (find-toplevel-shortcut expr)))
+                    (if expansion (setf expr expansion))))
+              
+              (setq - expr)
+              (editor-set-message "Working...")
+              (unwind-protect
+                  (progn
+                    ;; remove newline character when reading from console input
+                    ;; READ-LINE will not work properly without this
+                    (when (eq (ccl:cormanlisp-client-type) :console-client)
+                      (let ((ch (peek-char nil *standard-input* nil 'Eof nil)))
+                        (when (char= ch #\Newline)
+                          (read-char *standard-input* nil nil nil))))
+                    (setq result (multiple-value-list (eval expr))))
+                (editor-set-default-message))
+              (update-toplevel-globals expr result)
+              (if (null result)
+                  (force-output)
+                  (dolist (i result)
+                    (write i)
+                    (terpri)
+                    (force-output))))))
+        (if stack-overflow (protect-stack)))
+      (abort () :report "Abort to top level."
+             (format *standard-output* "~%;;; Returning to top level loop.~%")
+             (go next)))
+    next))
 
 (setq *top-level* #'top-level)
 
