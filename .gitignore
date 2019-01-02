@@ -39,4 +39,6 @@ installer/Headers.wxs
 installer/HyperSpec.wxs
 installer/Version.wxi
 installer/LICENSE.rtf
+unpacked/*
+CormanLisp*.zip
 
