@@ -103,6 +103,11 @@ sources under the MIT license. He added:
 Roger provided the source code for Corman Lisp to Zach, who updated
 the license information and posted the code to github.
 
+**N.B.**
+
+The problem which was reported by Roger was resolved. Current versions
+of Corman Lisp support modern, 64-bit versions of Windows.
+
 ## Support
 
 This source release of Corman Lisp is not officially supported,
