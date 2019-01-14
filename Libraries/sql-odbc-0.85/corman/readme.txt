@@ -28,10 +28,10 @@ support is not included.
 
 Questions, comments or suggestions about the Corman Lisp specific
 portions of the SQL-ODBC port can be addressed to Chris Double
-(chris@double.co.nz).
+(chris@double.nz).
 
 Chris Double
-chris@double.co.nz
+chris@double.nz
 1 September 2000.
 
 

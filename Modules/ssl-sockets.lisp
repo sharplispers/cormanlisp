@@ -35,10 +35,10 @@
 ;;;; See the examples at the end of the file for useage. It requires the 
 ;;;; SOCKETS package by Christopher Double. More recent versions of this 
 ;;;; software, including the SOCKETS package, may be available at:
-;;;;   http://www.double.co.nz/cl
+;;;;   http://www.double.nz/cl
 ;;;;
 ;;;; Comments, suggestions and bug reports to the author, 
-;;;; Christopher Double, at: chris@double.co.nz
+;;;; Christopher Double, at: chris@double.nz
 ;;;;
 ;;;; This product includes software developed by the OpenSSL Project for 
 ;;;; use in the OpenSSL Toolkit (http://www.openssl.org/),

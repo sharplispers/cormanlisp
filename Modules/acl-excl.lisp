@@ -30,10 +30,10 @@
 ;;;; like AllegroServe. 
 ;;;;
 ;;;; More recent versions of this software may be available at:
-;;;;   http://www.double.co.nz/cl
+;;;;   http://www.double.nz/cl
 ;;;;
 ;;;; Comments, suggestions and bug reports to the author, 
-;;;; Christopher Double, at: chris@double.co.nz
+;;;; Christopher Double, at: chris@double.nz
 ;;;;
 ;;;; 20/09/2000 - 1.0 
 ;;;;              Initial release.

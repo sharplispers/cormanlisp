@@ -20,7 +20,7 @@
 ;;;               lambda expression that can be later applied to a
 ;;;               string argument for parsing.
 ;;;;
-;;;; Modifications made 6 March 2001 By Chris Double (chris@double.co.nz)
+;;;; Modifications made 6 March 2001 By Chris Double (chris@double.nz)
 ;;;; to get working with Corman Lisp 1.42, add package statement and export
 ;;;; relevant functions.
 ;;;;

@@ -1,7 +1,7 @@
 ;;;; Unofficial patches to Corman Lisp 1.41
 ;;;;
-;;;; Patch done by Chris Double - chris@double.co.nz
-;;;; Available from http://www.double.co.nz/cl
+;;;; Patch done by Chris Double - chris@double.nz
+;;;; Available from http://www.double.nz/cl
 ;;;;
 ;;;; Additional official patches exist at http://www.corman.net 
 ;;;; that must be applied before applying this patch.

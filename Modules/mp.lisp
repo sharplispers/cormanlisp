@@ -29,14 +29,14 @@
 ;;;; striving to be compatible with CLOCC and/or Allegro CL.
 ;;;;
 ;;;; More recent versions of this software may be available at:
-;;;;   http://www.double.co.nz/cl
+;;;;   http://www.double.nz/cl
 ;;;; 
 ;;;; This package works as-is on Windows NT 4.0. For Windows 98 some
-;;;; patches to Corman Lisp 1.41 are required. See http://www.double.co.nz/cl
+;;;; patches to Corman Lisp 1.41 are required. See http://www.double.nz/cl
 ;;;; for details.
 ;;;;
 ;;;; Comments, suggestions and bug reports to the author, 
-;;;; Christopher Double, at: chris@double.co.nz
+;;;; Christopher Double, at: chris@double.nz
 ;;;;
 ;;;; 16/09/2000 - 1.0 
 ;;;;              Initial release.

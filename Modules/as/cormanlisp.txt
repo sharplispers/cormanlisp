@@ -11,7 +11,7 @@ using SSL sockets to retrieve web pages.
 
 I've distributed it now to allow others to use it in case I don't get
 a chance to work on it in the near future. Comments, bugs and
-suggestions can be sent to chris@double.co.nz.
+suggestions can be sent to chris@double.nz.
 
 The original AllegroServe distribution is available at:
 
@@ -19,5 +19,5 @@ http://allegroserve.sourceforge.net/
 
 --
 Chris Double.
-http://www.double.co.nz/cl
+http://www.double.nz/cl
 6 March 2001

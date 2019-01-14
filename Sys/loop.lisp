@@ -54,7 +54,7 @@
 ;; $aclHeader: loop.cl,v 1.5 91/12/04 01:13:48 cox acl4_1 $
 
 ;;;; 11/12/1999 - Changes to work under Corman Lisp 1.3 by Chris Double
-;;;;              (chris@double.co.nz)
+;;;;              (chris@double.nz)
 ;;;;
 ;;;; LOOP Iteration Macro
 

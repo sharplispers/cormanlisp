@@ -26,7 +26,7 @@
 ;;;; Notes
 ;;;; =====
 ;;;; This package depends on Chris Double's Gray Streams (available
-;;;; from http://www.double.co.nz/cl/).
+;;;; from http://www.double.nz/cl/).
 ;;;;
 ;;;; I insert things into the COMMON-LISP package.  This is not
 ;;;; exactly comme-il-faut, but composite streams are defined by ANSI

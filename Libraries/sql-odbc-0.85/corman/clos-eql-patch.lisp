@@ -2,8 +2,8 @@
 ;;;; EQL specialisers with defmethod.
 ;;;;
 ;;;; Version 1.4
-;;;; Created by Chris Double - chris@double.co.nz
-;;;; Available from http://www.double.co.nz/cl
+;;;; Created by Chris Double - chris@double.nz
+;;;; Available from http://www.double.nz/cl
 ;;;;
 ;;;; This patch is in the public domain and may therefore
 ;;;; be used in any manner you wish. 

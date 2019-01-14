@@ -34,7 +34,7 @@ made contributions to the 3.0 release, including many of the
 new GUI features and the Othello sample program.
 
 Chris Double has a great web site at:
-http://www.double.co.nz/cl/index.htm 
+http://double.nz/cl/index.htm 
 
 which contains all kinds of Corman Lisp add-on features and 
 programs (which he has personally developed). He continues 
@@ -55,7 +55,7 @@ included in this release.
 
 Chris Double has contributed many bug fixes and enhancements 
 for Corman Lisp, and has a nice Corman Lisp site at 
-http://www.double.co.nz/cl/.
+http://double.nz/cl/.
 
 Erann Gat has assisted us with obtaining the cormanlisp.com
 domain registration.

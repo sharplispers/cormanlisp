@@ -24,10 +24,10 @@
 ;;;;    distribution.
 ;;;;
 ;;;; More recent versions of this software may be available at:
-;;;;   http://www.double.co.nz/cl
+;;;;   http://www.double.nz/cl
 ;;;;
 ;;;; Comments, suggestions and bug reports to the author, 
-;;;; Christopher Double, at: chris@double.co.nz
+;;;; Christopher Double, at: chris@double.nz
 ;;;;
 ;;;; 03/03/2000 - 1.0 
 ;;;;              Initial release.
@@ -110,7 +110,7 @@
 (use-package :net.aserve.client)
 
 (setq cookies (make-instance 'cookie-jar))
-(do-http-request "http://www.double.co.nz/cl/index.htm" 
+(do-http-request "http://www.double.nz/cl/index.htm" 
 	:cookies cookies
 	:protocol :http/1.0)
 (net.aserve.client::cookie-jar-items cookies)

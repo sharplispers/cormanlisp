@@ -29,10 +29,10 @@
 ;;;; at least version 1.4 of Corman Lisp available at http://www.cormanlisp.com
 ;;;;
 ;;;; More recent versions of this software may be available at:
-;;;;   http://www.double.co.nz/cl
+;;;;   http://www.double.nz/cl
 ;;;;
 ;;;; Comments, suggestions and bug reports to the author, 
-;;;; Christopher Double, at: chris@double.co.nz
+;;;; Christopher Double, at: chris@double.nz
 ;;;;
 ;;;; 05/12/1999 - 1.0 
 ;;;;              Initial release.
@@ -134,7 +134,7 @@
 ;;;;              blocking sockets when reading sequences. Unless you
 ;;;;              have patched CL 1.41 to fix this problem I suggest
 ;;;;              not using READ-SEQUENCE (See
-;;;;              http://www.double.co.nz/cl) for an unofficial patch
+;;;;              http://www.double.nz/cl) for an unofficial patch
 ;;;;              to READ-SEQUENCE to fix the problem.
 ;;;;
 ;;;; 10/08/2000 - 1.7

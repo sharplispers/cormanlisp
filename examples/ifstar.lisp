@@ -6,8 +6,8 @@
 ;;;; with Allegro CL.
 ;;;;
 ;;;; This distribution of the macro supplied by Chris Double
-;;;; (chris@double.co.nz) for use with Corman Lisp 1.41 and available
-;;;; at http://www.double.co.nz/cl
+;;;; (chris@double.nz) for use with Corman Lisp 1.41 and available
+;;;; at http://double.nz/cl/
 ;;;;
 (defpackage :excl
 	(:use :common-lisp)

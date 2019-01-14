@@ -33,10 +33,10 @@
 ;;;;   http://www.franz.com/support/documentation/5.0.1/doc/cl/socket.htm
 ;;;;
 ;;;; More recent versions of this software may be available at:
-;;;;   http://www.double.co.nz/cl
+;;;;   http://www.double.nz/cl
 ;;;;
 ;;;; Comments, suggestions and bug reports to the author, 
-;;;; Christopher Double, at: chris@double.co.nz
+;;;; Christopher Double, at: chris@double.nz
 ;;;;
 ;;;; 17/09/2000 - 1.0 
 ;;;;              Initial release.
@@ -166,7 +166,7 @@
 (use-package :socket)
 (use-package :mp)
 
-(let ((stream (make-socket :remote-host "www.double.co.nz" :remote-port 80)))
+(let ((stream (make-socket :remote-host "www.double.nz" :remote-port 80)))
 	(write-line "GET / HTTP/1.0" stream)
 	(write-line "" stream)
 	(force-output stream)
