@@ -602,13 +602,13 @@
   "Checks if supplied file exists with well-known Lisp files extensions. If the check fails this functions returns NIL."
 	(if (and (pathname-type file)
 			 (probe-file file))
-		file
+		(truename (pathname file))
         (flet ((check-extension (ext)
                     (let ((path (make-pathname :name file
                                     :type ext
                                     :version nil)))
                         (when (probe-file path)
-                            path))))
+                            (truename path)))))
             (or (check-extension "lisp")
                 (check-extension "lsp")
                 (check-extension "cl")))))
@@ -631,9 +631,9 @@
 			 (external-format :default))
     (declare (ignore external-format print))
     (let ((old-input-file input-file))
-	  (setq input-file (or (resolve-load-path input-file)
+	  (setq input-file (or (resolve-lisp-file-path input-file)
 					       ;; try to find file in the Corman Lisp installation directory.
-					       (resolve-load-path (concatenate 'string
+					       (resolve-lisp-file-path (concatenate 'string
 													       (cl::cormanlisp-directory)
 													(if (stringp input-file)
 														input-file
@@ -817,18 +817,21 @@
 (setf ccl::*save-relative-source-file-names* t)   ;; after the image loads, this is turned off
 
 (defun resolve-load-path (file)
-  (let ((resolved-lisp-file-path (resolve-lisp-file-path file))
-		(compiled-file-path (compile-file-pathname file)))
-	(cond
-	  ((and resolved-lisp-file-path
-			(probe-file compiled-file-path)
-			(< (file-write-date resolved-lisp-file-path)
-			   (file-write-date compiled-file-path)))
-	   compiled-file-path)
-	  ((and (not resolved-lisp-file-path)
-			(probe-file compiled-file-path))
-	   compiled-file-path)
-	  (t resolved-lisp-file-path))))
+  (if (probe-file file)
+      (truename (pathname file))
+      (let ((resolved-lisp-file-path (resolve-lisp-file-path file))
+            (compiled-file-path (compile-file-pathname file)))
+        (cond
+          ((and resolved-lisp-file-path
+                (probe-file compiled-file-path))
+           (if (< (file-write-date resolved-lisp-file-path)
+                  (file-write-date compiled-file-path))
+               compiled-file-path
+               resolved-lisp-file-path))
+          ((and (not resolved-lisp-file-path)
+                (probe-file compiled-file-path))
+           compiled-file-path)
+          (t resolved-lisp-file-path)))))
 
 ;;;;
 ;;;; Common Lisp LOAD function
