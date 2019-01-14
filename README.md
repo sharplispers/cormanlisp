@@ -9,6 +9,8 @@ From the [Corman Lisp 'Features' page](http://www.cormanlisp.com/features.html):
 
 > Corman Lisp incorporates state-of-the-art compiler technology to bring you a Common Lisp system unmatched on Windows platforms.
 
+Corman Lisp works on Windows XP SP3 and newer. It is also reported to [work on Linux via Wine](https://appdb.winehq.org/objectManager.php?sClass=application&iId=4751).
+
 ## Source release history
 
 In June 2013, Zach Beane contacted Roger Corman about the future of
