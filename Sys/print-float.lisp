@@ -717,7 +717,7 @@
 		(unless padchar (setf padchar #\Space))
 		(if (integerp padchar) 
 			(setf padchar (int-char padchar)))
-		(format-fixed stream (car args) width digits nil
+		(format-fixed stream (car args) width (if digits digits 2) nil
 			nil padchar nil)
 		(1+ index)))
 
