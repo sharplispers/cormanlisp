@@ -472,7 +472,7 @@
 ;;;
 (defun format-fixed-aux (stream number w d k ovf pad atsign)
 	(cond
-		((not (or w d))
+		((and (not k) (not (or w d)))
 			(prin1 number stream)
 			nil)
 		(t (let ((spaceleft w))
