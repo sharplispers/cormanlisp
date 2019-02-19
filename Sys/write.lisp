@@ -445,7 +445,7 @@
 			(setf fraction (if (minusp fraction)(- fraction) fraction))
 			(%output-char #\. os)
 			(if (= fraction 0)
-				(%output-char #\0 os)
+				(progn (%output-char #\0 os) (%output-char #\0 os))
 				(let ((frac (/ fraction float-decimal-constant)))
 					(dotimes (i max-float-decimal-digits)
 						(if (= frac 0)
