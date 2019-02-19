@@ -337,13 +337,13 @@
 						(if first-time 
 							(setq first-time nil)
 							(setq i (char-downcase i)))
-						(%output-char (if (or first-time pack-escape) i (char-downcase i)) os)))
+						(%output-char i os)))
 				(setq first-time t)
 				(dolist (i name-chars) 
 					(if first-time 
 						(setq first-time nil)
 						(setq i (char-downcase i)))
-					(%output-char (if (or first-time name-escape) i (char-downcase i)) os))))
+					(%output-char i os))))
 			(t
 			 (if escape (dolist (i pack) (%output-char i os)))
 			 (dolist (i name-chars) (%output-char i os))))))
