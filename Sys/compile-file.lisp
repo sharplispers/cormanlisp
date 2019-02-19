@@ -735,7 +735,9 @@
 		   (cl::*COMPILER-WARN-ON-UNDEFINED-FUNCTION* nil)
 		   (cl::*UNDEFINED-FUNCTIONS* t)
 		   (address (open-fasl-file input-file))
-		   (count 0))
+		   (count 0)
+		   (*load-pathname* (pathname (merge-pathnames (truename input-file))))
+		   (*load-truename* *load-pathname*))
 		(unwind-protect
 			(progn
 				(when *fasl-compression*
