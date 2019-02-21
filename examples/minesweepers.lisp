@@ -524,12 +524,13 @@
 ;;;
 (defun genetic-algorithm-grab-n-best (ga nbest num-copies population)
     ;; add the required amount of copies of the n most fittest to the supplied vector
-    (do ()
-        ((= nbest 0))
-        (decf nbest)
-        (dotimes (i num-copies)
-            (vector-push-extend (aref (genetic-algorithm-population ga) 
-                    (- (1- (genetic-algorithm-population-size ga)) nbest)) population))))
+    (dotimes (i num-copies)
+        (let ((nbest nbest))
+            (do ()
+                ((= nbest 0))
+                (decf nbest)
+                (vector-push-extend (aref (genetic-algorithm-population ga)
+                                          (- (1- (genetic-algorithm-population-size ga)) nbest)) population)))))
 
 ;;;
 ;;; given parents and storage for the offspring this method performs
@@ -538,26 +539,25 @@
 (defun genetic-algorithm-crossover (ga mom dad baby1 baby2)
     (let ((cp 0))
         ;; just return parents as offspring dependent on the rate or if parents are the same
-        (if (or (> (rand-float) (genetic-algorithm-crossover-rate ga))(eq mom dad))
-            (setf cp (length mom)))         ; baby1 = mom, baby2 = dad
-            (progn
-                ;; determine a crossover point
-                (setf cp (rand-int 0 (1- (genetic-algorithm-chromo-length ga)))))
-                ;; create the offspring
-                (dotimes (i cp)
-                    (vector-push-extend (aref mom i) baby1)
-                    (vector-push-extend (aref dad i) baby2))
-                (do* ((i cp (+ i 1)))
-                     ((>= i (length mom)))
-                    (vector-push-extend (aref dad i) baby1)
-                    (vector-push-extend (aref mom i) baby2))))
+        (if (or (> (rand-float) (genetic-algorithm-crossover-rate ga)) (eq mom dad))
+            (setf cp (length mom))          ; baby1 = mom, baby2 = dad
+            ;; determine a crossover point
+            (setf cp (rand-int 0 (1- (genetic-algorithm-chromo-length ga)))))
+        ;; create the offspring
+        (dotimes (i cp)
+            (vector-push-extend (aref mom i) baby1)
+            (vector-push-extend (aref dad i) baby2))
+        (do* ((i cp (+ i 1)))
+            ((>= i (length mom)))
+            (vector-push-extend (aref dad i) baby1)
+            (vector-push-extend (aref mom i) baby2))))
     
 ;;;
 ;;; returns a chromosome based on roulette wheel sampling
 ;;;
 (defun genetic-algorithm-get-chromo-roulette (ga)
     (let* ((slice (* (rand-float) (genetic-algorithm-total-fitness ga)))
-           (chosen (create-genome (make-array 0 :fill-pointer t) 0))
+	   ; (chosen (create-genome (make-array 0 :fill-pointer t) 0))
            (fitness-so-far 0))
         (dotimes (i (genetic-algorithm-population-size ga))
             (incf fitness-so-far (genome-fitness (aref (genetic-algorithm-population ga) i)))
@@ -566,7 +566,8 @@
             (when (>= fitness-so-far slice)
                 (return-from genetic-algorithm-get-chromo-roulette 
                     (aref (genetic-algorithm-population ga) i))))
-        chosen))
+	; chosen
+	))
 
 ;;;
 ;;; mutates a chromosome by perturbing its weights by an amount not greater than *max-perturbation*
@@ -580,7 +581,7 @@
             (incf (aref chromosomes i) (* (random-clamped) *max-perturbation*)))))
     
 (defun genetic-algorithm-epoch (ga old-population)
-    (setf (genetic-algorithm-population ga) old-population)
+    (setf (genetic-algorithm-population ga) (sort old-population #'< :key #'genome-fitness)) ; sort needed for elitism
     
     ;; reset the appropriate variables
     (genetic-algorithm-reset ga)
@@ -869,9 +870,9 @@
                     (MoveToEx surface (floor (point-x (aref sweeper-vertices 10))) (floor (point-y (aref sweeper-vertices 10))) NULL)
                     (dotimes (i 5)
                         (LineTo surface (floor (point-x (aref sweeper-vertices (+ i 11))))
-                                        (floor (point-y (aref sweeper-vertices (+ i 11))))))
-                    
-                    (SelectObject surface old-pen))))      ;; put the old pen back
+                                        (floor (point-y (aref sweeper-vertices (+ i 11))))))))
+            
+            (SelectObject surface old-pen))      ;; put the old pen back
         
         (controller-plot-stats controller surface)))
 
@@ -1055,5 +1056,3 @@
 			(winmain (cl::get-application-instance) 
 				null (ct:create-c-string "") SW_SHOW))
 		(error () (return-from minesweepers))))
-
-
