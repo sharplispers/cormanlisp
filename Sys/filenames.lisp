@@ -79,8 +79,18 @@
 		(unless supplied-name (setq name (pathname-internal-name defaults)))
 		(unless supplied-type (setq type (pathname-internal-type defaults)))
 		(unless supplied-version (setq version (pathname-internal-version defaults))))
-
-	(construct-pathname host device directory name type version logical))
+  (construct-pathname host
+                      device
+                      (cond
+                        ((stringp directory)
+                         (list :absolute directory))
+                        ((eq directory :wild)
+                         (list ""))
+                        (t directory))
+                      name
+                      type
+                      version
+                      logical))
 
 (defun convert-pathname-to-namestring (pathname)
 	(let ((device (pathname-internal-device pathname))
