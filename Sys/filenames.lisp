@@ -380,12 +380,6 @@
 		(make-pathname :host host :device device :directory directory
 			:name name :type type :version version)))
 
-;; Make sure the default pathname gets set when an image is loaded.
-(flet ((init-default-path ()
-			(setf cl::*default-pathname-defaults* (cl:pathname (cl::cormanlisp-directory)))))
-	(init-default-path)
-	(cl::register-load-image-restore-func #'init-default-path))
-
 (ct:defun-dll GetFullPathName ((lpFileName (:unsigned-char *)) 
 							(nBufferLength :long) 
 							(lpBuffer (:unsigned-char *))

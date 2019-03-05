@@ -321,6 +321,12 @@
            ))
         
         ))))
-	
+
+;; Make sure the default pathname gets set when an image is loaded.
+(flet ((init-default-path ()
+			(setq cl::*default-pathname-defaults* (ccl::get-current-directory))))
+	(init-default-path)
+	(cl::register-load-image-restore-func #'init-default-path))
+
 (export '(ccl::get-current-directory ccl::set-current-directory ccl::current-directory) "CORMANLISP")
 		
