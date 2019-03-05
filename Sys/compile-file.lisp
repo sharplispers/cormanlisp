@@ -624,98 +624,98 @@
 ;;;
 ;;;	Common Lisp COMPILE-FILE function.
 ;;;
-(defun compile-file (input-file 
-		&key (output-file nil)
-			 (verbose *compile-verbose*)
-			 (print *compile-print*)
-			 (external-format :default))
-    (declare (ignore external-format print))
-    (let ((old-input-file input-file))
-	  (setq input-file (or (resolve-lisp-file-path input-file)
-					       ;; try to find file in the Corman Lisp installation directory.
-					       (resolve-lisp-file-path (concatenate 'string
-													       (cl::cormanlisp-directory)
-													(if (stringp input-file)
-														input-file
-														(namestring input-file))))))
-	  (unless input-file
-	    (error "Can't resolve lisp file path ~S" old-input-file)))
-	(setq output-file (compile-file-pathname input-file :output-file output-file))
-				
-	(let* ((*fasl-output-buffer* (make-array #x2000 :element-type 'byte :fill-pointer 0 :adjustable t))
-		   (*compiled-objects-hash-table* (make-hash-table :test 'eq))
-		   (*hashed-objects-index* 0)
-		   (*package* *package*)
-		   (*print-level* *print-level*)
-		   (*read-level* *read-level*)
-           (*compile-verbose* verbose)
-           (*compile-print* print)
-		   (pl::*source-file* (namestring input-file))
-		   (pl::*source-line* nil)
-		   (pl::*compiler-collect-jump-table-refs* t)
-		   (pl::*compiler-collect-var-table-refs* t)
-		   (cl::*compiler-save-lambdas* nil)
-		   (cl::*append-refs-to-code* nil)
-		   (cl::*COMPILER-WARN-ON-UNDEFINED-FUNCTION* nil)
-		   (cl::*UNDEFINED-FUNCTIONS* t)
-		   (*compile-file-pathname* (pathname (merge-pathnames (truename input-file))))
-		   (*compile-file-truename* *compile-file-pathname*)
-		   (count 0)
-		   (eof-value (cons 'eof nil))
-		   (warnings-p nil)
-		   (failure-p nil))
-		(declare (special pl::*compiler-collect-jump-table-refs*
-						  pl::*compiler-collect-var-table-refs*
-						  cl::*append-refs-to-code*
-						  cl::*compiler-save-lambdas*
-						  cl::*COMPILER-WARN-ON-UNDEFINED-FUNCTION*
-						  cl::*UNDEFINED-FUNCTIONS*))
-		(when verbose
-			(format t "Compiling file ~A~%" input-file)
-			(format t "Producing  output file ~A~%" output-file))
-
-		(with-open-file (is input-file :direction :input)
-			(do ((x 
-					(progn 
-						(setq ccl::*source-line* nil)
-						(read is nil eof-value nil)) 
-					(progn 
-						(setq ccl::*source-line* nil)
-						(read is nil eof-value nil)))) 
-				((eq x eof-value))
-				(incf count)
-                (compile-file-toplevel-form  x))
-			(if *compress-fasl-files*
-				(setf *fasl-output-buffer* (cl::compress-bytes *fasl-output-buffer*)))
-			(if (file-is-executable output-file)
-				(let* ((len (length *fasl-output-buffer*))
-					   (buf (make-array (+ len fasl-header-size) :element-type 'byte)))
-					;; copy the output byte to a new buffer, with room for the header			
-					(dotimes (i len)
-						(setf (aref buf (+ i fasl-header-size)) (aref *fasl-output-buffer* i)))
-					(win:write-exe-section output-file ".fasl" buf)
-					(with-open-file (os output-file :direction :io :element-type 'unsigned-byte)
-						(win::open-read-exe os ".fasl")
-						(write-header os)))
-				(with-open-file (os output-file :direction :output :element-type 'unsigned-byte)
-					(write-header os)					
-					(dotimes (i (length *fasl-output-buffer*))
-						(write-byte (elt *fasl-output-buffer* i) os)))))
-	
-		(unless (eq cl::*UNDEFINED-FUNCTIONS* t)
-			(let ((undefined '()))
-				(do* ((x cl::*UNDEFINED-FUNCTIONS* (cddr x)))
-					((not (consp x)))
-					(if (or (not (fboundp (car x)))(eq (symbol-function (car x)) (cadr x)))
-						(push (car x) undefined)))
-				(when undefined
-					(format *error-output* ";;; Warning: the following function(s) are called from forms~%~
-											;;; in file \"~A\" but were not defined:~%" input-file)
-					(dolist (s undefined)
-						(format *error-output* ";;;     ~S~%" s)))))		
-		(when verbose
-			(format t "~A forms were compiled~%" count))
-		(values output-file warnings-p failure-p)))
+(defun compile-file (input-file
+                      &key (output-file nil)
+                      (verbose *compile-verbose*)
+                      (print *compile-print*)
+                      (external-format :default))
+  (declare (ignore external-format print))
+  (let* ((old-input-file (if (stringp input-file)
+                             input-file
+                             (namestring input-file)))
+         (input-file (or (resolve-lisp-file-path old-input-file)
+                         ;; try to find file in the Corman Lisp installation directory.
+                         (resolve-lisp-file-path (concatenate 'string
+                                                              (cl::cormanlisp-directory)
+                                                              (if (stringp old-input-file)
+                                                                  old-input-file
+                                                                  (namestring old-input-file))))))
+         (output-file (if input-file
+                          (compile-file-pathname input-file :output-file output-file)
+                          (error "Can't resolve lisp file path ~S" old-input-file)))
+         (*fasl-output-buffer* (make-array #x2000 :element-type 'byte :fill-pointer 0 :adjustable t))
+         (*compiled-objects-hash-table* (make-hash-table :test 'eq))
+         (*hashed-objects-index* 0)
+         (*package* *package*)
+         (*print-level* *print-level*)
+         (*read-level* *read-level*)
+         (*compile-verbose* verbose)
+         (*compile-print* print)
+         (pl::*source-file* (namestring input-file))
+         (pl::*source-line* nil)
+         (pl::*compiler-collect-jump-table-refs* t)
+         (pl::*compiler-collect-var-table-refs* t)
+         (cl::*compiler-save-lambdas* nil)
+         (cl::*append-refs-to-code* nil)
+         (cl::*COMPILER-WARN-ON-UNDEFINED-FUNCTION* nil)
+         (cl::*UNDEFINED-FUNCTIONS* t)
+         (*compile-file-pathname* (pathname (merge-pathnames old-input-file)))
+         (*compile-file-truename* (pathname (merge-pathnames (truename input-file))))
+         (count 0)
+         (eof-value (cons 'eof nil))
+         (warnings-p nil)
+         (failure-p nil))
+    (declare (special pl::*compiler-collect-jump-table-refs*
+                      pl::*compiler-collect-var-table-refs*
+                      cl::*append-refs-to-code*
+                      cl::*compiler-save-lambdas*
+                      cl::*COMPILER-WARN-ON-UNDEFINED-FUNCTION*
+                      cl::*UNDEFINED-FUNCTIONS*))
+    (when verbose
+      (format t "Compiling file ~A~%" input-file)
+      (format t "Producing  output file ~A~%" output-file))
+    
+    (with-open-file (is input-file :direction :input)
+      (do ((x
+             (progn
+               (setq ccl::*source-line* nil)
+               (read is nil eof-value nil))
+             (progn
+               (setq ccl::*source-line* nil)
+               (read is nil eof-value nil))))
+          ((eq x eof-value))
+        (incf count)
+        (compile-file-toplevel-form  x))
+      (if *compress-fasl-files*
+          (setf *fasl-output-buffer* (cl::compress-bytes *fasl-output-buffer*)))
+      (if (file-is-executable output-file)
+          (let* ((len (length *fasl-output-buffer*))
+                 (buf (make-array (+ len fasl-header-size) :element-type 'byte)))
+            ;; copy the output byte to a new buffer, with room for the header
+            (dotimes (i len)
+              (setf (aref buf (+ i fasl-header-size)) (aref *fasl-output-buffer* i)))
+            (win:write-exe-section output-file ".fasl" buf)
+            (with-open-file (os output-file :direction :io :element-type 'unsigned-byte)
+              (win::open-read-exe os ".fasl")
+              (write-header os)))
+          (with-open-file (os output-file :direction :output :element-type 'unsigned-byte)
+            (write-header os)
+            (dotimes (i (length *fasl-output-buffer*))
+              (write-byte (elt *fasl-output-buffer* i) os)))))
+    (unless (eq cl::*UNDEFINED-FUNCTIONS* t)
+      (let ((undefined '()))
+        (do* ((x cl::*UNDEFINED-FUNCTIONS* (cddr x)))
+            ((not (consp x)))
+          (if (or (not (fboundp (car x)))(eq (symbol-function (car x)) (cadr x)))
+              (push (car x) undefined)))
+        (when undefined
+          (format *error-output* ";;; Warning: the following function(s) are called from forms~%~
+                                                                                        ;;; in file \"~A\" but were not defined:~%" input-file)
+          (dolist (s undefined)
+            (format *error-output* ";;;     ~S~%" s)))))
+    (when verbose
+      (format t "~A forms were compiled~%" count))
+    (values output-file warnings-p failure-p)))
 
 (defun offset-foreign-ptr (p offset) 
 	(ct:int-to-foreign-ptr (+ (ct:cpointer-value p) offset)))
@@ -735,9 +735,7 @@
 		   (cl::*COMPILER-WARN-ON-UNDEFINED-FUNCTION* nil)
 		   (cl::*UNDEFINED-FUNCTIONS* t)
 		   (address (open-fasl-file input-file))
-		   (count 0)
-		   (*load-pathname* (pathname (merge-pathnames (truename input-file))))
-		   (*load-truename* *load-pathname*))
+		   (count 0))
 		(unwind-protect
 			(progn
 				(when *fasl-compression*
@@ -840,71 +838,71 @@
 ;;;; Enhanced LOAD to allow the extension to be unspecified. In this case it 
 ;;;; assume ".lisp" unless there is a newer file with the extension ".fasl".
 ;;;;
-(defun load (path &key 
-                (verbose *load-verbose*) 
-		        (print *load-print*) 
-                (if-does-not-exist t) 
-                (external-format :default))
-   (declare (ignore external-format))
-   (let ((old-path path))
-	 (setf path (or (resolve-load-path path)
-					;; try to find file in the Corman Lisp installation directory.
-					(resolve-load-path (concatenate 'string
-													(cl::cormanlisp-directory)
-													(if (stringp path)
-														path
-														(namestring path))))))
-	 (unless path
-	   (error "Can't resolve load path for file ~S" old-path)))
-	 (if (path-is-fasl-file-name path)
-	   (return-from load (load-fasl-file path :verbose verbose :print print)))
-	(let* ((*package* *package*)
-		   (*print-level* *print-level*)
-		   (*read-level* *read-level*)
-		   (*load-pathname* (pathname (merge-pathnames (truename path))))
-		   (*load-truename* *load-pathname*)
-		   (cl::*COMPILER-WARN-ON-UNDEFINED-FUNCTION* nil)
-		   (cl::*UNDEFINED-FUNCTIONS* t)
-		   (ccl::*source-file* 
-                (if ccl::*save-relative-source-file-names*
-                    (namestring path)
-                    (namestring *load-pathname*)))
-		   (ccl::*source-line* nil)
-		   (count 0)
-		   (eof-value (cons 'eof nil)))
-		(with-open-file (istream path 
-                        :direction :input 
-                        :if-does-not-exist (if if-does-not-exist :error nil))
-            
+(defun load (path &key
+                  (verbose *load-verbose*)
+                  (print *load-print*)
+                  (if-does-not-exist t)
+                  (external-format :default))
+  (declare (ignore external-format))
+  (let* ((old-path (if (stringp path)
+                       path
+                       (namestring path)))
+         (path (or (resolve-load-path old-path)
+                   ;; try to find file in the Corman Lisp installation directory.
+                   (resolve-load-path (concatenate 'string
+                                                   (cl::cormanlisp-directory)
+                                                   (if (stringp old-path)
+                                                       old-path
+                                                       (namestring old-path))))))
+         (*load-pathname* (pathname (merge-pathnames old-path)))
+         (*load-truename* (pathname (merge-pathnames (truename path)))))
+    (unless path
+      (error "Can't resolve load path for file ~S" old-path))
+    (if (path-is-fasl-file-name path)
+        (load-fasl-file path :verbose verbose :print print)
+        (let* ((*package* *package*)
+               (*print-level* *print-level*)
+               (*read-level* *read-level*)
+               (cl::*COMPILER-WARN-ON-UNDEFINED-FUNCTION* nil)
+               (cl::*UNDEFINED-FUNCTIONS* t)
+               (ccl::*source-file*
+                 (if ccl::*save-relative-source-file-names*
+                     (namestring path)
+                     (namestring *load-pathname*)))
+               (ccl::*source-line* nil)
+               (count 0)
+               (eof-value (cons 'eof nil)))
+          (with-open-file (istream path
+                                   :direction :input
+                                   :if-does-not-exist (if if-does-not-exist :error nil))
             ;; If ISTREAM is null, it means the open failed but
             ;; the user specified :if-does-not-exist nil, which
             ;; means we just return NIL.
             (when (null istream) (return-from load nil))
-            (when verbose 
-                (format *standard-output* ";; Loading ~A~%" (namestring *load-pathname*)))
-            (do ((x 
-					(progn 
-						(setq ccl::*source-line* nil)
-						(read istream nil eof-value nil)) 
-					(progn 
-						(setq ccl::*source-line* nil)
-						(read istream nil eof-value nil)))) 
-				((eq x eof-value))
-				(setq count (+ 1 count))
-                (process-top-level-form-for-load x print)))
-        (unless (eq cl::*UNDEFINED-FUNCTIONS* t)
-			(let ((undefined '()))
-				(do* ((x cl::*UNDEFINED-FUNCTIONS* (cddr x)))
-					((not (consp x)))
-					(if (or (not (fboundp (car x)))(eq (symbol-function (car x)) (cadr x)))
-						(push (car x) undefined)))
-				(when undefined
-					(format *error-output* ";;; Warning: the following function(s) are called from forms~%~
-											;;; in file \"~A\" but have not yet been defined:~%" path)
-					(dolist (s undefined)
-						(format *error-output* ";;;     ~S~%" s))))) 
-		 count))
-
+            (when verbose
+              (format *standard-output* ";; Loading ~A~%" (namestring *load-pathname*)))
+            (do ((x
+                   (progn
+                     (setq ccl::*source-line* nil)
+                     (read istream nil eof-value nil))
+                   (progn
+                     (setq ccl::*source-line* nil)
+                     (read istream nil eof-value nil))))
+                ((eq x eof-value))
+              (setq count (+ 1 count))
+              (process-top-level-form-for-load x print)))
+          (unless (eq cl::*UNDEFINED-FUNCTIONS* t)
+            (let ((undefined '()))
+              (do* ((x cl::*UNDEFINED-FUNCTIONS* (cddr x)))
+                  ((not (consp x)))
+                (if (or (not (fboundp (car x)))(eq (symbol-function (car x)) (cadr x)))
+                    (push (car x) undefined)))
+              (when undefined
+                (format *error-output* ";;; Warning: the following function(s) are called from forms~%~")
+                (format *error-output* ";;; in file \"~A\" but have not yet been defined:~%" path)
+                (dolist (s undefined)
+                  (format *error-output* ";;;     ~S~%" s)))))
+          count))))
 ;;;
 ;;; Common Lisp WITH-COMPILATION-UNIT macro.
 ;;;
