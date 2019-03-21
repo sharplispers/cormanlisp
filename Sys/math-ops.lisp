@@ -5634,23 +5634,20 @@
 ;;; arctan x = -i log  ((1+ix) sqrt(1/(1+x^2)) )
 ;;; arctan x = 
 ;;; 
-(defun atan (x &optional y)
-    (when y
-        (unless (realp x)
-            (cl::signal-type-error x 'real))
-        (unless (realp y)
-            (cl::signal-type-error y 'real))
-        
-        ;; handle case where y is 0
-        (when (= y 0)
-            (if (= x 0)
-                (cl::signal-arithmetic-error 'atan (list x y)))
-            (return-from atan (if (> x 0) (/ pi 2) (- (/ pi 2)))))
-        (setq x (/ x y)))
-    
-    (let ((type (num-type x)))
-        (funcall (uref atan-functions (+ type 2)) x)))
-                
+(defconstant pi/2 (/ pi 2))
+(defconstant -pi/2 (/ pi -2))
+(defun atan (y &optional x);;; This atan is numerically stable for single-floats.
+  (cond ((not x) (funcall (uref atan-functions (+ (num-type y) 2)) y))
+        ((not (realp x)) (cl::signal-type-error x 'real))
+        ((not (realp y)) (cl::signal-type-error x 'real))
+        ((> x y) (if (> x (- y)) (funcall (uref atan-functions (+ (num-type y) 2)) (/ y x))
+                        (- -pi/2 (funcall (uref atan-functions (+ (num-type y) 2)) (/ x y)))))
+        ((> x (- y))     (- pi/2 (funcall (uref atan-functions (+ (num-type y) 2)) (/ x y))))
+        ;; The test for zeros case can be postponed to here because the above exclude (0, 0) and also divide-by-zero.  The last two cases don't exclude (0, 0), or divide-by-zero, so it goes here.
+        ((= 0 x y) (cl::signal-arithmetic-error 'atan (list x y)))
+        ((< y 0)              (- (funcall (uref atan-functions (+ (num-type y) 2)) (/ y x)) pi))
+        (t                 (+ pi (funcall (uref atan-functions (+ (num-type y) 2)) (/ y x))))))
+
 ;;;
 ;;;	Common Lisp SINH function.
 ;;;
